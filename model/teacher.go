@@ -1,10 +1,8 @@
-package jwc
-
-import "github.com/mohuishou/scuplus-go/model"
+package model
 
 // Teacher 教师表
 type Teacher struct {
-	model.Model
+	Model
 	Name    string
 	College string
 }

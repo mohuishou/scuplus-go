@@ -1,9 +1,7 @@
-package jwc
-
-import "github.com/mohuishou/scuplus-go/model"
+package model
 
 type Course struct {
-	model.Model
+	Model
 	College     string  // 学院
 	CourseID    string  // 课程号
 	Name        string  // 课程名

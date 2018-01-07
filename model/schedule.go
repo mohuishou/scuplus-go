@@ -1,12 +1,7 @@
-package jwc
-
-import (
-	"github.com/mohuishou/scuplus-go/model"
-)
+package model
 
 // Schedule 课程表
 type Schedule struct {
-	model.Model
 	CourseID     uint
 	UserID       uint
 	CourseType   string // 课程属性

@@ -1,12 +1,8 @@
-package user
-
-import (
-	"github.com/mohuishou/scuplus-go/model"
-)
+package model
 
 // Wechat 用户微信相关的信息
 type Wechat struct {
-	model.Model
+	Model
 	Openid     string
 	SessionKey string
 	NickName   string
