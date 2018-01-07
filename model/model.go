@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql" // mysql 驱动
 	"github.com/mohuishou/scuplus-go/config"
 )
 
@@ -34,14 +35,15 @@ func initDB() {
 	db.DB().SetMaxOpenConns(20)
 
 	autoMigrate()
+	addRelation()
 
 }
 
 // 自动迁移
 func autoMigrate() {
 	db.AutoMigrate(
-		&CourseTeacher{},
 		&Schedule{},
+		&CourseTeacher{},
 		&User{},
 		&Wechat{},
 		&Course{},
@@ -49,11 +51,15 @@ func autoMigrate() {
 	)
 }
 
+func addRelation() {
+}
+
 // DB 返回db，如果不存在则初始化
 func DB() *gorm.DB {
 	if db == nil {
 		initDB()
 	}
+	// db.LogMode(true)
 	return db
 }
 

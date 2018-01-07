@@ -57,6 +57,12 @@
   revision = "1f4be1efe3b3529b7e58861f75d70120a9567dc4"
 
 [[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
+  version = "v1.3"
+
+[[projects]]
   branch = "master"
   name = "github.com/hashicorp/go-version"
   packages = ["."]
@@ -71,7 +77,10 @@
 [[projects]]
   branch = "master"
   name = "github.com/jinzhu/gorm"
-  packages = ["."]
+  packages = [
+    ".",
+    "dialects/mysql"
+  ]
   revision = "0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e"
 
 [[projects]]
@@ -260,6 +269,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ae08a35a80d921ffbc6bf0b5254badded144b023313ed0faae26a04ed274771e"
+  inputs-digest = "e322ef9a5b5f4191b6568a7b0941fc43e0323cd0ba52acff4c7ab44d530856ff"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/kataras/iris"
+	"github.com/mohuishou/scuplus-go/model"
 
 	"github.com/betacraft/yaag/irisyaag"
 	"github.com/betacraft/yaag/yaag"
@@ -16,6 +17,7 @@ type myXML struct {
 }
 
 func main() {
+	model.DB()
 	app := iris.New()
 
 	yaag.Init(&yaag.Config{ // <- IMPORTANT, init the middleware.

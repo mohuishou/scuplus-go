@@ -16,9 +16,17 @@ type Mysql struct {
 	Port     string
 }
 
+// CourseTask 任务配置文件
+type CourseTask struct {
+	StudentID int    `toml:"student_id"`
+	Password  string `toml:"password"`
+	PageNO    int    `toml:"page_no"`
+}
+
 // Config 对应config.yml文件的位置
 type Config struct {
-	Mysql `toml:"mysql"`
+	Mysql      `toml:"mysql"`
+	CourseTask `toml:"course_task"`
 }
 
 var config Config
