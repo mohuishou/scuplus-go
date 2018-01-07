@@ -12,4 +12,5 @@ type Wechat struct {
 	NickName   string
 	AvatarURL  string
 	Gender     string
+	UserID     uint
 }
