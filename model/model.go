@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/mohuishou/scuplus-spider/config"
+	"github.com/mohuishou/scuplus-go/config"
 )
 
 var db *gorm.DB
@@ -21,6 +21,7 @@ type Model struct {
 
 // init 数据库初始化
 func initDB() {
+
 	// 获取配置
 	conf := config.GetConfig("").Mysql
 

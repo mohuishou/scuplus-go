@@ -2,3 +2,4 @@
 .idea
 vendor
 config.toml
+apidoc*
