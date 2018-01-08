@@ -48,6 +48,7 @@ func autoMigrate() {
 		&Wechat{},
 		&Course{},
 		&Teacher{},
+		&Grade{},
 	)
 }
 
