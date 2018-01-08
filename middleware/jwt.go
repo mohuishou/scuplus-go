@@ -66,6 +66,11 @@ func jwtMiddle(ctx iris.Context) {
 	ctx.Next()
 }
 
+// GetUserID 获取用户的id
+func GetUserID(ctx iris.Context) uint {
+	return uint(ctx.Values().Get("user_id").(float64))
+}
+
 // CreateToken 新建一个Token
 func CreateToken(userID uint) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{

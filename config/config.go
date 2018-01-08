@@ -25,6 +25,7 @@ type CourseTask struct {
 
 // Config 对应config.yml文件的位置
 type Config struct {
+	Secret     string
 	JwtSecret  string `toml:"jwt_secret"`
 	Mysql      `toml:"mysql"`
 	CourseTask `toml:"course_task"`
