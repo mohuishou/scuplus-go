@@ -34,3 +34,7 @@
 [[override]]
   name = "github.com/satori/go.uuid"
   revision = "063359185d32c6b045fa171ad7033ea545864fa1"
+
+[[constraint]]
+  name = "github.com/iris-contrib/middleware"
+  branch = "v8"

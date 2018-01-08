@@ -1,61 +1,41 @@
+// iris provides some basic middleware, most for your learning courve.
+// You can use any net/http compatible middleware with iris.FromStd wrapper.
+//
+// JWT net/http video tutorial for golang newcomers: https://www.youtube.com/watch?v=dgJFeqeXVKw
+//
+// This middleware is the only one cloned from external source: https://github.com/auth0/go-jwt-middleware
+// (because it used "context" to define the user but we don't need that so a simple iris.FromStd wouldn't work as expected.)
 package main
 
-import (
-	"github.com/kataras/iris"
-	"github.com/mohuishou/scuplus-go/model"
+// $ go get -u github.com/dgrijalva/jwt-go
+// $ go run main.go
 
-	"github.com/betacraft/yaag/irisyaag"
-	"github.com/betacraft/yaag/yaag"
+import (
+	"github.com/mohuishou/scuplus-go/middleware"
+
+	"github.com/mohuishou/scuplus-go/route"
+
+	"github.com/kataras/iris"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
-/*
-	go get github.com/betacraft/yaag/...
-*/
+func myHandler(ctx iris.Context) {
+	user := ctx.Values().Get("jwt").(*jwt.Token)
 
-type myXML struct {
-	Result string `xml:"result"`
+	ctx.Writef("This is an authenticated request\n")
+	ctx.Writef("Claim content:\n")
+
+	ctx.Writef("%s", int64(user.Claims.(jwt.MapClaims)["nbf"].(float64)))
 }
 
 func main() {
-	model.DB()
 	app := iris.New()
 
-	yaag.Init(&yaag.Config{ // <- IMPORTANT, init the middleware.
-		On:       true,
-		DocTitle: "Iris",
-		DocPath:  "apidoc.html",
-		BaseUrls: map[string]string{"Production": "", "Staging": ""},
-	})
-	app.Use(irisyaag.New()) // <- IMPORTANT, register the middleware.
+	// 注册中间件
+	middleware.Register(app)
 
-	app.Get("/json", func(ctx iris.Context) {
-		ctx.JSON(iris.Map{"result": "Hello World!"})
-	})
-
-	app.Get("/plain", func(ctx iris.Context) {
-		ctx.Text("Hello World!")
-	})
-
-	app.Get("/xml", func(ctx iris.Context) {
-		ctx.XML(myXML{Result: "Hello World!"})
-	})
-
-	app.Get("/complex", func(ctx iris.Context) {
-		value := ctx.URLParam("key")
-		ctx.JSON(iris.Map{"value": value})
-	})
-
-	// Run our HTTP Server.
-	//
-	// Documentation of "yaag" doesn't note the follow, but in Iris we are careful on what
-	// we provide to you.
-	//
-	// Each incoming request results on re-generation and update of the "apidoc.html" file.
-	// Recommentation:
-	// Write tests that calls those handlers, save the generated "apidoc.html".
-	// Turn off the yaag middleware when in production.
-	//
-	// Example usage:
-	// Visit all paths and open the generated "apidoc.html" file to see the API's automated docs.
-	app.Run(iris.Addr(":8080"))
-}
+	app.Get("/ping", myHandler)
+	route.Routes(app)
+	app.Run(iris.Addr("localhost:3001"))
+} // don't forget to look ../jwt_test.go to seee how to set your own custom claims

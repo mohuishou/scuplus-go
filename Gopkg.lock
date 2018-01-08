@@ -14,6 +14,18 @@
   revision = "35b3f5bdbcc920cd31f4870536dbc63be8530541"
 
 [[projects]]
+  name = "github.com/PuerkitoBio/goquery"
+  packages = ["."]
+  revision = "e1271ee34c6a305e38566ecd27ae374944907ee9"
+  version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/andybalholm/cascadia"
+  packages = ["."]
+  revision = "349dd0209470eabd9514242c688c403c0926d266"
+
+[[projects]]
   branch = "master"
   name = "github.com/aymerick/raymond"
   packages = [
@@ -25,15 +37,10 @@
   revision = "72acac2207479d21dd45898c2a4264246c818148"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/betacraft/yaag"
-  packages = [
-    "irisyaag",
-    "middleware",
-    "yaag",
-    "yaag/models"
-  ]
-  revision = "67962f4b77581a1ab1e3492ff26add2c20d29def"
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+  version = "v3.1.0"
 
 [[projects]]
   branch = "master"
@@ -75,6 +82,12 @@
   revision = "ad9fb86c356f971f30319c40ddbdcf72129a2791"
 
 [[projects]]
+  branch = "v8"
+  name = "github.com/iris-contrib/middleware"
+  packages = ["jwt"]
+  revision = "2102ebae5ecce406e29c5d93f1a7421650d8cf4c"
+
+[[projects]]
   branch = "master"
   name = "github.com/jinzhu/gorm"
   packages = [
@@ -88,6 +101,12 @@
   name = "github.com/jinzhu/inflection"
   packages = ["."]
   revision = "1c35d901db3da928c72a72d8458480cc9ade058f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jordic/goics"
+  packages = ["."]
+  revision = "826350cb6414a8014639473fb7e2db255fd1713c"
 
 [[projects]]
   branch = "master"
@@ -214,6 +233,12 @@
   revision = "542fd4642604d0d0c26112396ce5b1a9d01eee0b"
 
 [[projects]]
+  name = "github.com/mohuishou/scujwc-go"
+  packages = ["."]
+  revision = "89e2dde6d42d8f6497ac669d8c41928d2096c80b"
+  version = "0.2.1"
+
+[[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
   revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
@@ -258,17 +283,31 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "dd9ec17814d5b1de388ebe438ec013d57d8b3779"
+  revision = "1792d66dc88e503d3cb2400578221cdf1f7fe26f"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/text"
+  packages = [
+    "encoding",
+    "encoding/internal",
+    "encoding/internal/identifier",
+    "encoding/simplifiedchinese",
+    "internal/gen",
+    "transform",
+    "unicode/cldr"
+  ]
+  revision = "e19ae1496984b1c655b8044a65c0300a3c878dd3"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "0e4404da71227dcc02fb1deee803d93e86d08f72"
+  revision = "c4a9fb418357aceb801272d73efd518f183700fa"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e322ef9a5b5f4191b6568a7b0941fc43e0323cd0ba52acff4c7ab44d530856ff"
+  inputs-digest = "d388b8486c5996844cedbe21c5887b73f67e7bb53d847f086572f8ffa6dcebcf"
   solver-name = "gps-cdcl"
   solver-version = 1

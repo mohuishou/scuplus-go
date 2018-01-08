@@ -25,18 +25,22 @@ type CourseTask struct {
 
 // Config 对应config.yml文件的位置
 type Config struct {
+	JwtSecret  string `toml:"jwt_secret"`
 	Mysql      `toml:"mysql"`
 	CourseTask `toml:"course_task"`
 }
 
+// config
 var config Config
 
-// GetConfig 获取config
-func GetConfig(path string) Config {
+// 配置文件路径
+var configFile = ""
 
+// Get 获取config
+func Get() Config {
 	if config.Host == "" {
 		// 默认配置文件在同级目录
-		filepath := getPath(path)
+		filepath := getPath(configFile)
 
 		// 解析配置文件
 		if _, err := toml.DecodeFile(filepath, &config); err != nil {
@@ -46,6 +50,12 @@ func GetConfig(path string) Config {
 	return config
 }
 
+// SetPath 设置Config文件的路径
+func SetPath(path string) {
+	configFile = path
+}
+
+// 获取文件路径
 func getPath(path string) string {
 	if path != "" {
 		return path

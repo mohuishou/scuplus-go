@@ -14,7 +14,8 @@ func main() {
 	flag.Parse()
 
 	// 获取配置文件
-	conf := config.GetConfig(*confPath)
+	config.SetPath(*confPath)
+	conf := config.Get()
 
 	// 执行任务
 	switch *t {

@@ -24,7 +24,7 @@ type Model struct {
 func initDB() {
 
 	// 获取配置
-	conf := config.GetConfig("").Mysql
+	conf := config.Get().Mysql
 
 	// 初始化连接
 	var err error
