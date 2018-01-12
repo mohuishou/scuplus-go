@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -17,6 +16,7 @@ func jwtMiddle(ctx iris.Context) {
 	// 登录页面无需验证
 	if ctx.Path() == "/login" {
 		ctx.Next()
+		return
 	}
 
 	// token 验证
@@ -72,14 +72,13 @@ func GetUserID(ctx iris.Context) uint {
 }
 
 // CreateToken 新建一个Token
-func CreateToken(userID uint) {
+func CreateToken(userID uint) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
-		"end":     time.Now().Unix() + 3600*2,
+		"end":     time.Now().Unix() + 3600*24*15,
+		"start":   time.Now().Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString([]byte(config.Get().JwtSecret))
-
-	fmt.Println(tokenString, err)
+	return token.SignedString([]byte(config.Get().JwtSecret))
 }

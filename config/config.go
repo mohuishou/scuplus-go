@@ -23,12 +23,18 @@ type CourseTask struct {
 	PageNO    int    `toml:"page_no"`
 }
 
+type Wechat struct {
+	Appid  string `toml:"appid"`
+	Secret string `toml:"secret"`
+}
+
 // Config 对应config.yml文件的位置
 type Config struct {
 	Secret     string
 	JwtSecret  string `toml:"jwt_secret"`
 	Mysql      `toml:"mysql"`
 	CourseTask `toml:"course_task"`
+	Wechat     `toml:"wechat"`
 }
 
 // config

@@ -33,10 +33,9 @@ func initDB() {
 		log.Fatal("数据库连接错误：", err, conf)
 	}
 	db.DB().SetMaxOpenConns(20)
+	db.LogMode(true)
 
 	autoMigrate()
-	addRelation()
-
 }
 
 // 自动迁移
@@ -52,15 +51,11 @@ func autoMigrate() {
 	)
 }
 
-func addRelation() {
-}
-
 // DB 返回db，如果不存在则初始化
 func DB() *gorm.DB {
 	if db == nil {
 		initDB()
 	}
-	// db.LogMode(true)
 	return db
 }
 

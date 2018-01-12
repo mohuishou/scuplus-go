@@ -1,29 +1,31 @@
 package model
 
 import (
+	"strings"
+
 	"github.com/mohuishou/scujwc-go"
 )
 
 // Schedule 课程表
 type Schedule struct {
 	Model
-	Project      string   `json:"project"`
-	CourseID     string   `json:"course_id"`
-	CourseName   string   `json:"course_name"`
-	LessonID     string   `json:"lesson_id"`
-	Credit       string   `json:"credit"`
-	CourseType   string   `json:"course_type"`
-	ExamType     string   `json:"exam_type"`
-	Teachers     []string `json:"teachers"`
-	StudyWay     string   `json:"study_way"`
-	ChooseStatus string   `json:"choose_status"`
-	AllWeek      string   `json:"all_week"`
-	Day          string   `json:"day"`
-	Session      string   `json:"session"`
-	Campus       string   `json:"campus"`
-	Building     string   `json:"building"`
-	Classroom    string   `json:"classroom"`
-	Term         string   // 学期，例如：2017-2018年春季学期
+	Project      string `json:"project"`
+	CourseID     string `json:"course_id"`
+	CourseName   string `json:"course_name"`
+	LessonID     string `json:"lesson_id"`
+	Credit       string `json:"credit"`
+	CourseType   string `json:"course_type"`
+	ExamType     string `json:"exam_type"`
+	Teachers     string `json:"teachers"`
+	StudyWay     string `json:"study_way"`
+	ChooseStatus string `json:"choose_status"`
+	AllWeek      string `json:"all_week"`
+	Day          string `json:"day"`
+	Session      string `json:"session"`
+	Campus       string `json:"campus"`
+	Building     string `json:"building"`
+	Classroom    string `json:"classroom"`
+	Term         string // 学期，例如：2017-2018年春季学期
 	UserID       uint
 }
 
@@ -67,7 +69,7 @@ func UpdateSchedules(userID uint, term string) error {
 			Credit:       schedule.Credit,
 			CourseType:   schedule.CourseType,
 			ExamType:     schedule.ExamType,
-			Teachers:     schedule.Teachers,
+			Teachers:     strings.Join(schedule.Teachers, ","),
 			StudyWay:     schedule.StudyWay,
 			ChooseStatus: schedule.ChooseType,
 			AllWeek:      schedule.AllWeek,
