@@ -37,5 +37,5 @@ func main() {
 
 	app.Get("/ping", myHandler)
 	route.Routes(app)
-	app.Run(iris.Addr("localhost:80"))
+	app.Run(iris.Addr("0.0.0.0:80"))
 } // don't forget to look ../jwt_test.go to seee how to set your own custom claims
