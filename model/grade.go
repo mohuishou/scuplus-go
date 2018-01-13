@@ -19,7 +19,7 @@ type Grade struct {
 // GetGrades 获取用户的所有成绩
 func GetGrades(userID uint) []Grade {
 	grades := make([]Grade, 0)
-	if err := DB().Where("user_id", userID).Find(&grades); err != nil {
+	if err := DB().Where("user_id = ?", userID).Find(&grades); err != nil {
 		log.Printf("[Error] GetGrades Fail, userID: %d", userID)
 	}
 	return grades
@@ -44,6 +44,7 @@ func UpdateGrades(userID uint) error {
 	for _, gradeArr := range grades {
 		for _, g := range gradeArr {
 			grade := Grade{
+				UserID:     userID,
 				CourseID:   g.CourseID,
 				LessonID:   g.LessonID,
 				CourseName: g.CourseName,
@@ -59,25 +60,27 @@ func UpdateGrades(userID uint) error {
 				UserID:   userID,
 				CourseID: g.CourseID,
 				LessonID: g.LessonID,
+				Term:     g.Term,
 			}).Find(&oldGrade)
 
 			// 有则更新，无则创建
 			if oldGrade.ID != 0 {
-				if err := tx.Where("id", oldGrade.ID).Update(grade).Error; err != nil {
+				if err := tx.Model(&oldGrade).Updates(grade).Error; err != nil {
 					tx.Rollback()
-					log.Println("[Error]: UpdateGrades", grade)
+					log.Println("[Error]: UpdateGrades", err, grade)
 					return err
 				}
 			} else {
 				if err := tx.Create(&grade).Error; err != nil {
 					tx.Rollback()
-					log.Println("[Error]: UpdateGrades", grade)
+					log.Println("[Error]: UpdateGrades", err, grade)
 					return err
 				}
 			}
 
-			tx.Commit()
 		}
 	}
+	tx.Commit()
+
 	return nil
 }
