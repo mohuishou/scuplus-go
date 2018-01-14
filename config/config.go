@@ -30,6 +30,7 @@ type Wechat struct {
 
 // Config 对应config.yml文件的位置
 type Config struct {
+	Port       string
 	Secret     string
 	JwtSecret  string `toml:"jwt_secret"`
 	Mysql      `toml:"mysql"`
