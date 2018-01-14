@@ -9,6 +9,8 @@ import (
 
 // Routes 路由
 func Routes(app *iris.Application) {
+	app.Get("/notices", api.GetNotices)
+	app.Get("/notice/{id}", api.GetNotice)
 	app.Get("/user/grade", jwc.GetGrade)
 	app.Post("/user/grade", jwc.UpdateGrade)
 	app.Get("/user/schedule", jwc.GetSchedules)
