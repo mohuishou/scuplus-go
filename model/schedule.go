@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/mohuishou/scujwc-go"
@@ -49,7 +50,11 @@ func UpdateSchedules(userID uint, term string) error {
 
 	schedules, err := jwc.Schedule()
 	if err != nil {
-		return nil
+		return err
+	}
+
+	if len(schedules) < 1 {
+		return errors.New("没有获取到新的数据，请查看教务处")
 	}
 
 	// 删除所有的数据
