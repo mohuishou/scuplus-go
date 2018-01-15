@@ -57,8 +57,10 @@ func UpdateSchedules(userID uint, term string) error {
 		return errors.New("没有获取到新的数据，请查看教务处")
 	}
 
-	// 删除所有的数据
+	// 删除所有的数据，软删除只保留一个版本
 	// TODO: 待后期优化
+	DB().Unscoped().Where("deleted_at IS NOT NULL").Delete(Schedule{}, Schedule{UserID: userID, Term: term})
+
 	if err := DB().Delete(Schedule{}, Schedule{UserID: userID, Term: term}).Error; err != nil {
 		return err
 	}
