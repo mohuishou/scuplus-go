@@ -14,7 +14,7 @@ import (
 func jwtMiddle(ctx iris.Context) {
 
 	// 登录页面无需验证
-	if ctx.Path() == "/login" {
+	if ctx.Path() == "/login" || ctx.Path() == "/notices" {
 		ctx.Next()
 		return
 	}
