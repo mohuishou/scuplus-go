@@ -5,6 +5,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/api/detail"
 	"github.com/mohuishou/scuplus-go/api/jwc"
+	"github.com/mohuishou/scuplus-go/api/user"
 )
 
 // Routes 路由
@@ -19,4 +20,5 @@ func Routes(app *iris.Application) {
 	app.Post("/bind-jwc", api.BindJwc)
 	app.Get("/details", detail.GetDetails)
 	app.Get("/detail/{id}", detail.GetDetail)
+	app.Post("/user/feedback", user.FeedBack)
 }

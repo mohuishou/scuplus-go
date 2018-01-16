@@ -23,9 +23,17 @@ type CourseTask struct {
 	PageNO    int    `toml:"page_no"`
 }
 
+// Wechat 微信配置
 type Wechat struct {
 	Appid  string `toml:"appid"`
 	Secret string `toml:"secret"`
+}
+
+// Github 配置文件
+type Github struct {
+	AccessToken string `toml:"access_token"`
+	Repo        string `toml:"repo"`
+	OwnerUser   string `toml:"owner_user"`
 }
 
 // Config 对应config.yml文件的位置
@@ -36,6 +44,7 @@ type Config struct {
 	Mysql      `toml:"mysql"`
 	CourseTask `toml:"course_task"`
 	Wechat     `toml:"wechat"`
+	Github     `toml:"github"`
 }
 
 // config
