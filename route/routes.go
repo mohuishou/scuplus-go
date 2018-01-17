@@ -21,4 +21,5 @@ func Routes(app *iris.Application) {
 	app.Get("/details", detail.GetDetails)
 	app.Get("/detail/{id}", detail.GetDetail)
 	app.Post("/user/feedback", user.FeedBack)
+	app.Post("/classroom", api.GetClassroom)
 }
