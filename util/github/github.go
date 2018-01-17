@@ -24,14 +24,14 @@ func init() {
 }
 
 // NewIssue 创建一个新的issue
-func NewIssue(title, body string, labels []string) error {
-	_, _, err := client.Issues.Create(ctx, config.Get().Github.OwnerUser, config.Get().Github.Repo, &github.IssueRequest{
+func NewIssue(title, body string, labels []string) (*github.Issue, error) {
+	issue, _, err := client.Issues.Create(ctx, config.Get().Github.OwnerUser, config.Get().Github.Repo, &github.IssueRequest{
 		Title:  &title,
 		Body:   &body,
 		Labels: &labels,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return issue, nil
 }

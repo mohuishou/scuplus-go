@@ -49,6 +49,7 @@ func autoMigrate() {
 		&Teacher{},
 		&Grade{},
 		&Notice{},
+		&Feedback{},
 	)
 }
 

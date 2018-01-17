@@ -2,10 +2,12 @@ package user
 
 import (
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
+	"github.com/mohuishou/scuplus-go/middleware"
+	"github.com/mohuishou/scuplus-go/model"
 	"github.com/mohuishou/scuplus-go/util/github"
 	validator "gopkg.in/go-playground/validator.v9"
 )
@@ -25,13 +27,27 @@ type FeedBackParam struct {
 
 // FeedBack 新增一条反馈信息
 func FeedBack(ctx iris.Context) {
+
+	// 频率验证，每位用户每天最多只能发送五条反馈信息
+	uid := middleware.GetUserID(ctx)
+
+	today, _ := time.ParseInLocation("2006-01-02", time.Now().Format("2006-01-02"), time.Local)
+	count := 0
+	model.DB().Table("feedbacks").Where("user_id = ? and created_at > ?", uid, today).Count(&count)
+	if count > 5 {
+		api.Error(ctx, 50004, "您今天的反馈次数已经达到上限", "")
+		return
+	}
+
+	// 获取参数
 	param := FeedBackParam{}
 	err := ctx.ReadForm(&param)
 	if err != nil {
 		api.Error(ctx, 50002, "反馈失败", "")
 		return
 	}
-	log.Println(param)
+
+	// 参数验证
 	validate := validator.New()
 	err = validate.Struct(param)
 	if err != nil {
@@ -46,10 +62,21 @@ func FeedBack(ctx iris.Context) {
 	body += fmt.Sprintf("微信：%s,SDK: %s \n", param.Version, param.SDKVersion)
 
 	// 向github新建反馈信息
-	err = github.NewIssue(param.Title, body, []string{param.Label, "用户反馈"})
+	issue, err := github.NewIssue(param.Title, body, []string{param.Label, "用户反馈"})
 	if err != nil {
 		api.Error(ctx, 50001, "反馈失败", err.Error())
+		return
 	}
+
 	// 数据库保存反馈记录
+	if err := model.DB().Create(&model.Feedback{
+		UserID: uid,
+		Number: *issue.Number,
+		Title:  param.Title,
+	}).Error; err != nil {
+		api.Error(ctx, 50003, "反馈失败", err.Error())
+		return
+	}
+
 	api.Success(ctx, "反馈成功", nil)
 }
