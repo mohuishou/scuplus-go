@@ -4,3 +4,4 @@ vendor
 config.toml
 apidoc*
 scuplus
+test.sh
