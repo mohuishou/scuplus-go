@@ -77,6 +77,12 @@ func getPath(path string) string {
 	if path != "" {
 		return path
 	}
+
+	path = os.Getenv("SCUPLUS_CONF")
+	if path != "" {
+		return path
+	}
+
 	// 获取当前环境
 	env := os.Getenv("SCUPLUS_ENV")
 	if env == "" {
