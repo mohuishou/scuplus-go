@@ -1,0 +1,13 @@
+package: GoWork/scujwc
+import:
+- package: github.com/PuerkitoBio/goquery
+  version: ~1.1.0
+- package: github.com/goless/config
+- package: golang.org/x/net
+  repo: https://github.com/golang/net
+  subpackages:
+  - html
+- package: github.com/jordic/goics
+- package: golang.org/x/text
+  subpackages:
+  - encoding/simplifiedchinese

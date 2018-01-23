@@ -1,0 +1,4 @@
+{
+    "dsn": "root:jordi@tcp(docker:3306)/test?charset=utf8&parseTime=true",
+    "ServerAddress": "localhost:9000"
+}

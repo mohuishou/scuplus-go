@@ -1,6 +1,5 @@
 .vscode
 .idea
-vendor
 config.toml
 apidoc*
 scuplus

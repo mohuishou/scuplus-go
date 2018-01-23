@@ -1,0 +1,12 @@
+{
+    "database":{
+        "host":"127.0.0.1",
+        "dbname":"test",
+        "test":{
+            "test":{
+                "test":"123"
+            }
+        }
+    },
+    "domain":"hello.app.io"
+}
