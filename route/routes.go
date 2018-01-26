@@ -5,6 +5,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/api/detail"
 	"github.com/mohuishou/scuplus-go/api/jwc"
+	"github.com/mohuishou/scuplus-go/api/library"
 	"github.com/mohuishou/scuplus-go/api/user"
 )
 
@@ -16,10 +17,11 @@ func Routes(app *iris.Application) {
 	app.Post("/user/grade", jwc.UpdateGrade)
 	app.Get("/user/schedule", jwc.GetSchedules)
 	app.Post("/user/schedule", jwc.UpdateSchedule)
+	app.Post("/user/feedback", user.FeedBack)
 	app.Post("/login", api.Login)
 	app.Post("/bind-jwc", api.BindJwc)
 	app.Get("/details", detail.GetDetails)
 	app.Get("/detail/{id}", detail.GetDetail)
-	app.Post("/user/feedback", user.FeedBack)
 	app.Post("/classroom", api.GetClassroom)
+	app.Post("/library/search", library.Search)
 }
