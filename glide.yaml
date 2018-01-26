@@ -22,3 +22,6 @@ import:
 - package: golang.org/x/oauth2
 - package: gopkg.in/go-playground/validator.v9
   version: ~9.9.3
+- package: github.com/betacraft/yaag
+  subpackages:
+  - irisyaag

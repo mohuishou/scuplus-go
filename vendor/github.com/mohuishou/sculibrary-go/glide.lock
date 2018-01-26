@@ -1,0 +1,69 @@
+hash: e1e80dbb0b1a0b489110c676f4a33f48b390069cf9591cb2740461a9a85b7b18
+updated: 2018-01-24T21:38:57.660125346+08:00
+imports:
+- name: github.com/andybalholm/cascadia
+  version: 349dd0209470eabd9514242c688c403c0926d266
+- name: github.com/gobwas/glob
+  version: 51eb1ee00b6d931c66d229ceeb7c31b985563420
+  subpackages:
+  - compiler
+  - match
+  - syntax
+  - syntax/ast
+  - syntax/lexer
+  - util/runes
+  - util/strings
+- name: github.com/gocolly/colly
+  version: 7722b9005c4eea06c9326aecee98ebcf44d95b52
+  subpackages:
+  - debug
+- name: github.com/golang/protobuf
+  version: c65a0412e71e8b9b3bfd22925720d23c0f054237
+  subpackages:
+  - proto
+- name: github.com/kennygrant/sanitize
+  version: 2e6820834a1f36c626bf19a253b7d3cc060e9b8b
+- name: github.com/PuerkitoBio/goquery
+  version: 2324bda66f504d95adef95070aeb15187b45d3cf
+- name: github.com/saintfish/chardet
+  version: 3af4cd4741ca4f3eb0c407c034571a6fb0ea529c
+- name: github.com/temoto/robotstxt
+  version: 9e4646fa705336d5b2fa9dddfafbe0a1a965acd7
+- name: golang.org/x/net
+  version: 0ed95abb35c445290478a5348a7b38bb154135fd
+  subpackages:
+  - context
+  - html
+  - html/atom
+  - html/charset
+- name: golang.org/x/text
+  version: e19ae1496984b1c655b8044a65c0300a3c878dd3
+  subpackages:
+  - encoding
+  - encoding/charmap
+  - encoding/htmlindex
+  - encoding/internal
+  - encoding/internal/identifier
+  - encoding/japanese
+  - encoding/korean
+  - encoding/simplifiedchinese
+  - encoding/traditionalchinese
+  - encoding/unicode
+  - internal/tag
+  - internal/utf8internal
+  - language
+  - runes
+  - transform
+- name: google.golang.org/appengine
+  version: 5bee14b453b4c71be47ec1781b0fa61c2ea182db
+  subpackages:
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
+testImports: []
