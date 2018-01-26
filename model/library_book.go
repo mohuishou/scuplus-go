@@ -3,7 +3,8 @@ package model
 // LibraryBook 借阅的书籍
 type LibraryBook struct {
 	Model
-	UserID      uint
+	UserID      uint    `json:"user_id"`
+	IsHistory   int     `json:"is_history"`
 	BookID      string  `json:"book_id"` // 书籍id 用于续借
 	Author      string  `json:"author"`
 	Title       string  `json:"title"`

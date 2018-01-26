@@ -50,6 +50,8 @@ func autoMigrate() {
 		&Grade{},
 		&Notice{},
 		&Feedback{},
+		&UserLibrary{},
+		&LibraryBook{},
 	)
 }
 

@@ -40,18 +40,47 @@ func BindLibrary(ctx iris.Context) {
 
 }
 
-// GetBook 获取借阅的书籍
-func GetBook(ctx iris.Context) {
-	ctx.FormValue()
-	uid := middleware.GetUserID(ctx)
-}
-
 // Loan 续借
 func Loan(ctx iris.Context) {
+	uid := middleware.GetUserID(ctx)
+	userLibrary := model.UserLibrary{}
+	model.DB().Where("user_id = ?", uid).Find(&userLibrary)
+	lib, err := userLibrary.GetLibrary()
+	if err != nil {
+		api.Error(ctx, 600401, err.Error(), map[string]interface{}{
+			"verify": userLibrary.Verify,
+		})
+		return
+	}
 
+	bookID := ctx.FormValue("book_id")
+	if lib.Loan(bookID) {
+		api.Success(ctx, "续借成功", nil)
+	} else {
+		api.Error(ctx, 60002, "续借失败", nil)
+	}
 }
 
-// UpdateBook 更新借阅的书籍
-func UpdateBook(ctx iris.Context) {
+// GetBook 更新借阅的书籍
+func GetBook(ctx iris.Context) {
+	uid := middleware.GetUserID(ctx)
+	userLibrary := model.UserLibrary{}
+	model.DB().Where("user_id = ?", uid).Find(&userLibrary)
+	lib, err := userLibrary.GetLibrary()
+	if err != nil {
+		api.Error(ctx, 600401, err.Error(), map[string]interface{}{
+			"verify": userLibrary.Verify,
+		})
+		return
+	}
 
+	isHistory := ctx.FormValue("is_history")
+
+	books := []sculibrary.LoanBook{}
+	if isHistory == "1" {
+		books = lib.GetLoanAll()
+	} else {
+		books = lib.GetLoan()
+	}
+	api.Success(ctx, "获取成功", books)
 }
