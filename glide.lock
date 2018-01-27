@@ -1,5 +1,5 @@
 hash: 8171664e0df67b4a47ee4b1fc2b161dd0b5cb0a911d71ac57c3aa3917791cd9a
-updated: 2018-01-26T21:48:12.691406038+08:00
+updated: 2018-01-27T15:10:39.003860497+08:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
@@ -149,7 +149,7 @@ imports:
 - name: github.com/mohuishou/scujwc-go
   version: 89e2dde6d42d8f6497ac669d8c41928d2096c80b
 - name: github.com/mohuishou/sculibrary-go
-  version: e8883d1ffa2140e3c47caa3512b8fc6a1b161628
+  version: 43040f46f26902377d8b00576a421e83711692d4
 - name: github.com/PuerkitoBio/goquery
   version: e1271ee34c6a305e38566ecd27ae374944907ee9
 - name: github.com/russross/blackfriday
@@ -177,11 +177,11 @@ imports:
   - html/atom
   - html/charset
 - name: golang.org/x/oauth2
-  version: b28fcf2b08a19742b43084fb40ab78ac6c3d8067
+  version: a032972e28060ca4f5644acffae3dfc268cc09db
   subpackages:
   - internal
 - name: golang.org/x/sys
-  version: 03467258950d845cd1877eab69461b98e8c09219
+  version: ff2a66f350cefa5c93a634eadb5d25bb60c85a9c
   subpackages:
   - unix
 - name: golang.org/x/text

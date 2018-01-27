@@ -15,7 +15,7 @@ import (
 func main() {
 	app := iris.New()
 
-	env = os.Getenv("SCUPLUS_ENV")
+	env := os.Getenv("SCUPLUS_ENV")
 	if env == "test" {
 		yaag.Init(&yaag.Config{ // <- IMPORTANT, init the middleware.
 			On:       true,

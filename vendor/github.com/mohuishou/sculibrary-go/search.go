@@ -13,27 +13,27 @@ import (
 
 // SearchResult 搜索结果
 type SearchResult struct {
-	Books   []SearchBook
-	NextURL string
+	Books   []SearchBook `json:"books"`
+	NextURL string       `json:"next_url"`
 }
 
 // SearchBook 搜索到的书籍
 type SearchBook struct {
-	Author        string
-	Title         string
-	Cover         string
-	Press         string // 出版社
-	PublishYear   string // 出版年
-	Number        string // 索书号(当前借阅)
-	BookAddresses []SearchBookAddress
+	Author        string              `json:"author"`
+	Title         string              `json:"title"`
+	Cover         string              `json:"cover"`
+	Press         string              `json:"press"`        // 出版社
+	PublishYear   string              `json:"publish_year"` // 出版年
+	Number        string              `json:"number"`       // 索书号(当前借阅)
+	BookAddresses []SearchBookAddress `json:"book_addresses"`
 }
 
 // SearchBookAddress 搜索到的书籍地址
 type SearchBookAddress struct {
-	Address   string // 馆藏地址
-	Number    string // 索书号
-	ALLCount  string // 馆藏数
-	LoanCount string // 可借数
+	Address   string `json:"address"`    // 馆藏地址
+	Number    string `json:"number"`     // 索书号
+	ALLCount  string `json:"all_count"`  // 馆藏数
+	LoanCount string `json:"loan_count"` // 可借数
 }
 
 // Search 搜索
