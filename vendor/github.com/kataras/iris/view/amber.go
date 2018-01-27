@@ -20,8 +20,9 @@ type AmberEngine struct {
 	namesFn   func() []string                   // for embedded, in combination with directory & extension
 	reload    bool
 	//
-	rmu           sync.RWMutex // locks for `ExecuteWiter` when `reload` is true.
+	rmu           sync.RWMutex // locks for funcs
 	funcs         map[string]interface{}
+	mu            sync.Mutex // locks for template files load
 	templateCache map[string]*template.Template
 }
 
@@ -56,10 +57,6 @@ func (s *AmberEngine) Binary(assetFn func(name string) ([]byte, error), namesFn 
 // Reload if setted to true the templates are reloading on each render,
 // use it when you're in development and you're boring of restarting
 // the whole app when you edit a template file.
-//
-// Note that if `true` is passed then only one `View -> ExecuteWriter` will be render each time,
-// no concurrent access across clients, use it only on development status.
-// It's good to be used side by side with the https://github.com/kataras/rizla reloader for go source files.
 func (s *AmberEngine) Reload(developmentMode bool) *AmberEngine {
 	s.reload = developmentMode
 	return s
@@ -119,6 +116,8 @@ func (s *AmberEngine) loadDirectory() error {
 
 	templates, err := amber.CompileDir(dir, opt, amber.DefaultOptions) // this returns the map with stripped extension, we want extension so we copy the map
 	if err == nil {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		s.templateCache = make(map[string]*template.Template)
 		for k, v := range templates {
 			name := filepath.ToSlash(k + opt.Ext)
@@ -156,6 +155,9 @@ func (s *AmberEngine) loadAssets() error {
 	}
 	amber.FuncMap = funcs //set the funcs
 
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	names := namesFn()
 
 	for _, path := range names {
@@ -190,22 +192,21 @@ func (s *AmberEngine) loadAssets() error {
 }
 
 func (s *AmberEngine) fromCache(relativeName string) *template.Template {
+	s.mu.Lock()
 	tmpl, ok := s.templateCache[relativeName]
 	if ok {
+		s.mu.Unlock()
 		return tmpl
 	}
+	s.mu.Unlock()
 	return nil
 }
 
 // ExecuteWriter executes a template and writes its result to the w writer.
 // layout here is useless.
 func (s *AmberEngine) ExecuteWriter(w io.Writer, filename string, layout string, bindingData interface{}) error {
-	// re-parse the templates if reload is enabled.
+	// reload the templates if reload configuration field is true
 	if s.reload {
-		// locks to fix #872, it's the simplest solution and the most correct,
-		// to execute writers with "wait list", one at a time.
-		s.rmu.Lock()
-		defer s.rmu.Unlock()
 		if err := s.Load(); err != nil {
 			return err
 		}

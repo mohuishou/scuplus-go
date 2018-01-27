@@ -68,13 +68,13 @@ func GetBook(ctx iris.Context) {
 	model.DB().Where("user_id = ?", uid).Find(&userLibrary)
 	lib, err := userLibrary.GetLibrary()
 	if err != nil {
-		api.Error(ctx, 600401, err.Error(), map[string]interface{}{
+		api.Error(ctx, 60401, err.Error(), map[string]interface{}{
 			"verify": userLibrary.Verify,
 		})
 		return
 	}
 
-	isHistory := ctx.FormValue("is_history")
+	isHistory := "1"
 
 	books := []sculibrary.LoanBook{}
 	if isHistory == "1" {

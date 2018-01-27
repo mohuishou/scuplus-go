@@ -24,4 +24,6 @@ func Routes(app *iris.Application) {
 	app.Get("/detail/{id}", detail.GetDetail)
 	app.Post("/classroom", api.GetClassroom)
 	app.Post("/library/search", library.Search)
+	app.Get("/library/books", library.GetBook)
+	app.Post("/library/loan", library.Loan)
 }

@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"time"
 )
 
 type (
@@ -21,7 +20,7 @@ type (
 		extension string
 		assetFn   func(name string) ([]byte, error) // for embedded, in combination with directory & extension
 		namesFn   func() []string                   // for embedded, in combination with directory & extension
-		reload    bool                              // if true, each time the ExecuteWriter is called the templates will be reloaded, each ExecuteWriter waits to be finished before writing to a new one.
+		reload    bool                              // if true, each time the ExecuteWriter is called the templates will be reloaded.
 		// parser configuration
 		options     []string // text options
 		left        string
@@ -33,6 +32,7 @@ type (
 
 		//
 		middleware func(name string, contents string) (string, error)
+		mu         sync.Mutex // locks for template files loader
 		Templates  *template.Template
 		//
 	}
@@ -94,10 +94,6 @@ func (s *HTMLEngine) Binary(assetFn func(name string) ([]byte, error), namesFn f
 // Reload if setted to true the templates are reloading on each render,
 // use it when you're in development and you're boring of restarting
 // the whole app when you edit a template file.
-//
-// Note that if `true` is passed then only one `View -> ExecuteWriter` will be render each time,
-// no concurrent access across clients, use it only on development status.
-// It's good to be used side by side with the https://github.com/kataras/rizla reloader for go source files.
 func (s *HTMLEngine) Reload(developmentMode bool) *HTMLEngine {
 	s.reload = developmentMode
 	return s
@@ -122,9 +118,9 @@ func (s *HTMLEngine) Reload(developmentMode bool) *HTMLEngine {
 //		Execution stops immediately with an error.
 //
 func (s *HTMLEngine) Option(opt ...string) *HTMLEngine {
-	s.rmu.Lock()
+	s.mu.Lock()
 	s.options = append(s.options, opt...)
-	s.rmu.Unlock()
+	s.mu.Unlock()
 	return s
 }
 
@@ -184,15 +180,6 @@ func (s *HTMLEngine) AddFunc(funcName string, funcBody interface{}) {
 //
 // Returns an error if something bad happens, user is responsible to catch it.
 func (s *HTMLEngine) Load() error {
-	// No need to make this with a complicated and "pro" way, just add lockers to the `ExecuteWriter`.
-	// if `Reload(true)` and add a note for non conc access on dev mode.
-	// atomic.StoreUint32(&s.isLoading, 1)
-	// s.rmu.Lock()
-	// defer func() {
-	// 	s.rmu.Unlock()
-	// 	atomic.StoreUint32(&s.isLoading, 0)
-	// }()
-
 	if s.assetFn != nil && s.namesFn != nil {
 		// NOT NECESSARY "fix" of https://github.com/kataras/iris/issues/784,
 		// IT'S BAD CODE WRITTEN WE KEEP HERE ONLY FOR A REMINDER
@@ -269,10 +256,10 @@ func (s *HTMLEngine) loadDirectory() error {
 					templateErr = err
 					return err
 				}
-				//s.mu.Lock()
+				s.mu.Lock()
 				// Add our funcmaps.
 				_, err = tmpl.Funcs(emptyFuncs).Funcs(s.funcs).Parse(contents)
-				//s.mu.Unlock()
+				s.mu.Unlock()
 				if err != nil {
 					templateErr = err
 					return err
@@ -419,10 +406,11 @@ func (s *HTMLEngine) layoutFuncsFor(name string, binding interface{}) {
 			return template.HTML(buf.String()), err
 		},
 	}
-
+	s.rmu.RLock()
 	for k, v := range s.layoutFuncs {
 		funcs[k] = v
 	}
+	s.rmu.RUnlock()
 	if tpl := s.Templates.Lookup(name); tpl != nil {
 		tpl.Funcs(funcs)
 	}
@@ -441,16 +429,10 @@ func (s *HTMLEngine) runtimeFuncsFor(name string, binding interface{}) {
 	}
 }
 
-var zero = time.Time{}
-
 // ExecuteWriter executes a template and writes its result to the w writer.
 func (s *HTMLEngine) ExecuteWriter(w io.Writer, name string, layout string, bindingData interface{}) error {
-	// re-parse the templates if reload is enabled.
+	// reload the templates if reload configuration field is true
 	if s.reload {
-		// locks to fix #872, it's the simplest solution and the most correct,
-		// to execute writers with "wait list", one at a time.
-		s.rmu.Lock()
-		defer s.rmu.Unlock()
 		if err := s.Load(); err != nil {
 			return err
 		}
