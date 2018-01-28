@@ -312,8 +312,8 @@
 [[projects]]
   name = "github.com/mohuishou/sculibrary-go"
   packages = ["."]
-  revision = "43040f46f26902377d8b00576a421e83711692d4"
-  version = "0.1.1"
+  revision = "f4f0f063e369c5f8fb9972be772b3452837a2584"
+  version = "0.1.2"
 
 [[projects]]
   name = "github.com/russross/blackfriday"
@@ -357,7 +357,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "0efb9460aaf800c6376acf625be2853bceac2e06"
+  revision = "1875d0a70c90e57f11972aefd42276df65e895b9"
 
 [[projects]]
   branch = "master"

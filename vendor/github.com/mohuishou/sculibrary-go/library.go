@@ -121,7 +121,7 @@ func (lib *Library) GetLoanAll() []LoanBook {
 			v := reflect.ValueOf(&book)
 			elem := v.Elem()
 			typeOfBook := elem.Type()
-			eq := 2
+			eq := 1
 			for k := 0; k < elem.NumField(); k++ {
 				val := strings.TrimSpace(s.Find("td").Eq(eq).Text())
 				switch typeOfBook.Field(k).Name {
