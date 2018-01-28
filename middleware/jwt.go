@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"time"
 
 	"github.com/mohuishou/scuplus-go/config"
@@ -49,16 +48,16 @@ func jwtMiddle(ctx iris.Context) {
 	}
 
 	// token 时效验证
-	end, ok := token.Claims.(jwt.MapClaims)["end"].(float64)
-	if !ok || time.Now().Unix() > int64(end) {
-		log.Println("[Error]: 登录信息已失效", end)
-		ctx.JSON(map[string]interface{}{
-			"status": 401,
-			"msg":    "用户尚未登录，获取用户信息失败",
-		})
-		ctx.StopExecution()
-		return
-	}
+	// end, ok := token.Claims.(jwt.MapClaims)["end"].(float64)
+	// if !ok || time.Now().Unix() > int64(end) {
+	// 	log.Println("[Error]: 登录信息已失效", end)
+	// 	ctx.JSON(map[string]interface{}{
+	// 		"status": 401,
+	// 		"msg":    "用户尚未登录，获取用户信息失败",
+	// 	})
+	// 	ctx.StopExecution()
+	// 	return
+	// }
 
 	// 设置用户id
 	ctx.Values().Set("user_id", userID)

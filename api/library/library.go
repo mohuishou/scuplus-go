@@ -65,7 +65,12 @@ func Loan(ctx iris.Context) {
 func GetBook(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
 	userLibrary := model.UserLibrary{}
-	model.DB().Where("user_id = ?", uid).Find(&userLibrary)
+	if err := model.DB().Where("user_id = ?", uid).Find(&userLibrary).Error; err != nil {
+		api.Error(ctx, 60401, "用户暂未绑定", map[string]interface{}{
+			"verify": userLibrary.Verify,
+		})
+		return
+	}
 	lib, err := userLibrary.GetLibrary()
 	if err != nil {
 		api.Error(ctx, 60401, err.Error(), map[string]interface{}{
@@ -74,7 +79,7 @@ func GetBook(ctx iris.Context) {
 		return
 	}
 
-	isHistory := "1"
+	isHistory := ctx.URLParam("is_history")
 
 	books := []sculibrary.LoanBook{}
 	if isHistory == "1" {
