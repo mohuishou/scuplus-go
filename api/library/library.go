@@ -31,9 +31,19 @@ func BindLibrary(ctx iris.Context) {
 		UserID:    uid,
 	}
 
-	if err := model.DB().Create(&lib).Error; err != nil {
-		api.Error(ctx, 60500, err.Error(), nil)
-		return
+	oldLib := model.UserLibrary{}
+
+	model.DB().Where("user_id = ?", uid).Find(&oldLib)
+	if oldLib.StudentID != "" {
+		if err := model.DB().Model(&oldLib).Updates(&lib).Error; err != nil {
+			api.Error(ctx, 60500, err.Error(), nil)
+			return
+		}
+	} else {
+		if err := model.DB().Create(&lib).Error; err != nil {
+			api.Error(ctx, 60500, err.Error(), nil)
+			return
+		}
 	}
 
 	api.Success(ctx, "绑定成功", nil)

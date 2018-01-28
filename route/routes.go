@@ -26,5 +26,5 @@ func Routes(app *iris.Application) {
 	app.Post("/library/search", library.Search)
 	app.Get("/library/books", library.GetBook)
 	app.Post("/library/loan", library.Loan)
-	app.Post("/library-bind", library.BindLibrary)
+	app.Post("/bind-library", library.BindLibrary)
 }
