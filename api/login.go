@@ -34,9 +34,13 @@ func Login(ctx iris.Context) {
 		return
 	}
 
+	userLibrary := model.UserLibrary{}
+	model.DB().Model(&user).Related(&userLibrary)
+
 	Success(ctx, "登录成功！", map[string]interface{}{
-		"token":      token,
-		"jwc_verify": user.JwcVerify,
+		"token":          token,
+		"jwc_verify":     user.JwcVerify,
+		"library_verify": userLibrary.Verify,
 	})
 }
 
