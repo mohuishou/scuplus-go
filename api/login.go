@@ -4,6 +4,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/mohuishou/scu"
+
 	"github.com/kataras/iris"
 	scujwc "github.com/mohuishou/scujwc-go"
 	"github.com/mohuishou/scuplus-go/middleware"
@@ -15,14 +17,14 @@ func Login(ctx iris.Context) {
 	code := ctx.FormValue("code")
 
 	if code == "" {
-		Error(ctx, 30002, "code不能为空", nil)
+		Error(ctx, 10400, "code不能为空", nil)
 		return
 	}
 
 	// 获取openid
 	user := &model.User{}
 	if err := user.Wechat.GetOpenid(code); err != nil {
-		Error(ctx, 30001, "获取用户信息失败", nil)
+		Error(ctx, 10401, "获取用户信息失败", nil)
 		return
 	}
 
@@ -30,7 +32,7 @@ func Login(ctx iris.Context) {
 	token, err := user.Login()
 	if err != nil {
 		log.Println(err)
-		Error(ctx, 30001, "获取用户信息失败", nil)
+		Error(ctx, 10401, "登录失败", nil)
 		return
 	}
 
@@ -38,10 +40,39 @@ func Login(ctx iris.Context) {
 	model.DB().Model(&user).Related(&userLibrary)
 
 	Success(ctx, "登录成功！", map[string]interface{}{
-		"token":          token,
-		"jwc_verify":     user.JwcVerify,
-		"library_verify": userLibrary.Verify,
+		"token":  token,
+		"verify": user.Verify,
 	})
+}
+
+// Bind 绑定统一认证账号
+func Bind(ctx iris.Context) {
+	studentID := ctx.FormValue("student_id")
+	password := ctx.FormValue("password")
+
+	if studentID == "" || password == "" {
+		Error(ctx, 10400, "参数错误", nil)
+		return
+	}
+
+	// 验证统一账号是否可以登录
+	if _, err := scu.NewCollector(studentID, password); err != nil {
+		Error(ctx, 10401, err.Error(), nil)
+		return
+	}
+
+	user := model.User{
+		StudentID: studentID,
+		Password:  password,
+	}
+
+	uid := middleware.GetUserID(ctx)
+	user.Verify = 1
+	if err := model.DB().Model(&user).Where("id = ?", uid).Updates(&user).Error; err != nil {
+		log.Println("用户绑定账号失败: ", err)
+		Error(ctx, 30004, "系统错误！", nil)
+		return
+	}
 }
 
 // BindJwc 绑定教务处
