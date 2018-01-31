@@ -5,6 +5,10 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/gocolly/colly"
+
+	"github.com/mohuishou/scu/jwc"
+
 	"github.com/jinzhu/gorm"
 	"github.com/mohuishou/scujwc-go"
 	"github.com/mohuishou/scuplus-go/middleware"
@@ -69,8 +73,8 @@ func (u *User) AfterFind(scope *gorm.Scope) error {
 	return nil
 }
 
-// GetJwc 获取教务处实例
-func (u User) GetJwc() (*scujwc.Jwc, error) {
+// jwc 获取教务处实例
+func (u User) jwc() (*scujwc.Jwc, error) {
 	sid, err := strconv.Atoi(u.StudentID)
 	if err != nil {
 		return nil, err
@@ -84,10 +88,10 @@ func (u User) GetJwc() (*scujwc.Jwc, error) {
 }
 
 // GetJwc 获取教务处实例
-func GetJwc(userID uint) (*scujwc.Jwc, error) {
+func GetJwc(userID uint) (*colly.Collector, error) {
 	user := User{}
 	if err := DB().Find(&user, userID).Error; err != nil {
 		return nil, err
 	}
-	return user.GetJwc()
+	return jwc.Login(user.StudentID, user.Password)
 }

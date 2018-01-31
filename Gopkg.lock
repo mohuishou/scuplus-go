@@ -304,6 +304,15 @@
   revision = "542fd4642604d0d0c26112396ce5b1a9d01eee0b"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/mohuishou/scu"
+  packages = [
+    ".",
+    "jwc"
+  ]
+  revision = "1d97137a5d6b0968ea2044d6f8ebc305daf33c72"
+
+[[projects]]
   name = "github.com/mohuishou/scujwc-go"
   packages = ["."]
   revision = "89e2dde6d42d8f6497ac669d8c41928d2096c80b"
@@ -442,6 +451,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4cec6827e3462173f673986d3510da6cbd6ea97fd5210ffcd41940aeecaf54ff"
+  inputs-digest = "19446cdb60d9937979d314d88fd2726e655b49b9001f653ca19745e2484845cf"
   solver-name = "gps-cdcl"
   solver-version = 1
