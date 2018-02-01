@@ -308,6 +308,7 @@
   name = "github.com/mohuishou/scu"
   packages = [
     ".",
+    "ecard",
     "jwc",
     "jwc/grade",
     "jwc/schedule",
@@ -449,6 +450,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2a9f8dcd51e525ded4ba625666e3c94f7a1a5041a1a9ba0f8f6cb126474dbcf0"
+  inputs-digest = "28d05ab38505da87dc2c32dd2870388aab9ca7404b5a4134f260a6f2d37f153e"
   solver-name = "gps-cdcl"
   solver-version = 1
