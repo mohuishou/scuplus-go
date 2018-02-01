@@ -1,9 +1,6 @@
 package model
 
 import (
-	"errors"
-	"strings"
-
 	"github.com/mohuishou/scujwc-go"
 )
 
@@ -43,54 +40,54 @@ func GetSchedules(userID uint, term string) []Schedule {
 
 // UpdateSchedules 更新课程表
 func UpdateSchedules(userID uint, term string) error {
-	jwc, err := GetJwc(userID)
-	if err != nil {
-		return err
-	}
+	// jwc, err := GetJwc(userID)
+	// if err != nil {
+	// 	return err
+	// }
 
-	schedules, err := jwc.Schedule()
-	if err != nil {
-		return err
-	}
+	// schedules, err := jwc.Schedule()
+	// if err != nil {
+	// 	return err
+	// }
 
-	if len(schedules) < 1 {
-		return errors.New("没有获取到新的数据，请查看教务处")
-	}
+	// if len(schedules) < 1 {
+	// 	return errors.New("没有获取到新的数据，请查看教务处")
+	// }
 
-	// 删除所有的数据，软删除只保留一个版本
-	// TODO: 待后期优化
-	DB().Unscoped().Where("deleted_at IS NOT NULL").Delete(Schedule{}, Schedule{UserID: userID, Term: term})
+	// // 删除所有的数据，软删除只保留一个版本
+	// // TODO: 待后期优化
+	// DB().Unscoped().Where("deleted_at IS NOT NULL").Delete(Schedule{}, Schedule{UserID: userID, Term: term})
 
-	if err := DB().Delete(Schedule{}, Schedule{UserID: userID, Term: term}).Error; err != nil {
-		return err
-	}
+	// if err := DB().Delete(Schedule{}, Schedule{UserID: userID, Term: term}).Error; err != nil {
+	// 	return err
+	// }
 
-	for _, schedule := range schedules {
-		newSchedule := Schedule{
-			Term:         term,
-			UserID:       userID,
-			Project:      schedule.Project,
-			CourseID:     schedule.CourseID,
-			CourseName:   schedule.CourseName,
-			LessonID:     schedule.LessonID,
-			Credit:       schedule.Credit,
-			CourseType:   schedule.CourseType,
-			ExamType:     schedule.ExamType,
-			Teachers:     strings.Join(schedule.Teachers, ","),
-			StudyWay:     schedule.StudyWay,
-			ChooseStatus: schedule.ChooseType,
-			AllWeek:      schedule.AllWeek,
-			Day:          schedule.Day,
-			Session:      schedule.Session,
-			Campus:       schedule.Campus,
-			Building:     schedule.Building,
-			Classroom:    schedule.Classroom,
-		}
+	// for _, schedule := range schedules {
+	// 	newSchedule := Schedule{
+	// 		Term:         term,
+	// 		UserID:       userID,
+	// 		Project:      schedule.Project,
+	// 		CourseID:     schedule.CourseID,
+	// 		CourseName:   schedule.CourseName,
+	// 		LessonID:     schedule.LessonID,
+	// 		Credit:       schedule.Credit,
+	// 		CourseType:   schedule.CourseType,
+	// 		ExamType:     schedule.ExamType,
+	// 		Teachers:     strings.Join(schedule.Teachers, ","),
+	// 		StudyWay:     schedule.StudyWay,
+	// 		ChooseStatus: schedule.ChooseType,
+	// 		AllWeek:      schedule.AllWeek,
+	// 		Day:          schedule.Day,
+	// 		Session:      schedule.Session,
+	// 		Campus:       schedule.Campus,
+	// 		Building:     schedule.Building,
+	// 		Classroom:    schedule.Classroom,
+	// 	}
 
-		if err := DB().Create(&newSchedule).Error; err != nil {
-			return err
-		}
-	}
+	// 	if err := DB().Create(&newSchedule).Error; err != nil {
+	// 		return err
+	// 	}
+	// }
 	return nil
 }
 

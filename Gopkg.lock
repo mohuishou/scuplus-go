@@ -308,7 +308,8 @@
   name = "github.com/mohuishou/scu"
   packages = [
     ".",
-    "jwc"
+    "jwc",
+    "jwc/grade"
   ]
   revision = "1d97137a5d6b0968ea2044d6f8ebc305daf33c72"
 
@@ -451,6 +452,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "19446cdb60d9937979d314d88fd2726e655b49b9001f653ca19745e2484845cf"
+  inputs-digest = "9abde04831e9b5f7b242a075060c5f7d6e072f6f9cb557e925b35daa7b694409"
   solver-name = "gps-cdcl"
   solver-version = 1
