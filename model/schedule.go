@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"github.com/mohuishou/scu/jwc/schedule"
-
-	"github.com/mohuishou/scujwc-go"
 )
 
 // Schedule 课程表
@@ -98,7 +96,7 @@ func UpdateSchedules(userID uint, term string) error {
 
 // deleteMore 删除多余的数据
 // 传入最新抓取的数据
-func (sl ScheduleList) deleteMore(s []scujwc.Schedule) error {
+func (sl ScheduleList) deleteMore(s []schedule.Schedule) error {
 	deleteID := []uint{}
 OLD:
 	for _, schedule := range sl {
