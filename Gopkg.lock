@@ -311,7 +311,8 @@
     "jwc",
     "jwc/grade",
     "jwc/schedule",
-    "jwc/util"
+    "jwc/util",
+    "library"
   ]
   revision = "1d97137a5d6b0968ea2044d6f8ebc305daf33c72"
 
@@ -454,6 +455,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "04c2f5151879deb030011700917192f75d177bccc7c96c7eb728345c1e73af9a"
+  inputs-digest = "c2b489230c6f83bc81da2795cf11480d75a0b2dee3fee9857d57a7e0c9a48bce"
   solver-name = "gps-cdcl"
   solver-version = 1
