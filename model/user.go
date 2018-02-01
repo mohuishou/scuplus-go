@@ -3,7 +3,8 @@ package model
 import (
 	"errors"
 	"log"
-	"strconv"
+
+	"github.com/mohuishou/scu"
 
 	"github.com/mohuishou/scu/library"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/mohuishou/scu/jwc"
 
 	"github.com/jinzhu/gorm"
-	"github.com/mohuishou/scujwc-go"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/util/aes"
 )
@@ -75,18 +75,13 @@ func (u *User) AfterFind(scope *gorm.Scope) error {
 	return nil
 }
 
-// jwc 获取教务处实例
-func (u User) jwc() (*scujwc.Jwc, error) {
-	sid, err := strconv.Atoi(u.StudentID)
-	if err != nil {
+// GetCollector 获取采集器
+func GetCollector(userID uint) (*colly.Collector, error) {
+	user := User{}
+	if err := DB().Find(&user, userID).Error; err != nil {
 		return nil, err
 	}
-
-	jwc, err := scujwc.NewJwc(sid, u.Password)
-	if err != nil {
-		return nil, err
-	}
-	return &jwc, nil
+	return scu.NewCollector(user.StudentID, user.Password)
 }
 
 // GetJwc 获取教务处实例
