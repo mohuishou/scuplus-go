@@ -2,63 +2,18 @@ package library
 
 import (
 	"github.com/kataras/iris"
-	"github.com/mohuishou/sculibrary-go"
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
 )
 
-// BindLibrary 绑定图书馆账号
-func BindLibrary(ctx iris.Context) {
-	studentID := ctx.FormValue("student_id")
-	passsword := ctx.FormValue("password")
-	if studentID == "" || passsword == "" {
-		api.Error(ctx, 60400, "学号或密码不能为空", nil)
-		return
-	}
-
-	//验证图书馆是否可以登录
-	_, err := sculibrary.NewLibrary(studentID, passsword)
-	if err != nil {
-		api.Error(ctx, 60401, err.Error(), nil)
-	}
-
-	uid := middleware.GetUserID(ctx)
-	lib := model.UserLibrary{
-		StudentID: studentID,
-		Password:  passsword,
-		Verify:    1,
-		UserID:    uid,
-	}
-
-	oldLib := model.UserLibrary{}
-
-	model.DB().Where("user_id = ?", uid).Find(&oldLib)
-	if oldLib.StudentID != "" {
-		if err := model.DB().Model(&oldLib).Updates(&lib).Error; err != nil {
-			api.Error(ctx, 60500, err.Error(), nil)
-			return
-		}
-	} else {
-		if err := model.DB().Create(&lib).Error; err != nil {
-			api.Error(ctx, 60500, err.Error(), nil)
-			return
-		}
-	}
-
-	api.Success(ctx, "绑定成功", nil)
-
-}
-
 // Loan 续借
 func Loan(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
-	userLibrary := model.UserLibrary{}
-	model.DB().Where("user_id = ?", uid).Find(&userLibrary)
-	lib, err := userLibrary.GetLibrary()
+	lib, err := model.GetLibrary(uid)
 	if err != nil {
-		api.Error(ctx, 600401, err.Error(), map[string]interface{}{
-			"verify": userLibrary.Verify,
+		api.Error(ctx, 30401, err.Error(), map[string]interface{}{
+			"verify": 0,
 		})
 		return
 	}
@@ -67,35 +22,20 @@ func Loan(ctx iris.Context) {
 	if lib.Loan(bookID) {
 		api.Success(ctx, "续借成功", nil)
 	} else {
-		api.Error(ctx, 60002, "续借失败", nil)
+		api.Error(ctx, 30001, "续借失败", nil)
 	}
 }
 
 // GetBook 更新借阅的书籍
 func GetBook(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
-	userLibrary := model.UserLibrary{}
-	if err := model.DB().Where("user_id = ?", uid).Find(&userLibrary).Error; err != nil {
-		api.Error(ctx, 60401, "用户暂未绑定", map[string]interface{}{
-			"verify": userLibrary.Verify,
-		})
-		return
-	}
-	lib, err := userLibrary.GetLibrary()
+	isHistory, err := ctx.URLParamInt("is_history")
 	if err != nil {
-		api.Error(ctx, 60401, err.Error(), map[string]interface{}{
-			"verify": userLibrary.Verify,
-		})
-		return
+		api.Error(ctx, 30400, "参数错误！", nil)
 	}
-
-	isHistory := ctx.URLParam("is_history")
-
-	books := []sculibrary.LoanBook{}
-	if isHistory == "1" {
-		books = lib.GetLoanAll()
-	} else {
-		books = lib.GetLoan()
+	books, err := model.UpdateLibraryBook(uid, isHistory)
+	if err != nil {
+		api.Error(ctx, 30002, err.Error(), nil)
 	}
 	api.Success(ctx, "获取成功", books)
 }

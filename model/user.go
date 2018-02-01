@@ -5,6 +5,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/mohuishou/scu/library"
+
 	"github.com/gocolly/colly"
 
 	"github.com/mohuishou/scu/jwc"
@@ -94,4 +96,13 @@ func GetJwc(userID uint) (*colly.Collector, error) {
 		return nil, err
 	}
 	return jwc.Login(user.StudentID, user.Password)
+}
+
+// GetLibrary 获取图书馆实例
+func GetLibrary(userID uint) (*library.Library, error) {
+	user := User{}
+	if err := DB().Find(&user, userID).Error; err != nil {
+		return nil, err
+	}
+	return library.NewLibrary(user.StudentID, user.Password)
 }
