@@ -19,12 +19,11 @@ func Routes(app *iris.Application) {
 	app.Post("/user/schedule", jwc.UpdateSchedule)
 	app.Post("/user/feedback", user.FeedBack)
 	app.Post("/login", api.Login)
-	app.Post("/bind-jwc", api.BindJwc)
+	app.Post("/bind", api.Bind)
 	app.Get("/details", detail.GetDetails)
 	app.Get("/detail/{id}", detail.GetDetail)
 	app.Post("/classroom", api.GetClassroom)
 	app.Post("/library/search", library.Search)
 	app.Get("/library/books", library.GetBook)
 	app.Post("/library/loan", library.Loan)
-	app.Post("/bind-library", library.BindLibrary)
 }
