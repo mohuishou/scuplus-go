@@ -323,12 +323,6 @@
   version = "0.2.1"
 
 [[projects]]
-  name = "github.com/mohuishou/sculibrary-go"
-  packages = ["."]
-  revision = "f4f0f063e369c5f8fb9972be772b3452837a2584"
-  version = "0.1.2"
-
-[[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
   revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
@@ -455,6 +449,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c2b489230c6f83bc81da2795cf11480d75a0b2dee3fee9857d57a7e0c9a48bce"
+  inputs-digest = "2a9f8dcd51e525ded4ba625666e3c94f7a1a5041a1a9ba0f8f6cb126474dbcf0"
   solver-name = "gps-cdcl"
   solver-version = 1

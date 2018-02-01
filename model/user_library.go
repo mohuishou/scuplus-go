@@ -2,9 +2,6 @@ package model
 
 import (
 	"log"
-	"strings"
-
-	"github.com/mohuishou/sculibrary-go"
 
 	"github.com/jinzhu/gorm"
 	"github.com/mohuishou/scuplus-go/util/aes"
@@ -44,15 +41,4 @@ func (u *UserLibrary) AfterFind(scope *gorm.Scope) error {
 		scope.SetColumn("password", password)
 	}
 	return nil
-}
-
-// GetLibrary 获取sculibrary
-func (u UserLibrary) GetLibrary() (*sculibrary.Library, error) {
-	lib, err := sculibrary.NewLibrary(u.StudentID, u.Password)
-	if err != nil {
-		if strings.Contains(err.Error(), "密码错误！") {
-			DB().Model(&u).Update("verify", 0)
-		}
-	}
-	return lib, err
 }
