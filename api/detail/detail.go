@@ -44,7 +44,7 @@ func GetDetails(ctx iris.Context) {
 
 	if err != nil {
 		ctx.JSON(map[string]interface{}{
-			"status":  20001,
+			"status":  50001,
 			"message": "获取信息错误",
 		})
 		return
@@ -64,7 +64,7 @@ func GetDetail(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil || id == 0 {
 		log.Println("[Error]: id:", id, err)
-		api.Error(ctx, 40400, "参数错误", nil)
+		api.Error(ctx, 50400, "参数错误", nil)
 		return
 	}
 	detail := model.Detail{}

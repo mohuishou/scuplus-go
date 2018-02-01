@@ -23,7 +23,7 @@ func UpdateSchedule(ctx iris.Context) {
 	term := ctx.FormValue("term")
 	if err := model.UpdateSchedules(uid, term); err != nil {
 		ctx.JSON(map[string]interface{}{
-			"status": 10001,
+			"status": 21001,
 			"msg":    err.Error(),
 		})
 		return

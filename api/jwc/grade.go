@@ -20,7 +20,7 @@ func UpdateGrade(ctx iris.Context) {
 
 	if err := model.UpdateGrades(uid); err != nil {
 		ctx.JSON(map[string]interface{}{
-			"status": 10001,
+			"status": 20001,
 			"msg":    "更新失败！",
 		})
 		return
