@@ -1,8 +1,6 @@
 package model
 
 import (
-	"sort"
-
 	"github.com/mohuishou/scu/ecard"
 )
 
@@ -25,7 +23,6 @@ func UpdateEcard(uid uint) error {
 
 	// 获取一卡通信息
 	card, err := ecard.Get(c)
-	sort.Sort(card.Transactions)
 
 	// 更新一卡通余额
 	if err := DB().Model(&UserInfo{UserID: uid}).Update("balance", card.Balance).Error; err != nil {

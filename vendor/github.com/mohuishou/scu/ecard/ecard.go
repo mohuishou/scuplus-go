@@ -3,6 +3,8 @@ package ecard
 import (
 	"encoding/json"
 	"errors"
+	"sort"
+	"time"
 
 	"github.com/gocolly/colly"
 )
@@ -15,18 +17,34 @@ type Transaction struct {
 	Balance float64 `json:"balance"` // 余额
 }
 
+// Transactions 交易数据
+type Transactions []Transaction
+
+func (t Transactions) Len() int {
+	return len(t)
+}
+func (t Transactions) Less(i, j int) bool {
+	// 倒序排列
+	return t[i].Time > t[j].Time
+}
+func (t Transactions) Swap(i, j int) {
+	t[j], t[i] = t[i], t[j]
+}
+
 // Card 一卡通记录
 type Card struct {
-	Balance      float64       `json:"balance"`      // 余额
-	Transactions []Transaction `json:"transactions"` //交易记录
+	Balance      float64      `json:"balance"`      // 余额
+	Transactions Transactions `json:"transactions"` //交易记录
 }
 
 // Get 获取一卡通余额以及历史交易记录
-func Get(c *colly.Collector) (Card, error) {
+func Get(c *colly.Collector, start, end time.Time) (Card, error) {
 	c.Visit("http://ecard.scu.edu.cn/ajax/login/sso")
 
+	trans := getTransactions(c, start, end)
+	sort.Sort(trans)
 	card := Card{
-		Transactions: getTransactions(c),
+		Transactions: trans,
 	}
 
 	balance, err := getBalance(c.Clone())
@@ -61,8 +79,8 @@ func getBalance(c *colly.Collector) (float64, error) {
 
 }
 
-func getTransactions(c *colly.Collector) []Transaction {
-	transactions := []Transaction{}
+func getTransactions(c *colly.Collector, start, end time.Time) Transactions {
+	transactions := make(Transactions, 0)
 	res := struct {
 		JSONData struct {
 			PageData []struct {
@@ -78,8 +96,10 @@ func getTransactions(c *colly.Collector) []Transaction {
 	})
 
 	c.Post("http://ecard.scu.edu.cn/ajax/tran/list.json", map[string]string{
-		"int_start":   "0",
-		"int_maxSize": "15",
+		"int_start":     "0",
+		"int_maxSize":   "15",
+		"str_startTime": start.Format("2006-01-02"),
+		"str_endTime":   end.Format("2006-01-02"),
 	})
 
 	for _, v := range res.JSONData.PageData {
