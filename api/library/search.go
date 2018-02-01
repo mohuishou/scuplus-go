@@ -2,7 +2,7 @@ package library
 
 import (
 	"github.com/kataras/iris"
-	"github.com/mohuishou/sculibrary-go"
+	"github.com/mohuishou/scu/library"
 	"github.com/mohuishou/scuplus-go/api"
 )
 
@@ -17,6 +17,6 @@ type SearchParam struct {
 func Search(ctx iris.Context) {
 	params := SearchParam{}
 	ctx.ReadForm(&params)
-	res := sculibrary.Search(params.Keyword, params.KeyType, params.NextPage)
+	res := library.Search(params.Keyword, params.KeyType, params.NextPage)
 	api.Success(ctx, "获取成功！", res)
 }
