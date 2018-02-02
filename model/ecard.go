@@ -65,4 +65,5 @@ func UpdateEcard(uid uint) error {
 			return err
 		}
 	}
+	return nil
 }
