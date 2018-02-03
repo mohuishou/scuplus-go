@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/api/detail"
+	"github.com/mohuishou/scuplus-go/api/ecard"
 	"github.com/mohuishou/scuplus-go/api/jwc"
 	"github.com/mohuishou/scuplus-go/api/library"
 	"github.com/mohuishou/scuplus-go/api/user"
@@ -26,4 +27,6 @@ func Routes(app *iris.Application) {
 	app.Post("/library/search", library.Search)
 	app.Get("/library/books", library.GetBook)
 	app.Post("/library/loan", library.Loan)
+	app.Get("/ecard", ecard.Get)
+	app.Post("/ecaed", ecard.Update)
 }
