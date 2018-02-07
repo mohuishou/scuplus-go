@@ -18,6 +18,8 @@ func Routes(app *iris.Application) {
 	app.Post("/user/grade", jwc.UpdateGrade)
 	app.Get("/user/schedule", jwc.GetSchedules)
 	app.Post("/user/schedule", jwc.UpdateSchedule)
+	app.Get("/user/exam", jwc.GetExam)
+	app.Post("/user/exam", jwc.UpdateExam)
 	app.Post("/user/feedback", user.FeedBack)
 	app.Post("/login", api.Login)
 	app.Post("/bind", api.Bind)

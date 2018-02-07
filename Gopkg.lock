@@ -310,6 +310,7 @@
     ".",
     "ecard",
     "jwc",
+    "jwc/exam",
     "jwc/grade",
     "jwc/schedule",
     "jwc/util",
@@ -450,6 +451,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "28d05ab38505da87dc2c32dd2870388aab9ca7404b5a4134f260a6f2d37f153e"
+  inputs-digest = "6b109e27774a5acbe9ab27aba6d3cc15202da3525f3ed3404e5a17a5453fdeea"
   solver-name = "gps-cdcl"
   solver-version = 1
