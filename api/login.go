@@ -71,4 +71,5 @@ func Bind(ctx iris.Context) {
 		Error(ctx, 30004, "系统错误！", nil)
 		return
 	}
+	Success(ctx, "绑定成功！", nil)
 }

@@ -21,6 +21,8 @@ func Routes(app *iris.Application) {
 	app.Get("/user/exam", jwc.GetExam)
 	app.Post("/user/exam", jwc.UpdateExam)
 	app.Post("/user/feedback", user.FeedBack)
+	app.Get("/user/ecard", ecard.Get)
+	app.Post("/user/ecaed", ecard.Update)
 	app.Post("/login", api.Login)
 	app.Post("/bind", api.Bind)
 	app.Get("/details", detail.GetDetails)
@@ -29,6 +31,5 @@ func Routes(app *iris.Application) {
 	app.Post("/library/search", library.Search)
 	app.Get("/library/books", library.GetBook)
 	app.Post("/library/loan", library.Loan)
-	app.Get("/ecard", ecard.Get)
-	app.Post("/ecaed", ecard.Update)
+
 }

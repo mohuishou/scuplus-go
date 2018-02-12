@@ -4,3 +4,4 @@ config.toml
 apidoc*
 scuplus
 test.sh
+test.bat
