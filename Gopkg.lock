@@ -21,6 +21,27 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/RichardKnop/logging"
+  packages = ["."]
+  revision = "66aaaba182584c20ec574b064975974f92f0936a"
+
+[[projects]]
+  name = "github.com/RichardKnop/machinery"
+  packages = [
+    "v1",
+    "v1/backends",
+    "v1/brokers",
+    "v1/common",
+    "v1/config",
+    "v1/log",
+    "v1/retry",
+    "v1/tasks"
+  ]
+  revision = "d94e51516cb760758e09b14aba400ff83d0e4fcc"
+  version = "v1.0.14"
+
+[[projects]]
+  branch = "master"
   name = "github.com/andybalholm/cascadia"
   packages = ["."]
   revision = "349dd0209470eabd9514242c688c403c0926d266"
@@ -48,6 +69,12 @@
   revision = "67962f4b77581a1ab1e3492ff26add2c20d29def"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/bradfitz/gomemcache"
+  packages = ["memcache"]
+  revision = "1952afaa557dc08e8e0d89eafab110fb501c1a2b"
+
+[[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
   revision = "dbeaa9332f19a944acb5736b4456cfcc02140e29"
@@ -73,6 +100,15 @@
   name = "github.com/flosch/pongo2"
   packages = ["."]
   revision = "1f4be1efe3b3529b7e58861f75d70120a9567dc4"
+
+[[projects]]
+  name = "github.com/garyburd/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "d1ed5c67e5794de818ea85e6b522fda02623a484"
+  version = "v1.5.0"
 
 [[projects]]
   name = "github.com/go-playground/locales"
@@ -253,6 +289,12 @@
   revision = "00934ae069eda15df26fa427ac393e67e239380c"
 
 [[projects]]
+  name = "github.com/kelseyhightower/envconfig"
+  packages = ["."]
+  revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/kennygrant/sanitize"
   packages = ["."]
   revision = "2e6820834a1f36c626bf19a253b7d3cc060e9b8b"
@@ -355,6 +397,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/streadway/amqp"
+  packages = ["."]
+  revision = "fc7fda2371f5327ad39211e09482845b8734cc72"
+
+[[projects]]
+  branch = "master"
   name = "github.com/temoto/robotstxt"
   packages = ["."]
   revision = "9e4646fa705336d5b2fa9dddfafbe0a1a965acd7"
@@ -444,6 +492,24 @@
 
 [[projects]]
   branch = "v2"
+  name = "gopkg.in/mgo.v2"
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
+  revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+
+[[projects]]
+  name = "gopkg.in/redsync.v1"
+  packages = ["."]
+  revision = "98dabdf1c8574561bf976911c14ff652c47b1ddf"
+  version = "v1.0.1"
+
+[[projects]]
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
@@ -451,6 +517,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6b109e27774a5acbe9ab27aba6d3cc15202da3525f3ed3404e5a17a5453fdeea"
+  inputs-digest = "5fc59e255cb1bdcb9d6f028e87b7f4de22a3083a562a421fbd001980091e0c38"
   solver-name = "gps-cdcl"
   solver-version = 1
