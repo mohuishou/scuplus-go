@@ -5,3 +5,4 @@ apidoc*
 scuplus
 test.sh
 test.bat
+config/job.yml
