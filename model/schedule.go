@@ -36,7 +36,7 @@ type ScheduleList []Schedule
 // GetSchedules 获取某个用户的某个学期课程表信息
 // TODO: 待完善
 func GetSchedules(userID uint, term string) []Schedule {
-	schedules := []Schedule{}
+	var schedules []Schedule
 	DB().Where(Schedule{UserID: userID, Term: term}).Find(&schedules)
 	return schedules
 }
