@@ -38,8 +38,12 @@ func Get(uid uint) string {
 }
 
 // Set set
-func Set(uid uint, v string) error {
-	_, err := cache.Do("RPUSH", getKey(uid), v)
+func Set(uid uint, strings []string) error {
+	args := []interface{}{interface{}(getKey(uid))}
+	for _, value := range strings {
+		args = append(args, interface{}(value))
+	}
+	_, err := cache.Do("RPUSH", args...)
 	if err != nil {
 		log.Println("set cache code err:", err)
 	}

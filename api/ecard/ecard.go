@@ -21,7 +21,7 @@ func Get(ctx iris.Context) {
 		api.Error(ctx, 60400, "参数错误", nil)
 		return
 	}
-	ecards := []model.Ecard{}
+	var ecards []model.Ecard
 	model.DB().Where("user_id = ?", uid).Order("trans_time desc").Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize).Find(&ecards)
 
 	api.Success(ctx, "一卡通信息获取成功", ecards)
