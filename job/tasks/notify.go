@@ -19,7 +19,7 @@ import (
 )
 
 // NotifyGrade 发送成绩更新通知
-func NotifyGrade(uid uint, grade model.Grade, num int) error {
+func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 	// 获取模板id
 	msgID := msgid.Get(uid)
 	if msgID == "" {
@@ -43,13 +43,13 @@ func NotifyGrade(uid uint, grade model.Grade, num int) error {
 		"form_id":     msgID,
 		"data": map[string]interface{}{
 			"keyword1": map[string]interface{}{
-				"value": grade.CourseName,
+				"value": courseName,
 			},
 			"keyword2": map[string]interface{}{
-				"value": grade.Grade,
+				"value": grade,
 			},
 			"keyword3": map[string]interface{}{
-				"value": grade.Credit,
+				"value": credit,
 			},
 			"keyword4": map[string]interface{}{
 				"value": fmt.Sprintf("共更新%d门成绩，点击查看所有成绩", num),

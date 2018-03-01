@@ -16,7 +16,11 @@ func Get() string {
 	if err != nil {
 		log.Println("get cache token err:", err)
 	}
-	return string(v.([]byte))
+	t, ok := v.([]byte)
+	if !ok {
+		return ""
+	}
+	return string(t)
 }
 
 // Set set

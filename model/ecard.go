@@ -35,7 +35,7 @@ func UpdateEcard(uid uint) error {
 
 	// 设置默认开始时间: 2个月内，结束时间: 当日
 	end := time.Now()
-	d, err := time.ParseDuration("60d")
+	d, err := time.ParseDuration("1440h")
 	log.Println(err)
 	start := end.Add(d)
 

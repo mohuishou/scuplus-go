@@ -1,6 +1,7 @@
 package wechat
 
 import (
+	"log"
 	"net/http"
 
 	"fmt"
@@ -13,9 +14,10 @@ import (
 	"github.com/mohuishou/scuplus-go/config"
 )
 
-type AccessToken struct {
-	Token     string
-	ExpiresIn int
+// Token wechat access token
+type Token struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int    `json:"expires_in"`
 }
 
 // GetAccessToken 获取微信access token
@@ -40,16 +42,17 @@ func GetAccessToken(refresh bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	at := AccessToken{}
+	at := Token{}
 	json.Unmarshal(body, &at)
 
 	// 缓存token并且返回
-	if at.Token == "" {
+	if at.AccessToken == "" {
+		log.Println(at)
 		return "", errors.New("获取token失败！")
 	}
-	err = token.Set(at.Token)
+	err = token.Set(at.AccessToken)
 	if err != nil {
 		return "", err
 	}
-	return at.Token, nil
+	return at.AccessToken, nil
 }
