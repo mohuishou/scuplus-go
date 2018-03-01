@@ -25,7 +25,8 @@ func StartServer() (*machinery.Server, error) {
 
 	// Register tasks
 	t := map[string]interface{}{
-		"update_all": tasks.UpdateAll,
+		"update_all":   tasks.UpdateAll,
+		"notify_grade": tasks.NotifyGrade,
 	}
 
 	return server, server.RegisterTasks(t)

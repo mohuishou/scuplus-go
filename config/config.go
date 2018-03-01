@@ -25,8 +25,9 @@ type CourseTask struct {
 
 // Wechat 微信配置
 type Wechat struct {
-	Appid  string `toml:"appid"`
-	Secret string `toml:"secret"`
+	Appid         string `toml:"appid"`
+	Secret        string `toml:"secret"`
+	TemplateGrade string `toml:"template_grade"`
 }
 
 // Github 配置文件
