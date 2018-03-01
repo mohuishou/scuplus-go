@@ -36,6 +36,12 @@ type Github struct {
 	OwnerUser   string `toml:"owner_user"`
 }
 
+// Redis redis配置
+type Redis struct {
+	IP   string `toml:"ip"`
+	Port string `toml:"port"`
+}
+
 // Config 对应config.yml文件的位置
 type Config struct {
 	Port       string
@@ -45,6 +51,7 @@ type Config struct {
 	CourseTask `toml:"course_task"`
 	Wechat     `toml:"wechat"`
 	Github     `toml:"github"`
+	Redis      `toml:"redis"`
 }
 
 // config

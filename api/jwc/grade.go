@@ -18,7 +18,7 @@ func GetGrade(ctx iris.Context) {
 func UpdateGrade(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
 
-	if err := model.UpdateGrades(uid); err != nil {
+	if _, err := model.UpdateGrades(uid); err != nil {
 		ctx.JSON(map[string]interface{}{
 			"status": 20001,
 			"msg":    "更新失败！",
