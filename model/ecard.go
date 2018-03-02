@@ -10,6 +10,7 @@ import (
 // Ecard 一卡通交易数据
 type Ecard struct {
 	Model
+	UserID    uint
 	TransTime int64   `json:"trans_time"` // 交易时间
 	Addr      string  `json:"addr"`       // 交易地点
 	Money     float64 `json:"money"`      // 交易金额
@@ -36,12 +37,11 @@ func UpdateEcard(uid uint) error {
 	// 设置默认开始时间: 2个月内，结束时间: 当日
 	end := time.Now()
 	d, err := time.ParseDuration("1440h")
-	log.Println(err)
 	start := end.Add(d)
 
 	// 获取最后一条交易数据
 	lastTrans := Ecard{}
-	DB().Where("user_id = ?", uid).Order("timedesc").Last(&lastTrans)
+	DB().Where("user_id = ?", uid).Order("trans_time desc").Last(&lastTrans)
 
 	if lastTrans.ID != 0 {
 		// 推后一天
@@ -51,15 +51,15 @@ func UpdateEcard(uid uint) error {
 
 	// 获取一卡通信息
 	card, err := ecard.Get(c, start, end)
-
-	// 更新一卡通余额
-	if err := DB().Model(&UserInfo{UserID: uid}).Update("balance", card.Balance).Error; err != nil {
+	if err != nil {
 		return err
 	}
+	log.Println(card)
 
 	// 插入新的交易数据
 	for _, v := range card.Transactions {
 		eCard := convertEcard(v)
+		eCard.UserID = uid
 		if err := DB().Create(&eCard).Error; err != nil {
 			log.Printf("[Error]: 更新一卡通数据错误,%s", err.Error())
 			return err

@@ -31,7 +31,7 @@ func Get(ctx iris.Context) {
 func Update(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
 	if err := model.UpdateEcard(uid); err != nil {
-		api.Error(ctx, 60001, "更新失败", nil)
+		api.Error(ctx, 60001, "更新失败", err.Error())
 		return
 	}
 	api.Success(ctx, "更新成功", nil)
