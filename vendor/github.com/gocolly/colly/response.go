@@ -44,29 +44,42 @@ func (r *Response) FileName() string {
 	return SanitizeFileName(r.Request.URL.Path[1:])
 }
 
-func (r *Response) fixCharset(detectCharset bool) {
+func (r *Response) fixCharset(detectCharset bool, defaultEncoding string) error {
+	if defaultEncoding != "" {
+		tmpBody, err := encodeBytes(r.Body, "text/plain; charset="+defaultEncoding)
+		if err != nil {
+			return err
+		}
+		r.Body = tmpBody
+		return nil
+	}
 	contentType := strings.ToLower(r.Headers.Get("Content-Type"))
 	if !strings.Contains(contentType, "charset") {
 		if !detectCharset {
-			return
+			return nil
 		}
 		d := chardet.NewTextDetector()
 		r, err := d.DetectBest(r.Body)
 		if err != nil {
-			return
+			return err
 		}
-		contentType = r.Charset
+		contentType = "text/plain; charset=" + r.Charset
 	}
 	if strings.Contains(contentType, "utf-8") || strings.Contains(contentType, "utf8") {
-		return
+		return nil
 	}
-	encodedBodyReader, err := charset.NewReader(bytes.NewReader(r.Body), contentType)
+	tmpBody, err := encodeBytes(r.Body, contentType)
 	if err != nil {
-		return
-	}
-	tmpBody, err := ioutil.ReadAll(encodedBodyReader)
-	if err != nil {
-		return
+		return err
 	}
 	r.Body = tmpBody
+	return nil
+}
+
+func encodeBytes(b []byte, contentType string) ([]byte, error) {
+	r, err := charset.NewReader(bytes.NewReader(b), contentType)
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(r)
 }

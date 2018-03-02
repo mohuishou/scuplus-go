@@ -14,6 +14,11 @@ import (
 //
 // Look the "APIBuilder" for its implementation.
 type Party interface {
+	// GetRelPath returns the current party's relative path.
+	// i.e:
+	// if r := app.Party("/users"), then the `r.GetRelPath()` is the "/users".
+	// if r := app.Party("www.") or app.Subdomain("www") then the `r.GetRelPath()` is the "www.".
+	GetRelPath() string
 	// GetReporter returns the reporter for adding errors
 	GetReporter() *errors.Reporter
 	// Macros returns the macro map which is responsible
@@ -48,17 +53,21 @@ type Party interface {
 	// this specific "subdomain".
 	//
 	// If called from a child party then the subdomain will be prepended to the path instead of appended.
-	// So if app.Subdomain("admin.").Subdomain("panel.") then the result is: "panel.admin.".
+	// So if app.Subdomain("admin").Subdomain("panel") then the result is: "panel.admin.".
 	Subdomain(subdomain string, middleware ...context.Handler) Party
 
 	// Use appends Handler(s) to the current Party's routes and child routes.
 	// If the current Party is the root, then it registers the middleware to all child Parties' routes too.
 	Use(middleware ...context.Handler)
 
-	// Done appends to the very end, Handler(s) to the current Party's routes and child routes
+	// Done appends to the very end, Handler(s) to the current Party's routes and child routes.
 	// The difference from .Use is that this/or these Handler(s) are being always running last.
 	Done(handlers ...context.Handler)
-
+	// Reset removes all the begin and done handlers that may derived from the parent party via `Use` & `Done`,
+	// note that the `Reset` will not reset the handlers that are registered via `UseGlobal` & `DoneGlobal`.
+	//
+	// Returns this Party.
+	Reset() Party
 	// Handle registers a route to the server's router.
 	// if empty method is passed then handler(s) are being registered to all methods, same as .Any.
 	//
@@ -206,15 +215,19 @@ type Party interface {
 	// Returns the GET *Route.
 	StaticWeb(requestPath string, systemPath string) *Route
 
-	// Layout oerrides the parent template layout with a more specific layout for this Party
-	// returns this Party, to continue as normal
+	// Layout overrides the parent template layout with a more specific layout for this Party.
+	// It returns the current Party.
+	//
+	// The "tmplLayoutFile" should be a relative path to the templates dir.
 	// Usage:
+	//
 	// app := iris.New()
+	// app.RegisterView(iris.$VIEW_ENGINE("./views", ".$extension"))
 	// my := app.Party("/my").Layout("layouts/mylayout.html")
-	// 	{
-	// 		my.Get("/", func(ctx context.Context) {
-	// 			ctx.MustRender("page1.html", nil)
-	// 		})
-	// 	}
+	// 	my.Get("/", func(ctx iris.Context) {
+	// 		ctx.View("page1.html")
+	// 	})
+	//
+	// Examples: https://github.com/kataras/iris/tree/master/_examples/view
 	Layout(tmplLayoutFile string) Party
 }

@@ -94,7 +94,7 @@ used "eqcsfield" it could be multiple levels down. Example:
 
 	// NOTE: when calling validate.Struct(val) topStruct will be the top level struct passed
 	//       into the function
-	//       when calling validate.FieldWithValue(val, field, tag) val will be
+	//       when calling validate.VarWithValue(val, field, tag) val will be
 	//       whatever you pass, struct, field...
 	//       when calling validate.Field(field, tag) val will be nil
 
@@ -295,6 +295,16 @@ validates the number of items.
 
 	Usage: ne=10
 
+One Of
+
+For strings, ints, and uints, oneof will ensure that the value
+is one of the values in the parameter.  The parameter should be
+a list of values separated by whitespace.  Values may be
+strings or numbers.
+
+    Usage: oneof=red green
+           oneof=5 7 9
+
 Greater Than
 
 For numbers, this will ensure that the value is greater than the
@@ -369,7 +379,7 @@ Example #1:
 Example #2:
 
 	// Validating by field:
-	validate.FieldWithValue(password, confirmpassword, "eqfield")
+	validate.VarWithValue(password, confirmpassword, "eqfield")
 
 Field Equals Another Field (relative)
 
@@ -391,7 +401,7 @@ Examples:
 	Usage: nefield=Color2
 
 	// Validating by field:
-	validate.FieldWithValue(color1, color2, "nefield")
+	validate.VarWithValue(color1, color2, "nefield")
 
 Field Does Not Equal Another Field (relative)
 
@@ -414,7 +424,7 @@ Example #1:
 Example #2:
 
 	// Validating by field:
-	validate.FieldWithValue(start, end, "gtfield")
+	validate.VarWithValue(start, end, "gtfield")
 
 
 Field Greater Than Another Relative Field
@@ -438,7 +448,7 @@ Example #1:
 Example #2:
 
 	// Validating by field:
-	validate.FieldWithValue(start, end, "gtefield")
+	validate.VarWithValue(start, end, "gtefield")
 
 Field Greater Than or Equal To Another Relative Field
 
@@ -461,7 +471,7 @@ Example #1:
 Example #2:
 
 	// Validating by field:
-	validate.FieldWithValue(start, end, "ltfield")
+	validate.VarWithValue(start, end, "ltfield")
 
 Less Than Another Relative Field
 
@@ -484,7 +494,7 @@ Example #1:
 Example #2:
 
 	// Validating by field:
-	validate.FieldWithValue(start, end, "ltefield")
+	validate.VarWithValue(start, end, "ltefield")
 
 Less Than or Equal To Another Relative Field
 
@@ -832,11 +842,17 @@ Note: See Go's ParseMAC for accepted formats and types:
 
 	http://golang.org/src/net/mac.go?s=866:918#L29
 
-Hostname
+Hostname RFC 952
 
-This validates that a string value is a valid Hostname
+This validates that a string value is a valid Hostname according to RFC 952 https://tools.ietf.org/html/rfc952
 
 	Usage: hostname
+
+Hostname RFC 1123
+
+This validates that a string value is a valid Hostname according to RFC 1123 https://tools.ietf.org/html/rfc1123
+
+	Usage: hostname_rfc1123 or if you want to continue to use 'hostname' in your tags, create an alias.
 
 Full Qualified Domain Name (FQDN)
 

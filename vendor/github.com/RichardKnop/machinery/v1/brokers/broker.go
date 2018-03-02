@@ -81,11 +81,16 @@ func (b *Broker) stopConsuming() {
 	// Stop the retry closure earlier
 	select {
 	case b.retryStopChan <- 1:
-		log.WARNING.Print("Stopping retry closue.")
+		log.WARNING.Print("Stopping retry closure.")
 	default:
 	}
 	// Notifying the stop channel stops consuming of messages
 	b.stopChan <- 1
+}
+
+// GetRegisteredTaskNames returns registered tasks names
+func (b *Broker) GetRegisteredTaskNames() []string {
+	return b.registeredTaskNames
 }
 
 // AdjustRoutingKey makes sure the routing key is correct.
@@ -109,6 +114,6 @@ func AdjustRoutingKey(b Interface, s *tasks.Signature) {
 
 // IsAMQP returns true if the broker is AMQP
 func IsAMQP(b Interface) bool {
-	_, isAMQPBackend := b.(*AMQPBroker)
-	return isAMQPBackend
+	_, isAMQPBroker := b.(*AMQPBroker)
+	return isAMQPBroker
 }

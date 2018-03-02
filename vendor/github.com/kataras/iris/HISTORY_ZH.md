@@ -17,6 +17,91 @@
 
 **如何升级**: 打开命令行执行以下命令: `go get -u github.com/kataras/iris` 或者等待自动更新。
 
+# 2018 2月15号 | v10.2.1 版本更新
+
+修正 子域名 (subdomain) 的 `StaticEmbedded` 和 `StaticWeb` 不存在错误, 由 [@speedwheel](https://github.com/speedwheel) 通过 [facebook page's chat](https://facebook.com/iris.framework) 反馈。
+
+# 2018 2月8号 | v10.2.0 版本更新
+
+新的小版本， 因为它包含一个 **破坏性变动** 和一个新功能 `Party#Reset`
+
+### Party#Done 特性变动 和 新增 Party#DoneGlobal 介绍
+
+正如 @likakuli 指出的那样 https://github.com/kataras/iris/issues/901, 以前 `Done` 注册的处理器，在全局范围内会替代子处理器，因为在引入 `UseGlobal` 这概念之前，缺少稳定性. 现在是时候了, 新的 `Done` 应该在相关的路由之前调用， **新增** `DoneGlobal` 之前的`Done` 使用相同; 顺序无关紧要，他只是结束处理附加到当前的注册程序, 全局性的 (所有子域名，分组).
+
+[routing/writing-a-middleware](_examples/routing/writing-a-middleware) 路由中间件示例更新, 列举了使用方式变化, 如果之前使用过 Iris ,并熟悉内置函数方法名称，请区分 `DoneGlobal` 和 `Done` 的不同.
+
+### Party#Reset
+
+新增 `Party#Reset()` 函数，以便重置上级分组通过 `Use` 和 `Done` 注册的处理方法, 没有什么特别之处，它只是清除当前分组实例的 `middleware` 和 `doneHandlers`，详情参见 `core/router#APIBuilder`.
+
+### 更新方法
+
+只需要将现有的 `.Done` 替换为 `.DoneGlobal` 就可以了。
+
+# 2018 2月6号 | v10.1.0 版本更新
+
+新特性：
+
+- 多级域名跳转, 相关示例 [here](https://github.com/kataras/iris/blob/master/_examples/subdomains/redirect/main.go)
+- 缓存中间件携带 `304` 状态码, 缓存期间的请求，服务器只响应状态, 相关示例 [here](https://github.com/kataras/iris/blob/master/_examples/cache/client-side/main.go)
+- `websocket/Connection#IsJoined(roomName string)` 新增方法，检查用户是否加入房间。 未加入的连接不能发送消息，此检查是可选的.
+
+详情：
+
+- 更新上游 vendor/golang/crypto 包到最新版本, 我们总是跟进依赖关系的任何修复和有意义的更新.
+- [改进：不在gzip响应的WriteString和Writef上强制设置内容类型（如果已经存在的话）](https://github.com/kataras/iris/commit/af79aad11932f1a4fcbf7ebe28274b96675d0000)
+- [新增：websocket/Connection#IsJoined](https://github.com/kataras/iris/commit/cb9e30948c8f1dd099f5168218d110765989992e)
+- [修复：#897](https://github.com/kataras/iris/commit/21cb572b638e82711910745cfae3c52d836f01f9)
+- [新增：context#StatusCodeNotSuccessful 变量用来定制 rfc2616-sec10](https://github.com/kataras/iris/commit/c56b7a3f04d953a264dfff15dadd2b4407d62a6f)
+- [修复：示例 routing/dynamic-path/main.go#L101](https://github.com/kataras/iris/commit/0fbf1d45f7893cb1393759b7362444f3d381d182)
+- [新增：缓存中间件 `iris.Cache304`](https://github.com/kataras/iris/commit/1722355870174cecbc12f7beff8514b058b3b912)
+- [修复：示例  csrf](https://github.com/kataras/iris/commit/a39e3d7d6cf528e51e6c7e32a884a8d9f2fadc0b)
+- [取消：Configuration.RemoteAddrHeaders 默认值](https://github.com/kataras/iris/commit/47108dc5a147a8b23de61bef86fe9327f0781396)
+- [新增：vscode 扩展链接和徽章](https://github.com/kataras/iris/commit/6f594c0a7c641cc98bd683163fffbf5fa5fc8de6)
+- [新增：`app.View` 示例 用于解析和编写HTTP之外的模板（类似于上下文＃视图)](_examples/view/write-to)
+- [新增：支持多级域名跳转](https://github.com/kataras/iris/commit/12d7df113e611a75088c2a72774dab749d2c7685).
+
+# 2018 1月16号 | v10.0.2 版本更新
+
+## 安全更新 | `iris.AutoTLS`
+
+**建议升级**, 包含几天前修复了 letsencrypt.org 禁用 tls-sni 的问题，这导致几乎每个启用了 https 的 golang 服务器都无法正常工作，因此支持添加了 http-01 类型。 现在服务器会尝试所有可用的 letsencrypt 类型。
+
+更多相关资讯:
+
+- https://letsencrypt.status.io/pages/incident/55957a99e800baa4470002da/5a55777ed9a9c1024c00b241
+- https://github.com/golang/crypto/commit/13931e22f9e72ea58bb73048bc752b48c6d4d4ac
+
+# 2018 1月15号 | v10.0.1 版本更新
+
+该版本暂未发现重大问题，但如果你使用 [cache](cache) 包的话，这里有些更新或许正好解决某些问题。
+
+- 修复缓存在同一控制器多个方法中，返回相同内容问题 https://github.com/kataras/iris/pull/852, 问题报告：https://github.com/kataras/iris/issues/850
+- 问题修正 https://github.com/kataras/iris/pull/862
+- 当 `view#Engine##Reload` 为 true，`ExecuteWriter -> Load` 不能同时使用问题，相关问题 ：https://github.com/kataras/iris/issues/872
+- 由Iris提供支持的开源项目的徽章, 学习如何将徽章添加到您的开源项目中 [FAQ.md](FAQ.md)
+- 上游更新 `golang/crypto` 修正 [tls-sni challenge disabled](https://letsencrypt.status.io/pages/incident/55957a99e800baa4470002da/5a55777ed9a9c1024c00b241) https://github.com/golang/crypto/commit/13931e22f9e72ea58bb73048bc752b48c6d4d4ac (**关系到 iris.AutoTLS**)
+
+## 新增捐助
+
+1. https://opencollective.com/cetin-basoz
+
+## 新增翻译
+
+1. 中文版 README_ZH.md and HISTORY_ZH.md 由 @Zeno-Code 翻译 https://github.com/kataras/iris/pull/858
+2. 俄语版 README_RU.md 由 @merrydii 翻译 https://github.com/kataras/iris/pull/857
+3. 希腊版 README_GR.md and HISTORY_GR.md https://github.com/kataras/iris/commit/8c4e17c2a5433c36c148a51a945c4dc35fbe502a#diff-74b06c740d860f847e7b577ad58ddde0 and https://github.com/kataras/iris/commit/bb5a81c540b34eaf5c6c8e993f644a0e66a78fb8
+
+## 新增示例
+
+1. [MVC - Register Middleware](_examples/mvc/middleware)
+
+## 新增文章
+
+1. [A Todo MVC Application using Iris and Vue.js](https://hackernoon.com/a-todo-mvc-application-using-iris-and-vue-js-5019ff870064)
+2. [A Hasura starter project with a ready to deploy Golang hello-world web app with IRIS](bit.ly/2lmKaAZ)
+
 # 2018 元旦 | v10.0.0 版本发布
 
 我们必须感谢 [Mrs. Diana](https://www.instagram.com/merry.dii/) 帮我们绘制的漂亮 [logo](https://iris-go.com/images/icon.svg)!
@@ -60,7 +145,7 @@
 
 ## MVC
 
-You have to understand the `hero` package in order to use the `mvc`, because `mvc` uses the `hero` internally for the controller's methods you use as routes, the same rules applied to those controller's methods of yours as well.
+如果要使用 `mvc` ，必须先理解 `hero` 包，因为`mvc`在内部使用`hero`作为路由控制器的方法，同样的规则也适用于你的控制器的方法。
 
 With this version you can register **any controller's methods as routes manually**, you can **get a route based on a method name and change its `Name` (useful for reverse routing inside templates)**, you can use any **dependencies** registered from `hero.Register` or `mvc.New(iris.Party).Register` per mvc application or per-controller, **you can still use `BeginRequest` and `EndRequest`**, you can catch **`BeforeActivation(b mvc.BeforeActivation)` to add dependencies per controller and `AfterActivation(a mvc.AfterActivation)` to make any post-validations**, **singleton controllers when no dynamic dependencies are used**, **Websocket controller, as simple as a `websocket.Connection` dependency** and more...
 
@@ -87,10 +172,9 @@ With this version you can register **any controller's methods as routes manually
 移除旧版本的常量 `context.DefaultMaxMemory` 替换为配置 `WithPostMaxMemory` 方法.
 
 ```go
-// WithPostMaxMemory sets the maximum post data size
-// that a client can send to the server, this differs
-// from the overral request body size which can be modified
-// by the `context#SetMaxRequestBodySize` or `iris#LimitRequestBodySize`.
+// WithPostMaxMemory 设置客户端向服务器 post 提交数据的最大值
+// 他不同于 request body 的值大小，如果有相关需求请使用
+// `context#SetMaxRequestBodySize` 或者 `iris#LimitRequestBodySize`
 //
 // 默认值为 32MB 或者 32 << 20
 func WithPostMaxMemory(limit int64) Configurator
@@ -116,8 +200,7 @@ func main() {
 新方法可以多文件上传, 应用于常见的上传操作, 它是一个非常有用的函数。
 
 ```go
-// UploadFormFiles uploads any received file(s) from the client
-// to the system physical location "destDirectory".
+// UploadFormFiles 将所有接收到的文件从客户端上传到系统物理位置 destDirectory。
 //
 // The second optional argument "before" gives caller the chance to
 // modify the *miltipart.FileHeader before saving to the disk,

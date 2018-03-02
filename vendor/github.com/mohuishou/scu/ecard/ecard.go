@@ -47,13 +47,13 @@ func Get(c *colly.Collector, start, end time.Time) (Card, error) {
 		Transactions: trans,
 	}
 
-	balance, err := getBalance(c.Clone())
+	// balance, err := getBalance(c.Clone())
 
-	if err != nil {
-		return card, err
-	}
+	// if err != nil {
+	// 	return card, err
+	// }
 
-	card.Balance = balance
+	// card.Balance = balance
 	return card, nil
 }
 

@@ -55,8 +55,8 @@
   name = "github.com/microcosm-cc/bluemonday"
 
 [[constraint]]
-  name = "github.com/russross/blackfriday"
-  version = "2.0.0"
+  branch = "v2"
+  name = "gopkg.in/russross/blackfriday.v2"
 
 [[constraint]]
   branch = "master"
@@ -64,7 +64,7 @@
 
 [[constraint]]
   name = "github.com/satori/go.uuid"
-  revision = "5bf94b69c6b68ee1b541973bb8e1144db23a194b"
+  version = "1.2.0"
 
 [[constraint]]
   branch = "master"

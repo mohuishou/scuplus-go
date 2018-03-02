@@ -32,10 +32,12 @@ func GetBook(ctx iris.Context) {
 	isHistory, err := ctx.URLParamInt("is_history")
 	if err != nil {
 		api.Error(ctx, 30400, "参数错误！", nil)
+		return
 	}
 	books, err := model.UpdateLibraryBook(uid, isHistory)
 	if err != nil {
 		api.Error(ctx, 30002, err.Error(), nil)
+		return
 	}
 	api.Success(ctx, "获取成功", books)
 }
