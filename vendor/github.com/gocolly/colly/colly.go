@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -146,6 +147,45 @@ var (
 	// ErrNoPattern is the error type for LimitRules without patterns
 	ErrNoPattern = errors.New("No pattern defined in LimitRule")
 )
+
+var envMap = map[string]func(*Collector, string){
+	"ALLOWED_DOMAINS": func(c *Collector, val string) {
+		c.AllowedDomains = strings.Split(val, ",")
+	},
+	"CACHE_DIR": func(c *Collector, val string) {
+		c.CacheDir = val
+	},
+	"DETECT_CHARSET": func(c *Collector, val string) {
+		c.DetectCharset = isYesString(val)
+	},
+	"DISABLE_COOKIES": func(c *Collector, _ string) {
+		c.backend.Client.Jar = nil
+	},
+	"DISALLOWED_DOMAINS": func(c *Collector, val string) {
+		c.DisallowedDomains = strings.Split(val, ",")
+	},
+	"IGNORE_ROBOTSTXT": func(c *Collector, val string) {
+		c.IgnoreRobotsTxt = isYesString(val)
+	},
+	"MAX_BODY_SIZE": func(c *Collector, val string) {
+		size, err := strconv.Atoi(val)
+		if err == nil {
+			c.MaxBodySize = size
+		}
+	},
+	"MAX_DEPTH": func(c *Collector, val string) {
+		maxDepth, err := strconv.Atoi(val)
+		if err != nil {
+			c.MaxDepth = maxDepth
+		}
+	},
+	"PARSE_HTTP_ERROR_RESPONSE": func(c *Collector, val string) {
+		c.ParseHTTPErrorResponse = isYesString(val)
+	},
+	"USER_AGENT": func(c *Collector, val string) {
+		c.UserAgent = val
+	},
+}
 
 // NewCollector creates a new Collector instance with default configuration
 func NewCollector(options ...func(*Collector)) *Collector {
@@ -363,33 +403,39 @@ func (c *Collector) scrape(u, method string, depth int, requestData io.Reader, c
 			return err
 		}
 	}
-	req, err := http.NewRequest(method, parsedURL.String(), requestData)
-	if err != nil {
-		return err
+	if hdr == nil {
+		hdr = http.Header{"User-Agent": []string{c.UserAgent}}
 	}
+	rc, ok := requestData.(io.ReadCloser)
+	if !ok && requestData != nil {
+		rc = ioutil.NopCloser(requestData)
+	}
+	req := &http.Request{
+		Method:     method,
+		URL:        parsedURL,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     hdr,
+		Body:       rc,
+		Host:       parsedURL.Host,
+	}
+	u = parsedURL.String()
 	c.wg.Add(1)
 	if c.Async {
-		go c.fetch(u, method, depth, requestData, ctx, hdr, checkRevisit, req, parsedURL)
+		go c.fetch(u, method, depth, requestData, ctx, hdr, checkRevisit, req)
 		return nil
 	}
-	return c.fetch(u, method, depth, requestData, ctx, hdr, checkRevisit, req, parsedURL)
+	return c.fetch(u, method, depth, requestData, ctx, hdr, checkRevisit, req)
 }
 
-func (c *Collector) fetch(u, method string, depth int, requestData io.Reader, ctx *Context, hdr http.Header, checkRevisit bool, req *http.Request, parsedURL *url.URL) error {
+func (c *Collector) fetch(u, method string, depth int, requestData io.Reader, ctx *Context, hdr http.Header, checkRevisit bool, req *http.Request) error {
 	defer c.wg.Done()
-	if hdr == nil {
-		req.Header.Set("User-Agent", c.UserAgent)
-		if method == "POST" {
-			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-		}
-	} else {
-		req.Header = hdr
-	}
 	if ctx == nil {
 		ctx = NewContext()
 	}
 	request := &Request{
-		URL:       parsedURL,
+		URL:       req.URL,
 		Headers:   &req.Header,
 		Ctx:       ctx,
 		Depth:     depth,
@@ -408,11 +454,12 @@ func (c *Collector) fetch(u, method string, depth int, requestData io.Reader, ct
 	if method == "POST" && req.Header.Get("Content-Type") == "" {
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	}
+	origURL := req.URL
 	response, err := c.backend.Cache(req, c.MaxBodySize, c.CacheDir)
 	if err := c.handleOnError(response, err, request, ctx); err != nil {
 		return err
 	}
-	if req.URL.String() != parsedURL.String() {
+	if req.URL != origURL {
 		request.URL = req.URL
 		request.Headers = &req.Header
 	}
@@ -742,7 +789,7 @@ func (c *Collector) handleOnResponse(r *Response) {
 }
 
 func (c *Collector) handleOnHTML(resp *Response) {
-	if !strings.Contains(strings.ToLower(resp.Headers.Get("Content-Type")), "html") || len(c.htmlCallbacks) == 0 {
+	if len(c.htmlCallbacks) == 0 || !strings.Contains(strings.ToLower(resp.Headers.Get("Content-Type")), "html") {
 		return
 	}
 	doc, err := goquery.NewDocumentFromReader(bytes.NewBuffer(resp.Body))
@@ -766,8 +813,11 @@ func (c *Collector) handleOnHTML(resp *Response) {
 }
 
 func (c *Collector) handleOnXML(resp *Response) {
+	if len(c.xmlCallbacks) == 0 {
+		return
+	}
 	contentType := strings.ToLower(resp.Headers.Get("Content-Type"))
-	if (!strings.Contains(contentType, "html") && !strings.Contains(contentType, "xml")) || len(c.xmlCallbacks) == 0 {
+	if !strings.Contains(contentType, "html") && !strings.Contains(contentType, "xml") {
 		return
 	}
 
@@ -951,34 +1001,9 @@ func (c *Collector) parseSettingsFromEnv() {
 			continue
 		}
 		pair := strings.SplitN(e[6:], "=", 2)
-		switch pair[0] {
-		case "ALLOWED_DOMAINS":
-			c.AllowedDomains = strings.Split(pair[1], ",")
-		case "CACHE_DIR":
-			c.CacheDir = pair[1]
-		case "DETECT_CHARSET":
-			c.DetectCharset = isYesString(pair[1])
-		case "DISABLE_COOKIES":
-			c.backend.Client.Jar = nil
-		case "DISALLOWED_DOMAINS":
-			c.DisallowedDomains = strings.Split(pair[1], ",")
-		case "IGNORE_ROBOTSTXT":
-			c.IgnoreRobotsTxt = isYesString(pair[1])
-		case "MAX_BODY_SIZE":
-			size, err := strconv.Atoi(pair[1])
-			if err == nil {
-				c.MaxBodySize = size
-			}
-		case "MAX_DEPTH":
-			maxDepth, err := strconv.Atoi(pair[1])
-			if err != nil {
-				c.MaxDepth = maxDepth
-			}
-		case "PARSE_HTTP_ERROR_RESPONSE":
-			c.ParseHTTPErrorResponse = isYesString(pair[1])
-		case "USER_AGENT":
-			c.UserAgent = pair[1]
-		default:
+		if f, ok := envMap[pair[0]]; ok {
+			f(c, pair[1])
+		} else {
 			log.Println("Unknown environment variable:", pair[0])
 		}
 	}

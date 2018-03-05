@@ -35,20 +35,25 @@ type Schedule struct {
 // Get 获取课程表
 func Get(c *colly.Collector) (data []Schedule) {
 	data = make([]Schedule, 0)
+	tmpSchedule := &Schedule{}
 
 	//通过反射利用字段间的对应关系，来进行字段赋值
 	c.OnHTML("body", func(e *colly.HTMLElement) {
 		e.DOM.Find(".displayTag").Eq(1).Find("tr").Each(func(i int, sel *goquery.Selection) {
 			schedule := &Schedule{}
-			v := reflect.ValueOf(schedule)
-			elem := v.Elem()
 			td := sel.Find("td")
 			index := 0
 			k := 0
+			v := reflect.ValueOf(schedule)
+			elem := v.Elem()
 			t := elem.Type()
 
 			//长度小于7说明，该课程为上一课程的不同时间段
 			if td.Size() < 7 {
+				schedule = tmpSchedule
+				v = reflect.ValueOf(schedule)
+				elem = v.Elem()
+				t = elem.Type()
 				k = 10
 			}
 
@@ -76,6 +81,10 @@ func Get(c *colly.Collector) (data []Schedule) {
 				}
 
 				index++
+			}
+
+			if v, ok := td.Eq(2).Attr("rowspan"); ok && v == "2" {
+				tmpSchedule = schedule
 			}
 
 			//只有长度大于1，才说明这一行不是标题行

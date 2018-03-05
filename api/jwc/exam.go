@@ -11,7 +11,7 @@ import (
 func GetExam(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
 	exams := []model.Exam{}
-	model.DB().Where("user_id = ?", uid).Find(&exams)
+	model.DB().Where("user_id = ?", uid).Order("start_time desc").Find(&exams)
 	api.Success(ctx, "考表获取成功！", exams)
 }
 

@@ -35,10 +35,11 @@
     "v1/config",
     "v1/log",
     "v1/retry",
-    "v1/tasks"
+    "v1/tasks",
+    "v1/tracing"
   ]
-  revision = "5e702432905571ea5aaafc7d6ebeab7010751988"
-  version = "v1.2.1"
+  revision = "6a249f4becc93c9938a1cd85831e6efc3086100b"
+  version = "v1.2.2"
 
 [[projects]]
   name = "github.com/andybalholm/cascadia"
@@ -95,7 +96,7 @@
     "service/sqs/sqsiface",
     "service/sts"
   ]
-  revision = "b3c93653d2e47b82c5f48d721a2db7778f4e33a8"
+  revision = "8a0e4eacaec13849a4177fa293f5e908760056a9"
 
 [[projects]]
   branch = "master"
@@ -217,7 +218,7 @@
     "debug",
     "storage"
   ]
-  revision = "515cbc2761873e28823af7d85a833ccb93bb5fe8"
+  revision = "724776441eece1622969e1f57abe13f57d70572d"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -229,7 +230,7 @@
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "9ecbd7c922ebaada90052b4ab0802abf086b3ebc"
+  revision = "74e913d8de3209e490c76b099d574e033bdcf717"
 
 [[projects]]
   branch = "master"
@@ -355,7 +356,7 @@
   branch = "master"
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
-  revision = "462fda1f11d8cad3660e52737b8beefd27acfb3f"
+  revision = "1f94cfab3dcc47159a6dcb83588baa3d8260e78a"
 
 [[projects]]
   name = "github.com/kennygrant/sanitize"
@@ -433,13 +434,23 @@
     "jwc/util",
     "library"
   ]
-  revision = "246a3cbb3a2e82a54420824cc9e39a333e533842"
+  revision = "a076fd62b35829ff29d65841236bc6f64fc6f2de"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
   packages = ["."]
   revision = "89e2dde6d42d8f6497ac669d8c41928d2096c80b"
   version = "0.2.1"
+
+[[projects]]
+  name = "github.com/opentracing/opentracing-go"
+  packages = [
+    ".",
+    "ext",
+    "log"
+  ]
+  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
+  version = "v1.0.2"
 
 [[projects]]
   branch = "master"

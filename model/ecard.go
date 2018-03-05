@@ -36,7 +36,7 @@ func UpdateEcard(uid uint) error {
 
 	// 设置默认开始时间: 2个月内，结束时间: 当日
 	end := time.Now()
-	d, err := time.ParseDuration("1440h")
+	d, err := time.ParseDuration("-1440h")
 	start := end.Add(d)
 
 	// 获取最后一条交易数据
