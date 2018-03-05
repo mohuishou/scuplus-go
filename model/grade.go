@@ -28,7 +28,7 @@ type Grade struct {
 // GetGrades 获取用户的所有成绩
 func GetGrades(userID uint) []Grade {
 	grades := make([]Grade, 0)
-	if err := DB().Where("user_id = ?", userID).Find(&grades).Error; err != nil {
+	if err := DB().Where("user_id = ?", userID).Order("year desc, term desc").Find(&grades).Error; err != nil {
 		log.Printf("[Error] GetGrades Fail, userID: %d, err: %s", userID, err.Error())
 	}
 	return grades
