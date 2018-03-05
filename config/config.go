@@ -28,6 +28,8 @@ type Wechat struct {
 	Appid         string `toml:"appid"`
 	Secret        string `toml:"secret"`
 	TemplateGrade string `toml:"template_grade"`
+	TemplateBook  string `toml:"template_book"`
+	TemplateExam  string `toml:"template_exam"`
 }
 
 // Github 配置文件

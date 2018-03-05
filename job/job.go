@@ -9,25 +9,32 @@ import (
 	"github.com/RichardKnop/machinery/v1/config"
 )
 
-// StartServer 初始化server
-func StartServer() (*machinery.Server, error) {
+var Server *machinery.Server
+
+// 初始化server
+func init() {
+	var err error
 	// 根据环境变量读取配置文件
 	cnf, err := config.NewFromYaml(os.Getenv("SCUPLUS_JOB_CONF"), true)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	// Create server instance
-	server, err := machinery.NewServer(cnf)
+	Server, err = machinery.NewServer(cnf)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	// Register tasks
 	t := map[string]interface{}{
 		"update_all":   tasks.UpdateAll,
 		"notify_grade": tasks.NotifyGrade,
+		"notify_book":  tasks.NotifyBook,
+		"notify_exam":  tasks.NotifyExam,
 	}
 
-	return server, server.RegisterTasks(t)
+	if err = Server.RegisterTasks(t); err != nil {
+		panic(err)
+	}
 }

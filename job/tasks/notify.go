@@ -25,13 +25,6 @@ func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 	if msgID == "" {
 		return errors.New("没有模板id")
 	}
-
-	// 获取access token
-	token, err := wechat.GetAccessToken(false)
-	if err != nil {
-		return err
-	}
-
 	// 获取用户openid
 	wechatUser := model.Wechat{}
 	model.DB().Where("user_id = ?", uid).Find(&wechatUser)
@@ -39,7 +32,7 @@ func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 	data := map[string]interface{}{
 		"touser":      wechatUser.Openid,
 		"template_id": config.Get().Wechat.TemplateGrade,
-		"page":        "grade",
+		"page":        "/pages/grade",
 		"form_id":     msgID,
 		"data": map[string]interface{}{
 			"keyword1": map[string]interface{}{
@@ -56,6 +49,94 @@ func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 			},
 		},
 	}
+
+	return notify(uid, data)
+}
+
+// NotifyBook 发送图书到期通知
+func NotifyBook(uid uint, bookName, end, start string) error {
+	// 获取模板id
+	msgID := msgid.Get(uid)
+	if msgID == "" {
+		return errors.New("没有模板id")
+	}
+	// 获取用户openid
+	wechatUser := model.Wechat{}
+	model.DB().Where("user_id = ?", uid).Find(&wechatUser)
+	// 构造请求参数
+	data := map[string]interface{}{
+		"touser":      wechatUser.Openid,
+		"template_id": config.Get().Wechat.TemplateBook,
+		"page":        "/pages/library/loan",
+		"form_id":     msgID,
+		"data": map[string]interface{}{
+			"keyword1": map[string]interface{}{
+				"value": bookName,
+			},
+			"keyword2": map[string]interface{}{
+				"value": end,
+			},
+			"keyword3": map[string]interface{}{
+				"value": start,
+			},
+			"keyword4": map[string]interface{}{
+				"value": "点击进入我的借阅，续借图书",
+			},
+		},
+	}
+
+	return notify(uid, data)
+}
+
+// NotifyExam 发送考试提醒
+func NotifyExam(uid uint, courseName, date, time, address, site, courseType string, day int64) error {
+	// 获取模板id
+	msgID := msgid.Get(uid)
+	if msgID == "" {
+		return errors.New("没有模板id")
+	}
+	// 获取用户openid
+	wechatUser := model.Wechat{}
+	model.DB().Where("user_id = ?", uid).Find(&wechatUser)
+	// 构造请求参数
+	data := map[string]interface{}{
+		"touser":      wechatUser.Openid,
+		"template_id": config.Get().Wechat.TemplateExam,
+		"page":        "/pages/exam",
+		"form_id":     msgID,
+		"data": map[string]interface{}{
+			"keyword1": map[string]interface{}{
+				"value": courseName,
+			},
+			"keyword2": map[string]interface{}{
+				"value": date,
+			},
+			"keyword3": map[string]interface{}{
+				"value": time,
+			},
+			"keyword4": map[string]interface{}{
+				"value": address,
+			},
+			"keyword5": map[string]interface{}{
+				"value": courseType,
+			},
+			"keyword6": map[string]interface{}{
+				"value": fmt.Sprintf("考试时间仅剩%d天，请抓紧时间复(yu)习,考试当天请携带好您的学生证，英语考试请携带听力耳机", day),
+			},
+		},
+	}
+
+	return notify(uid, data)
+}
+
+func notify(uid uint, data map[string]interface{}) error {
+
+	// 获取access token
+	token, err := wechat.GetAccessToken(false)
+	if err != nil {
+		return err
+	}
+
 	b, err := json.Marshal(&data)
 	if err != nil {
 		return err

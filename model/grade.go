@@ -96,7 +96,7 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 		}
 	}
 	if len(deleteIDs) != 0 {
-		tx.Where(deleteIDs).Delete(Grade{})
+		tx.Unscoped().Where(deleteIDs).Delete(Grade{})
 	}
 
 	// 新增更新的数据
