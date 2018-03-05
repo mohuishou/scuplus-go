@@ -69,7 +69,7 @@ func book() {
 			model.DB().Where("user_id = ? and due_time > ?", user.ID, now).Find(&book)
 
 			day := (book.DueTime.Unix() - now.Unix()) / 3600 / 24
-			if day == 6 || day == 1 {
+			if day == 7 || day == 1 {
 				sign := &tasks.Signature{
 					Name: "notify_book",
 					Args: []tasks.Arg{
