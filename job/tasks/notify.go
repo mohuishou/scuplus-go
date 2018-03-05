@@ -54,7 +54,7 @@ func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 }
 
 // NotifyBook 发送图书到期通知
-func NotifyBook(uid uint, bookName, end, start string) error {
+func NotifyBook(uid uint, bookName, end string, day int64) error {
 	// 获取模板id
 	msgID := msgid.Get(uid)
 	if msgID == "" {
@@ -77,10 +77,7 @@ func NotifyBook(uid uint, bookName, end, start string) error {
 				"value": end,
 			},
 			"keyword3": map[string]interface{}{
-				"value": start,
-			},
-			"keyword4": map[string]interface{}{
-				"value": "点击进入我的借阅，续借图书",
+				"value": fmt.Sprintf("图书到期时间仅剩%d天, 点击进入我的借阅，续借图书", day),
 			},
 		},
 	}

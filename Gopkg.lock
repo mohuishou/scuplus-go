@@ -453,6 +453,12 @@
   version = "v1.0.2"
 
 [[projects]]
+  name = "github.com/robfig/cron"
+  packages = ["."]
+  revision = "b024fc5ea0e34bc3f83d9941c8d60b0622bfaca4"
+  version = "v1"
+
+[[projects]]
   branch = "master"
   name = "github.com/ryanuber/columnize"
   packages = ["."]
@@ -604,6 +610,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1fbf13ffedaead94e3d61921fc3a64ad5cb99ab3b5fcd18b672455b4c633b379"
+  inputs-digest = "440444492026c297892aee822aaaf99068929972bcc4952e8b582ed6a7c16228"
   solver-name = "gps-cdcl"
   solver-version = 1

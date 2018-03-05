@@ -4,6 +4,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/robfig/cron"
+
 	"github.com/RichardKnop/machinery/v1/tasks"
 	"github.com/mohuishou/scuplus-go/job"
 	"github.com/mohuishou/scuplus-go/model"
@@ -12,7 +14,21 @@ import (
 const pageSize = 1000
 
 func main() {
-
+	c := cron.New()
+	// 每天 9,12,21点分别执行一次
+	c.AddFunc("0 0 9,12,21 1/1 * ? ", func() {
+		updateAll()
+	})
+	// 每天晚上八点执行一次
+	c.AddFunc("0 0 20 1/1 * ? ", func() {
+		book()
+	})
+	// 每天早上10点执行一次
+	c.AddFunc("0 0 9 1/1 * ? ", func() {
+		exam()
+	})
+	c.Start()
+	select {}
 }
 
 func updateAll() {
@@ -47,23 +63,41 @@ func book() {
 		users := []model.User{}
 		model.DB().Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
 		for _, user := range users {
-
 			// 获取即将到期的书籍
+			now := time.Now()
+			var book model.LibraryBook
+			model.DB().Where("user_id = ? and due_time > ?", user.ID, now).Find(&book)
 
-			sign := &tasks.Signature{
-				Name: "update_all",
-				Args: []tasks.Arg{
-					{
-						Type:  "uint",
-						Value: user.ID,
+			day := (book.DueTime.Unix() - now.Unix()) / 3600 / 24
+			if day == 6 || day == 1 {
+				sign := &tasks.Signature{
+					Name: "notify_book",
+					Args: []tasks.Arg{
+						{
+							Type:  "uint",
+							Value: user.ID,
+						},
+						{
+							Type:  "string",
+							Value: book.Title,
+						},
+						{
+							Type:  "string",
+							Value: book.DueDate,
+						},
+						{
+							Type:  "int64",
+							Value: day,
+						},
 					},
-				},
+				}
+
+				_, err := job.Server.SendTask(sign)
+				if err != nil {
+					log.Println("cron error book", err)
+				}
 			}
 
-			_, err := job.Server.SendTask(sign)
-			if err != nil {
-				log.Println("cron error update all", err)
-			}
 		}
 	}
 }
@@ -123,7 +157,6 @@ func exam() {
 					log.Println("cron error exam", err)
 				}
 			}
-
 		}
 	}
 }
