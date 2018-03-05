@@ -65,14 +65,14 @@ var configFile = ""
 
 func (c *Config) env() {
 	// 数据库相关 优先使用环境变量
-	c.Redis.IP = env("REDIS", c.Redis.IP)
-	c.Redis.Port = env("REDIS_PORT", c.Redis.Port)
+	c.Redis.IP = env("S_REDIS", c.Redis.IP)
+	c.Redis.Port = env("S_REDIS_PORT", c.Redis.Port)
 
-	c.Mysql.Host = env("SCUPLUS_DB", c.Mysql.Host)
-	c.Mysql.DB = env("SCUPLUS_DB_NAME", c.Mysql.DB)
-	c.Mysql.Password = env("SCUPLUS_DB_PASSWORD", c.Mysql.Password)
-	c.Mysql.User = env("SCUPLUS_DB_USER", c.Mysql.User)
-	c.Mysql.Port = env("SCUPLUS_DB_PORT", c.Mysql.Port)
+	c.Mysql.Host = env("S_DB", c.Mysql.Host)
+	c.Mysql.DB = env("S_DB_NAME", c.Mysql.DB)
+	c.Mysql.Password = env("S_DB_PASSWORD", c.Mysql.Password)
+	c.Mysql.User = env("S_DB_USER", c.Mysql.User)
+	c.Mysql.Port = env("S_DB_PORT", c.Mysql.Port)
 }
 
 func env(key, val string) string {
@@ -92,8 +92,12 @@ func Get() Config {
 		if _, err := toml.DecodeFile(filepath, &config); err != nil {
 			log.Fatal("配置文件读取失败！", err)
 		}
+
+		config.env()
+
+		log.Println("config init:", config)
 	}
-	config.env()
+
 	return config
 }
 
