@@ -63,6 +63,18 @@ var config Config
 // 配置文件路径
 var configFile = ""
 
+func (c *Config) env() {
+	c.Redis.IP = env("REDIS", c.Redis.IP)
+	c.Redis.Port = env("REDIS_PORT", c.Redis.Port)
+}
+
+func env(key, val string) string {
+	if os.Getenv(key) != "" {
+		return os.Getenv(key)
+	}
+	return val
+}
+
 // Get 获取config
 func Get() Config {
 	if config.Host == "" {
