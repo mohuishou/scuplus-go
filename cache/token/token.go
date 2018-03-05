@@ -12,7 +12,7 @@ const expireTime = 3600 * 1.5
 
 // Get get
 func Get() string {
-	v, err := cache.Redis.Do("GET", key)
+	v, err := cache.Do("GET", key)
 	if err != nil {
 		log.Println("get cache token err:", err)
 	}
@@ -25,7 +25,7 @@ func Get() string {
 
 // Set set
 func Set(v string) error {
-	_, err := cache.Redis.Do("SET", key, v)
+	_, err := cache.Do("SET", key, v)
 	if err != nil {
 		log.Println("set cache token err:", err)
 	}
