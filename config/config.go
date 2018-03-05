@@ -86,6 +86,7 @@ func Get() Config {
 			log.Fatal("配置文件读取失败！", err)
 		}
 	}
+	config.env()
 	return config
 }
 
