@@ -54,7 +54,6 @@ func UpdateEcard(uid uint) error {
 	if err != nil {
 		return err
 	}
-	log.Println(card)
 
 	// 插入新的交易数据
 	for _, v := range card.Transactions {
