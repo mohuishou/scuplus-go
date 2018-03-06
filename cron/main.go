@@ -36,7 +36,7 @@ func updateAll() {
 	model.DB().Table("users").Where("verify = 1").Count(&count)
 	for i := 0; i < (count/pageSize + 1); i++ {
 		users := []model.User{}
-		model.DB().Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
+		model.DB().Where("verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
 		for _, user := range users {
 			sign := &tasks.Signature{
 				Name: "update_all",
@@ -58,10 +58,10 @@ func updateAll() {
 
 func book() {
 	count := 0
-	model.DB().Table("users").Where("verify = 1").Count(&count)
+	model.Where("verify = 1").DB().Table("users").Where("verify = 1").Count(&count)
 	for i := 0; i < (count/pageSize + 1); i++ {
 		users := []model.User{}
-		model.DB().Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
+		model.DB().Where("verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
 		for _, user := range users {
 			// 获取即将到期的书籍
 			now := time.Now()
@@ -107,7 +107,7 @@ func exam() {
 	model.DB().Table("users").Where("verify = 1").Count(&count)
 	for i := 0; i < (count/pageSize + 1); i++ {
 		users := []model.User{}
-		model.DB().Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
+		model.DB().Where("verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
 		for _, user := range users {
 			// 获取最近的考试
 			now := time.Now()
