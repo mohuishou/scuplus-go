@@ -97,7 +97,7 @@ func getTransactions(c *colly.Collector, start, end time.Time) Transactions {
 
 	c.Post("http://ecard.scu.edu.cn/ajax/tran/list.json", map[string]string{
 		"int_start":     "0",
-		"int_maxSize":   "15",
+		"int_maxSize":   "1000",
 		"str_startTime": start.Format("2006-01-02"),
 		"str_endTime":   end.Format("2006-01-02"),
 	})
