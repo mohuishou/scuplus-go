@@ -58,7 +58,7 @@ func updateAll() {
 
 func book() {
 	count := 0
-	model.Where("verify = 1").DB().Table("users").Where("verify = 1").Count(&count)
+	model.DB().Table("users").Where("verify = 1").Count(&count)
 	for i := 0; i < (count/pageSize + 1); i++ {
 		users := []model.User{}
 		model.DB().Where("verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
