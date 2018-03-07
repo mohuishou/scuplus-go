@@ -98,7 +98,7 @@ func GetFeedBack(ctx iris.Context) {
 	}
 	issue, comments, err := github.GetIssue(id)
 	if err != nil {
-		api.Error(ctx, 50400, "参数错误", nil)
+		api.Error(ctx, 50002, "issue获取失败", err)
 		return
 	}
 	api.Success(ctx, "反馈信息获取成功！", map[string]interface{}{
