@@ -23,6 +23,16 @@ func init() {
 	client = github.NewClient(tc)
 }
 
+// GetIssue 获取指定id的issue
+func GetIssue(id int) (*github.Issue, []*github.IssueComment, error) {
+	issue, _, err := client.Issues.Get(ctx, config.Get().Github.OwnerUser, config.Get().Github.Repo, id)
+	if err != nil {
+		return nil, nil, err
+	}
+	issueComments, _, err := client.Issues.ListComments(ctx, config.Get().Github.OwnerUser, config.Get().Github.Repo, id, &github.IssueListCommentsOptions{})
+	return issue, issueComments, err
+}
+
 // NewIssue 创建一个新的issue
 func NewIssue(title, body string, labels []string) (*github.Issue, error) {
 	issue, _, err := client.Issues.Create(ctx, config.Get().Github.OwnerUser, config.Get().Github.Repo, &github.IssueRequest{

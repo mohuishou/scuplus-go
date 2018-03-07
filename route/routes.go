@@ -21,6 +21,8 @@ func Routes(app *iris.Application) {
 	app.Get("/user/exam", jwc.GetExam)
 	app.Post("/user/exam", jwc.UpdateExam)
 	app.Post("/user/feedback", user.FeedBack)
+	app.Get("/user/feedbacks", user.GetFeedBacks)
+	app.Get("/user/feedback/{id}", user.GetFeedBack)
 	app.Get("/user/ecard", ecard.Get)
 	app.Post("/user/ecard", ecard.Update)
 	app.Post("/user/msg_id", user.MsgID)

@@ -1,7 +1,10 @@
 package github
 
-import "testing"
+import (
+	"log"
+	"testing"
+)
 
 func Test_test(t *testing.T) {
-	test()
+	log.Println(client.Issues.Get(ctx, "mohuishou", "scuplus-wechat", 1))
 }
