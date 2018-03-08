@@ -11,7 +11,7 @@ var RedisPool *redis.Pool
 
 // Init 初始化缓存
 // 目前使用redis作为底层
-func Init() {
+func init() {
 	RedisPool = &redis.Pool{
 		MaxIdle:   20,
 		MaxActive: 100, // max number of connections

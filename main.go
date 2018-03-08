@@ -3,8 +3,6 @@ package main
 import (
 	"os"
 
-	"github.com/mohuishou/scuplus-go/cache"
-
 	"github.com/betacraft/yaag/irisyaag"
 	"github.com/betacraft/yaag/yaag"
 
@@ -28,8 +26,6 @@ func main() {
 		})
 		app.Use(irisyaag.New()) // <- IMPORTANT, register the middleware.
 	}
-
-	cache.Init()
 
 	// 注册中间件
 	middleware.Register(app)
