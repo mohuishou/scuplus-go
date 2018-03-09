@@ -32,7 +32,7 @@ func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 	data := map[string]interface{}{
 		"touser":      wechatUser.Openid,
 		"template_id": config.Get().Wechat.TemplateGrade,
-		"page":        "/pages/grade",
+		"page":        "pages/grade",
 		"form_id":     msgID,
 		"data": map[string]interface{}{
 			"keyword1": map[string]interface{}{
@@ -67,7 +67,7 @@ func NotifyBook(uid uint, bookName, end string, day int64) error {
 	data := map[string]interface{}{
 		"touser":      wechatUser.Openid,
 		"template_id": config.Get().Wechat.TemplateBook,
-		"page":        "/pages/library/loan",
+		"page":        "pages/library/loan",
 		"form_id":     msgID,
 		"data": map[string]interface{}{
 			"keyword1": map[string]interface{}{
@@ -99,7 +99,7 @@ func NotifyExam(uid uint, courseName, date, time, address, site, courseType stri
 	data := map[string]interface{}{
 		"touser":      wechatUser.Openid,
 		"template_id": config.Get().Wechat.TemplateExam,
-		"page":        "/pages/exam",
+		"page":        "pages/exam",
 		"form_id":     msgID,
 		"data": map[string]interface{}{
 			"keyword1": map[string]interface{}{
