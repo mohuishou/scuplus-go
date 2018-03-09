@@ -8,6 +8,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api/jwc"
 	"github.com/mohuishou/scuplus-go/api/library"
 	"github.com/mohuishou/scuplus-go/api/user"
+	"github.com/mohuishou/scuplus-go/api/wechat"
 )
 
 // Routes 路由
@@ -34,5 +35,6 @@ func Routes(app *iris.Application) {
 	app.Post("/library/search", library.Search)
 	app.Get("/library/books", library.GetBook)
 	app.Post("/library/loan", library.Loan)
+	app.Get("/wechat/qcode", wechat.GetQCode)
 
 }
