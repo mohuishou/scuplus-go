@@ -43,19 +43,12 @@ func GetDetails(ctx iris.Context) {
 	err := scope.Error
 
 	if err != nil {
-		ctx.JSON(map[string]interface{}{
-			"status":  50001,
-			"message": "获取信息错误",
-		})
+		api.Error(ctx, 50001, "获取信息错误", nil)
 		return
 	}
-	ctx.JSON(map[string]interface{}{
-		"status":  0,
-		"message": "获取成功",
-		"data": map[string]interface{}{
-			"page": params.Page,
-			"data": details,
-		},
+	api.Success(ctx, "文章列表获取成功！", map[string]interface{}{
+		"page": params.Page,
+		"data": details,
 	})
 }
 
