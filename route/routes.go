@@ -36,5 +36,7 @@ func Routes(app *iris.Application) {
 	app.Get("/library/books", library.GetBook)
 	app.Post("/library/loan", library.Loan)
 	app.Get("/wechat/qcode", wechat.GetQCode)
+	app.Get("/term", api.GetTerm)
+	app.Get("/term/events", api.GetTermEvents)
 
 }
