@@ -28,10 +28,11 @@ func init() {
 
 	// Register tasks
 	t := map[string]interface{}{
-		"update_all":   tasks.UpdateAll,
-		"notify_grade": tasks.NotifyGrade,
-		"notify_book":  tasks.NotifyBook,
-		"notify_exam":  tasks.NotifyExam,
+		"update_all":      tasks.UpdateAll,
+		"notify_grade":    tasks.NotifyGrade,
+		"notify_book":     tasks.NotifyBook,
+		"notify_exam":     tasks.NotifyExam,
+		"notify_feedback": tasks.NotifyFeedback,
 	}
 
 	if err = Server.RegisterTasks(t); err != nil {

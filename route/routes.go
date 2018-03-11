@@ -38,5 +38,5 @@ func Routes(app *iris.Application) {
 	app.Get("/wechat/qcode", wechat.GetQCode)
 	app.Get("/term", api.GetTerm)
 	app.Get("/term/events", api.GetTermEvents)
-
+	app.Post("/webhook", api.WebHook)
 }

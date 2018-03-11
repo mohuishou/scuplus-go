@@ -2,6 +2,15 @@ package github
 
 import (
 	"context"
+	"log"
+	"net/http"
+	"strings"
+
+	"github.com/mohuishou/scuplus-go/job"
+
+	"github.com/RichardKnop/machinery/v1/tasks"
+
+	"github.com/mohuishou/scuplus-go/model"
 
 	"github.com/google/go-github/github"
 	"github.com/mohuishou/scuplus-go/config"
@@ -21,6 +30,66 @@ func init() {
 	tc := oauth2.NewClient(ctx, ts)
 
 	client = github.NewClient(tc)
+}
+
+func WebHook(r *http.Request) error {
+	payload, err := github.ValidatePayload(r, []byte(config.Get().Github.WebhookSecret))
+	if err != nil {
+		log.Println("github webhook err:", err)
+		return err
+	}
+
+	event, err := github.ParseWebHook(github.WebHookType(r), payload)
+	if err != nil {
+		log.Println("github webhook err:", err)
+		return err
+	}
+
+	switch event := event.(type) {
+	case *github.IssueCommentEvent:
+		// 判断是否为用户的评论，仅通知管理员的评论
+		content := event.GetComment().GetBody()
+		if strings.Contains(content, "-$user$-") {
+			return nil
+		}
+		// 给用户发送通知
+		sign := &tasks.Signature{
+			Name: "notify_feedback",
+			Args: []tasks.Arg{
+				{
+					Type:  "int",
+					Value: event.GetIssue().GetNumber(),
+				},
+				{
+					Type:  "string",
+					Value: event.GetComment().GetBody(),
+				},
+			},
+		}
+		_, err := job.Server.SendTask(sign)
+		if err != nil {
+			log.Println("notify user feedback", err)
+		}
+	case *github.IssuesEvent:
+		// 更新tags & stat
+		issue := event.GetIssue()
+		tags := ""
+		for i, l := range issue.Labels {
+			tags = tags + "," + l.GetName()
+			if i == 0 {
+				tags = l.GetName()
+			}
+		}
+		model.UpdateFeedBack(issue.GetNumber(), issue.GetState(), tags)
+	}
+	return nil
+}
+
+// Comment 评论
+func Comment(id int, content string) error {
+	comment := github.IssueComment{Body: &content}
+	_, _, err := client.Issues.CreateComment(ctx, config.Get().Github.OwnerUser, config.Get().Github.Repo, id, &comment)
+	return err
 }
 
 // GetIssue 获取指定id的issue
