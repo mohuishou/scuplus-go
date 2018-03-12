@@ -73,6 +73,8 @@ func FeedBack(ctx iris.Context) {
 		UserID: uid,
 		Number: *issue.Number,
 		Title:  param.Title,
+		Stat:   "open",
+		Tags:   param.Label + ",用户反馈",
 	}).Error; err != nil {
 		api.Error(ctx, 50003, "反馈失败", err.Error())
 		return
