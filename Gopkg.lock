@@ -96,7 +96,7 @@
     "service/sqs/sqsiface",
     "service/sts"
   ]
-  revision = "99e4f37f2b87e2fd934346c6423a0fad945fa69a"
+  revision = "d856824058f17a35c61cabdfb1c40559ce070cd9"
 
 [[projects]]
   branch = "master"
@@ -135,8 +135,8 @@
 [[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
-  revision = "dbeaa9332f19a944acb5736b4456cfcc02140e29"
-  version = "v3.1.0"
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
 
 [[projects]]
   branch = "master"
@@ -171,8 +171,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a"
-  version = "v1.32.0"
+  revision = "6333e38ac20b8949a8dd68baa3650f4dee8f39f0"
+  version = "v1.33.0"
 
 [[projects]]
   name = "github.com/go-playground/locales"
@@ -218,7 +218,7 @@
     "debug",
     "storage"
   ]
-  revision = "724776441eece1622969e1f57abe13f57d70572d"
+  revision = "9e84f1c20874748ee93a85ebb6839af2a14dbe41"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -269,7 +269,7 @@
   branch = "master"
   name = "github.com/jinzhu/inflection"
   packages = ["."]
-  revision = "1c35d901db3da928c72a72d8458480cc9ade058f"
+  revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
   name = "github.com/jmespath/go-jmespath"
@@ -298,7 +298,7 @@
   branch = "master"
   name = "github.com/kataras/golog"
   packages = ["."]
-  revision = "85424b54aeb661d802fad5c305f0e4406a89ade2"
+  revision = "dd676348ce75fa471fbbcd1bbbd131d00179756a"
 
 [[projects]]
   name = "github.com/kataras/iris"
@@ -330,8 +330,8 @@
     "middleware/recover",
     "view"
   ]
-  revision = "cfd33bc7cdc077c11e7da911469321f2e54e3847"
-  version = "v10.2.1"
+  revision = "0c841013385c284695f2336b672101168d748480"
+  version = "v10.3.0"
 
 [[projects]]
   branch = "master"
@@ -356,7 +356,7 @@
   branch = "master"
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
-  revision = "1f94cfab3dcc47159a6dcb83588baa3d8260e78a"
+  revision = "b2c5c876e2659d9060d82e9b8494150d53854cc4"
 
 [[projects]]
   name = "github.com/kennygrant/sanitize"
@@ -434,7 +434,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "9a51c255dab401d91ce70e056c7e98b4ad10c44f"
+  revision = "bb336ad0e0ab9ac912168965ea470574e0dec5a3"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
@@ -486,7 +486,7 @@
   branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
-  revision = "fc7fda2371f5327ad39211e09482845b8734cc72"
+  revision = "d27ae102b8892a98ca4edb74539436af62577379"
 
 [[projects]]
   branch = "master"
@@ -501,7 +501,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "91a49db82a88618983a78a06c1cbd4e00ab749ab"
+  revision = "c7dcf104e3a7a1417abc0230cb0d5240d764159d"
 
 [[projects]]
   branch = "master"
@@ -513,7 +513,7 @@
     "html/atom",
     "html/charset"
   ]
-  revision = "d25186b37f34ebdbbea8f488ef055638dfab272d"
+  revision = "ae89d30ce0c63142b652837da33d782e2b0a9b25"
 
 [[projects]]
   branch = "master"
@@ -528,7 +528,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
+  revision = "7dca6fe1f43775aa6d1334576870ff63f978f539"
 
 [[projects]]
   name = "golang.org/x/text"
