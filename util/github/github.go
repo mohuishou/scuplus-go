@@ -47,8 +47,8 @@ func WebHook(r *http.Request) error {
 	switch event := event.(type) {
 	case *github.IssueCommentEvent:
 		// 判断是否为用户的评论，仅通知管理员的评论
-
-		if event.GetSender().GetName() != "mohuishou" {
+		log.Println("webhook 收到反馈评论信息")
+		if event.GetSender().GetLogin() != "mohuishou" {
 			return nil
 		}
 		// 给用户发送通知
@@ -70,6 +70,7 @@ func WebHook(r *http.Request) error {
 			log.Println("notify user feedback", err)
 		}
 	case *github.IssuesEvent:
+		log.Println("webhook 收到issue信息")
 		// 更新tags & stat
 		issue := event.GetIssue()
 		tags := ""
