@@ -126,6 +126,48 @@ func NotifyExam(uid uint, courseName, date, time, address, site, courseType stri
 	return notify(uid, data)
 }
 
+func NotifyFeedback(feedbackNumber int, content string) error {
+	// 获取反馈信息
+	feedback := model.Feedback{}
+	err := model.DB().Where("number = ?", feedbackNumber).Find(&feedback).Error
+	if err != nil {
+		return err
+	}
+	uid := feedback.UserID
+
+	// 获取模板id
+	msgID := msgid.Get(uid)
+	if msgID == "" {
+		return errors.New("没有模板id")
+	}
+	// 获取用户openid
+	wechatUser := model.Wechat{}
+	model.DB().Where("user_id = ?", uid).Find(&wechatUser)
+
+	// 构造请求参数
+	data := map[string]interface{}{
+		"touser":      wechatUser.Openid,
+		"template_id": config.Get().Wechat.TemplateFeedback,
+		"page":        fmt.Sprintf("pages/my/feedbackDetail?id=%d", feedback.Number),
+		"form_id":     msgID,
+		"data": map[string]interface{}{
+			"keyword1": map[string]interface{}{
+				"value": content,
+			},
+			"keyword2": map[string]interface{}{
+				"value": feedback.Title,
+			},
+			"keyword3": map[string]interface{}{
+				"value": feedback.Stat,
+			},
+			"keyword4": map[string]interface{}{
+				"value": feedback.CreatedAt.Format("2006-01-02 15:04"),
+			},
+		},
+	}
+	return notify(uid, data)
+}
+
 func notify(uid uint, data map[string]interface{}) error {
 
 	// 获取access token

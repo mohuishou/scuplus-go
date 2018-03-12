@@ -54,6 +54,8 @@ func autoMigrate() {
 		&LibraryBook{},
 		&Exam{},
 		&Ecard{},
+		&Term{},
+		&TermEvent{},
 	)
 }
 

@@ -25,18 +25,20 @@ type CourseTask struct {
 
 // Wechat 微信配置
 type Wechat struct {
-	Appid         string `toml:"appid"`
-	Secret        string `toml:"secret"`
-	TemplateGrade string `toml:"template_grade"`
-	TemplateBook  string `toml:"template_book"`
-	TemplateExam  string `toml:"template_exam"`
+	Appid            string `toml:"appid"`
+	Secret           string `toml:"secret"`
+	TemplateGrade    string `toml:"template_grade"`
+	TemplateBook     string `toml:"template_book"`
+	TemplateExam     string `toml:"template_exam"`
+	TemplateFeedback string `toml:"template_feedback"`
 }
 
 // Github 配置文件
 type Github struct {
-	AccessToken string `toml:"access_token"`
-	Repo        string `toml:"repo"`
-	OwnerUser   string `toml:"owner_user"`
+	AccessToken   string `toml:"access_token"`
+	Repo          string `toml:"repo"`
+	OwnerUser     string `toml:"owner_user"`
+	WebhookSecret string `toml:"webhook_secret"`
 }
 
 // Redis redis配置

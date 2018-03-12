@@ -81,11 +81,32 @@ func FeedBack(ctx iris.Context) {
 	api.Success(ctx, "反馈成功", nil)
 }
 
+// FeedBackComment 评论
+func FeedBackComment(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	content := ctx.FormValue("content")
+	if id == 0 || content == "" || err != nil {
+		api.Error(ctx, 50400, "参数错误", err)
+		return
+	}
+	err = github.Comment(id, content)
+	if err != nil {
+		api.Error(ctx, 50005, "评论错误", err)
+		return
+	}
+	api.Success(ctx, "评论成功！", nil)
+}
+
 // GetFeedBacks 获取用户的所有反馈信息
 func GetFeedBacks(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
+	scope := model.DB().Table("feedbacks")
+	isAll := ctx.URLParam("is_all")
+	if isAll == "" {
+		scope = scope.Where("user_id = ?", uid)
+	}
 	feedbacks := []model.Feedback{}
-	model.DB().Table("feedbacks").Where("user_id = ?", uid).Order("id desc").Find(&feedbacks)
+	scope.Order("id desc").Find(&feedbacks)
 	api.Success(ctx, "反馈列表获取成功！", feedbacks)
 }
 
