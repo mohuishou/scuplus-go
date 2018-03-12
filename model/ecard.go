@@ -19,7 +19,7 @@ type Ecard struct {
 
 func convertEcard(tran ecard.Transaction) Ecard {
 	return Ecard{
-		TransTime: tran.Time / 1000,
+		TransTime: tran.Time.Unix(),
 		Addr:      tran.Addr,
 		Balance:   tran.Balance,
 		Money:     tran.Money,
@@ -45,8 +45,8 @@ func UpdateEcard(uid uint) error {
 
 	if lastTrans.ID != 0 {
 		// 推后一天
-		unix := (lastTrans.TransTime + (3600 * 24))
-		start = time.Unix(unix, unix)
+		u := lastTrans.TransTime + (3600 * 24)
+		start = time.Unix(u, u)
 	}
 
 	// 获取一卡通信息

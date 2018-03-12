@@ -3,6 +3,7 @@ package ecard
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"sort"
 	"time"
 
@@ -11,10 +12,10 @@ import (
 
 // Transaction 交易记录
 type Transaction struct {
-	Time    int64   `json:"time"`    // 交易时间
-	Addr    string  `json:"addr"`    // 交易地点
-	Money   float64 `json:"money"`   // 交易金额
-	Balance float64 `json:"balance"` // 余额
+	Time    time.Time `json:"time"`    // 交易时间
+	Addr    string    `json:"addr"`    // 交易地点
+	Money   float64   `json:"money"`   // 交易金额
+	Balance float64   `json:"balance"` // 余额
 }
 
 // Transactions 交易数据
@@ -25,7 +26,7 @@ func (t Transactions) Len() int {
 }
 func (t Transactions) Less(i, j int) bool {
 	// 倒序排列
-	return t[i].Time > t[j].Time
+	return t[i].Time.Unix() > t[j].Time.Unix()
 }
 func (t Transactions) Swap(i, j int) {
 	t[j], t[i] = t[i], t[j]
@@ -84,10 +85,10 @@ func getTransactions(c *colly.Collector, start, end time.Time) Transactions {
 	res := struct {
 		JSONData struct {
 			PageData []struct {
-				Time    int64   `json:"smtDealDateTime"` // 交易时间
-				Addr    string  `json:"smtOrgName"`      // 交易地点
-				Money   float64 `json:"smtTransMoney"`   // 交易金额
-				Balance float64 `json:"smtOutMoney"`     // 余额
+				Time    string  `json:"smtDealDateTimeTxt"` // 交易时间
+				Addr    string  `json:"smtOrgName"`         // 交易地点
+				Money   float64 `json:"smtTransMoney"`      // 交易金额
+				Balance float64 `json:"smtOutMoney"`        // 余额
 			} `json:"pageData"`
 		} `json:"jsonData"`
 	}{}
@@ -103,8 +104,13 @@ func getTransactions(c *colly.Collector, start, end time.Time) Transactions {
 	})
 
 	for _, v := range res.JSONData.PageData {
+		t, err := time.Parse("2006-01-02 15:04:05", v.Time)
+		if err != nil {
+			log.Println("时间转换失败：", v, err)
+			continue
+		}
 		trans := Transaction{
-			Time:    v.Time,
+			Time:    t,
 			Addr:    v.Addr,
 			Money:   v.Money,
 			Balance: v.Balance,
