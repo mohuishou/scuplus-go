@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/mohuishou/scuplus-go/job"
 
@@ -48,8 +47,8 @@ func WebHook(r *http.Request) error {
 	switch event := event.(type) {
 	case *github.IssueCommentEvent:
 		// 判断是否为用户的评论，仅通知管理员的评论
-		content := event.GetComment().GetBody()
-		if strings.Contains(content, "-$user$-") {
+
+		if event.GetSender().GetName() != "mohuishou" {
 			return nil
 		}
 		// 给用户发送通知

@@ -24,6 +24,7 @@ func Routes(app *iris.Application) {
 	app.Post("/user/feedback", user.FeedBack)
 	app.Get("/user/feedbacks", user.GetFeedBacks)
 	app.Get("/user/feedback/{id}", user.GetFeedBack)
+	app.Post("/user/feedback/comment/{id}", user.FeedBackComment)
 	app.Get("/user/ecard", ecard.Get)
 	app.Post("/user/ecard", ecard.Update)
 	app.Post("/user/msg_id", user.MsgID)
