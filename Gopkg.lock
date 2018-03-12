@@ -434,7 +434,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "bb336ad0e0ab9ac912168965ea470574e0dec5a3"
+  revision = "cd0139c2954c53f107687c8732742cc75d2b878a"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
@@ -528,7 +528,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "7dca6fe1f43775aa6d1334576870ff63f978f539"
+  revision = "c28acc882ebcbfbe8ce9f0f14b9ac26ee138dd51"
 
 [[projects]]
   name = "golang.org/x/text"

@@ -33,6 +33,17 @@ func WeekParse(w string) (allWeek string) {
 			allWeek = allWeek + is + ","
 		}
 		allWeek = allWeek + s[1][0]
+	} else if len(s) > 2 {
+		start, _ := strconv.Atoi(s[0][0])
+		end, _ := strconv.Atoi(s[1][0])
+		for i := start; i < end; i++ {
+			is := strconv.Itoa(i)
+			allWeek = allWeek + is + ","
+		}
+		allWeek = allWeek + s[1][0]
+		for i := 2; i < len(s); i++ {
+			allWeek = allWeek + "," + s[i][0]
+		}
 	}
 	return allWeek
 }
