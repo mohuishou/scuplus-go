@@ -31,6 +31,10 @@ func init() {
 	client = github.NewClient(tc)
 }
 
+func Task() (*github.Client, context.Context) {
+	return client, ctx
+}
+
 func WebHook(r *http.Request) error {
 	payload, err := github.ValidatePayload(r, []byte(config.Get().Github.WebhookSecret))
 	if err != nil {
