@@ -8,5 +8,5 @@ type Detail struct {
 	Content  string `gorm:"type:text;" json:"content"`
 	URL      string `json:"url"`
 	Category string `json:"category"`
-	Tags     []Tag  `gorm:"many2many:detail_tags" json:"tags"`
+	Tags     []Tag  `gorm:"many2many:detail_tags;save_associations:false"  json:"tags"`
 }

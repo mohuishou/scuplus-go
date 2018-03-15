@@ -7,6 +7,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api/ecard"
 	"github.com/mohuishou/scuplus-go/api/jwc"
 	"github.com/mohuishou/scuplus-go/api/library"
+	"github.com/mohuishou/scuplus-go/api/spider"
 	"github.com/mohuishou/scuplus-go/api/user"
 	"github.com/mohuishou/scuplus-go/api/wechat"
 )
@@ -40,4 +41,6 @@ func Routes(app *iris.Application) {
 	app.Get("/term", api.GetTerm)
 	app.Get("/term/events", api.GetTermEvents)
 	app.Post("/webhook", api.WebHook)
+	app.Post("/spider/webhook", spider.WebHook)
+	app.Get("/spider/jwc/cookies", spider.GetJwcCookies)
 }
