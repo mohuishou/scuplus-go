@@ -14,12 +14,19 @@ type Params struct {
 	PageSize int    `form:"page_size"`
 	Category string `form:"category"`
 	TagID    uint   `form:"tag_id"`
+	TagName  string `form:"tag_name"`
 }
 
 // GetDetails 获取文章列表页
 func GetDetails(ctx iris.Context) {
 	params := Params{}
 	ctx.ReadForm(&params)
+	if params.TagName != "" {
+		t := model.Tag{}
+		model.DB().Find(&t, "name = ?", params.TagName)
+		params.TagID = t.ID
+	}
+
 	details := []model.Detail{}
 
 	scope := model.DB().Select([]string{"details.id", "title", "url", "category", "details.created_at"})
@@ -33,10 +40,7 @@ func GetDetails(ctx iris.Context) {
 		// 获取tag
 		tag := model.Tag{}
 		model.DB().Find(&tag, params.TagID)
-		scope = scope.Model(&tag).Related(&details, "Details")
-		for _, v := range details {
-			v.Tags = []model.Tag{tag}
-		}
+		scope = scope.Model(&tag).Preload("Tags").Related(&details, "Details")
 	} else {
 		scope = scope.Preload("Tags").Find(&details)
 	}
@@ -63,4 +67,11 @@ func GetDetail(ctx iris.Context) {
 	detail := model.Detail{}
 	model.DB().Preload("Tags").Find(&detail, id)
 	api.Success(ctx, "获取成功！", detail)
+}
+
+// GetTags 获取所有标签
+func GetTags(ctx iris.Context) {
+	tags := []model.Tag{}
+	model.DB().Find(&tags)
+	api.Success(ctx, "获取成功！", tags)
 }

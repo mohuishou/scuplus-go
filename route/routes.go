@@ -32,6 +32,7 @@ func Routes(app *iris.Application) {
 	app.Post("/login", api.Login)
 	app.Post("/bind", api.Bind)
 	app.Get("/details", detail.GetDetails)
+	app.Get("/detail/tags", detail.GetTags)
 	app.Get("/detail/{id}", detail.GetDetail)
 	app.Post("/classroom", api.GetClassroom)
 	app.Post("/library/search", library.Search)
