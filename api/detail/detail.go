@@ -41,7 +41,7 @@ func GetDetails(ctx iris.Context) {
 		// 获取tag
 		tag := model.Tag{}
 		model.DB().Find(&tag, params.TagID)
-		scope = scope.Where("details.created_at > ?", time.Now().Format("2006-01-02")).Order("created_at asc").Model(&tag).Preload("Tags").Related(&details, "Details")
+		scope = model.DB().Model(&tag).Where("details.created_at >= ?", time.Now().Format("2006-01-02")).Select([]string{"details.id", "title", "url", "category", "details.created_at"}).Offset((params.Page-1)*params.PageSize).Limit(params.PageSize).Preload("Tags").Related(&details, "Details")
 	} else if params.TagID != 0 {
 		// 获取tag
 		tag := model.Tag{}
