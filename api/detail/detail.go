@@ -2,6 +2,7 @@ package detail
 
 import (
 	"log"
+	"time"
 
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
@@ -36,7 +37,12 @@ func GetDetails(ctx iris.Context) {
 
 	scope = scope.Order("created_at desc").Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize)
 
-	if params.TagID != 0 {
+	if params.TagName == "就业网" || params.TagName == "宣讲会" {
+		// 获取tag
+		tag := model.Tag{}
+		model.DB().Find(&tag, params.TagID)
+		scope = scope.Where("details.created_at > ?", time.Now().Format("2006-01-02")).Order("created_at asc").Model(&tag).Preload("Tags").Related(&details, "Details")
+	} else if params.TagID != 0 {
 		// 获取tag
 		tag := model.Tag{}
 		model.DB().Find(&tag, params.TagID)
