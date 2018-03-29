@@ -13,7 +13,7 @@ import (
 func jwtMiddle(ctx iris.Context) {
 
 	// 登录页面无需验证
-	if ctx.Path() == "/login" || ctx.Path() == "/notices" || ctx.Path() == "/webhook" {
+	if skipJWT(ctx.Path()) {
 		ctx.Next()
 		return
 	}
@@ -63,6 +63,23 @@ func jwtMiddle(ctx iris.Context) {
 	ctx.Values().Set("user_id", userID)
 
 	ctx.Next()
+}
+
+// 跳过jwt的链接
+func skipJWT(path string) bool {
+	urls := []string{
+		"/login",
+		"/notices",
+		"/webhook",
+		"/spider/webhook",
+		"/spider/jwc/cookies",
+	}
+	for _, v := range urls {
+		if v == path {
+			return true
+		}
+	}
+	return false
 }
 
 // GetUserID 获取用户的id
