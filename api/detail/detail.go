@@ -41,6 +41,8 @@ func GetDetails(ctx iris.Context) {
 		tag := model.Tag{}
 		model.DB().Find(&tag, params.TagID)
 		scope = scope.Model(&tag).Preload("Tags").Related(&details, "Details")
+	} else if params.TagName == "" && params.TagID == 0 {
+		scope = scope.Not("category", "就业网").Preload("Tags").Find(&details)
 	} else {
 		scope = scope.Preload("Tags").Find(&details)
 	}
