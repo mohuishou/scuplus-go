@@ -3,8 +3,8 @@ package survey
 import (
 	"os"
 
-	"github.com/kataras/survey/core"
-	"github.com/kataras/survey/terminal"
+	"gopkg.in/AlecAivazis/survey.v1/core"
+	"gopkg.in/AlecAivazis/survey.v1/terminal"
 )
 
 /*

@@ -179,7 +179,7 @@ func (r RequestParams) GetIntUnslashed(key string) (int, error) {
 
 	}
 
-	return -1, memstore.ErrIntParse.Format(v)
+	return -1, fmt.Errorf("unable to find int for '%s'", key)
 }
 
 // Len returns the full length of the parameters.
@@ -456,39 +456,35 @@ type Context interface {
 
 	// URLParam returns true if the url parameter exists, otherwise false.
 	URLParamExists(name string) bool
-	// URLParamDefault returns the get parameter from a request, if not found then "def" is returned.
+	// URLParamDefault returns the get parameter from a request,
+	// if not found then "def" is returned.
 	URLParamDefault(name string, def string) string
-	// URLParam returns the get parameter from a request , if any.
+	// URLParam returns the get parameter from a request, if any.
 	URLParam(name string) string
-	// URLParamTrim returns the url query parameter with trailing white spaces removed from a request,
-	// returns an error if parse failed.
+	// URLParamTrim returns the url query parameter with trailing white spaces removed from a request.
 	URLParamTrim(name string) string
-	// URLParamTrim returns the escaped url query parameter from a request,
-	// returns an error if parse failed.
+	// URLParamTrim returns the escaped url query parameter from a request.
 	URLParamEscape(name string) string
-	// URLParamIntDefault returns the url query parameter as int value from a request,
-	// if not found then "def" is returned.
-	// Returns an error if parse failed.
-	URLParamIntDefault(name string, def int) (int, error)
 	// URLParamInt returns the url query parameter as int value from a request,
-	// returns an error if parse failed.
+	// returns -1 and an error if parse failed.
 	URLParamInt(name string) (int, error)
-	// URLParamInt64Default returns the url query parameter as int64 value from a request,
-	// if not found then "def" is returned.
-	// Returns an error if parse failed.
-	URLParamInt64Default(name string, def int64) (int64, error)
+	// URLParamIntDefault returns the url query parameter as int value from a request,
+	// if not found or parse failed then "def" is returned.
+	URLParamIntDefault(name string, def int) int
 	// URLParamInt64 returns the url query parameter as int64 value from a request,
-	// returns an error if parse failed.
+	// returns -1 and an error if parse failed.
 	URLParamInt64(name string) (int64, error)
-	// URLParamFloat64Default returns the url query parameter as float64 value from a request,
-	// if not found then "def" is returned.
-	// Returns an error if parse failed.
-	URLParamFloat64Default(name string, def float64) (float64, error)
+	// URLParamInt64Default returns the url query parameter as int64 value from a request,
+	// if not found or parse failed then "def" is returned.
+	URLParamInt64Default(name string, def int64) int64
 	// URLParamFloat64 returns the url query parameter as float64 value from a request,
-	// returns an error if parse failed.
+	// returns -1 and an error if parse failed.
 	URLParamFloat64(name string) (float64, error)
+	// URLParamFloat64Default returns the url query parameter as float64 value from a request,
+	// if not found or parse failed then "def" is returned.
+	URLParamFloat64Default(name string, def float64) float64
 	// URLParamBool returns the url query parameter as boolean value from a request,
-	// returns an error if parse failed.
+	// returns an error if parse failed or not found.
 	URLParamBool(name string) (bool, error)
 	// URLParams returns a map of GET query parameters separated by comma if more than one
 	// it returns an empty map if nothing found.
@@ -522,36 +518,36 @@ type Context interface {
 	// PostValueTrim returns the parsed form data from POST, PATCH,
 	// or PUT body parameters based on a "name",  without trailing spaces.
 	PostValueTrim(name string) string
-	// PostValueIntDefault returns the parsed form data from POST, PATCH,
-	// or PUT body parameters based on a "name", as int.
-	//
-	// If not found returns the "def".
-	PostValueIntDefault(name string, def int) (int, error)
 	// PostValueInt returns the parsed form data from POST, PATCH,
 	// or PUT body parameters based on a "name", as int.
 	//
-	// If not found returns 0.
+	// If not found returns -1 and a non-nil error.
 	PostValueInt(name string) (int, error)
-	// PostValueInt64Default returns the parsed form data from POST, PATCH,
-	// or PUT body parameters based on a "name", as int64.
+	// PostValueIntDefault returns the parsed form data from POST, PATCH,
+	// or PUT body parameters based on a "name", as int.
 	//
-	// If not found returns the "def".
-	PostValueInt64Default(name string, def int64) (int64, error)
+	// If not found returns or parse errors the "def".
+	PostValueIntDefault(name string, def int) int
 	// PostValueInt64 returns the parsed form data from POST, PATCH,
 	// or PUT body parameters based on a "name", as float64.
 	//
-	// If not found returns 0.0.
+	// If not found returns -1 and a no-nil error.
 	PostValueInt64(name string) (int64, error)
+	// PostValueInt64Default returns the parsed form data from POST, PATCH,
+	// or PUT body parameters based on a "name", as int64.
+	//
+	// If not found or parse errors returns the "def".
+	PostValueInt64Default(name string, def int64) int64
 	// PostValueInt64Default returns the parsed form data from POST, PATCH,
 	// or PUT body parameters based on a "name", as float64.
 	//
-	// If not found returns the "def".
-	PostValueFloat64Default(name string, def float64) (float64, error)
-	/// PostValueInt64Default returns the parsed form data from POST, PATCH,
+	// If not found returns -1 and a non-nil error.
+	PostValueFloat64(name string) (float64, error)
+	// PostValueInt64Default returns the parsed form data from POST, PATCH,
 	// or PUT body parameters based on a "name", as float64.
 	//
-	// If not found returns 0.0.
-	PostValueFloat64(name string) (float64, error)
+	// If not found or parse errors returns the "def".
+	PostValueFloat64Default(name string, def float64) float64
 	// PostValueInt64Default returns the parsed form data from POST, PATCH,
 	// or PUT body parameters based on a "name", as bool.
 	//
@@ -976,35 +972,6 @@ func Do(ctx Context, handlers Handlers) {
 var LimitRequestBodySize = func(maxRequestBodySizeBytes int64) Handler {
 	return func(ctx Context) {
 		ctx.SetMaxRequestBodySize(maxRequestBodySizeBytes)
-		ctx.Next()
-	}
-}
-
-// Cache304 sends a `StatusNotModified` (304) whenever
-// the "If-Modified-Since" request header (time) is before the
-// time.Now() + expiresEvery (always compared to their UTC values).
-// Use this `context#Cache304` instead of the "github.com/kataras/iris/cache" or iris.Cache
-// for better performance.
-// Clients that are compatible with the http RCF (all browsers are and tools like postman)
-// will handle the caching.
-// The only disadvantage of using that instead of server-side caching
-// is that this method will send a 304 status code instead of 200,
-// So, if you use it side by side with other micro services
-// you have to check for that status code as well for a valid response.
-//
-// Developers are free to extend this method's behavior
-// by watching system directories changes manually and use of the `ctx.WriteWithExpiration`
-// with a "modtime" based on the file modified date,
-// simillary to the `StaticWeb`(StaticWeb sends an OK(200) and browser disk caching instead of 304).
-var Cache304 = func(expiresEvery time.Duration) Handler {
-	return func(ctx Context) {
-		now := time.Now()
-		if modified, err := ctx.CheckIfModifiedSince(now.Add(-expiresEvery)); !modified && err == nil {
-			ctx.WriteNotModified()
-			return
-		}
-
-		ctx.SetLastModified(now)
 		ctx.Next()
 	}
 }
@@ -1602,8 +1569,6 @@ func (ctx *context) Header(name string, value string) {
 	ctx.writer.Header().Add(name, value)
 }
 
-const contentTypeHeaderKey = "Content-Type"
-
 // ContentType sets the response writer's header key "Content-Type" to the 'cType'.
 func (ctx *context) ContentType(cType string) {
 	if cType == "" {
@@ -1623,13 +1588,13 @@ func (ctx *context) ContentType(cType string) {
 		}
 	}
 
-	ctx.writer.Header().Set(contentTypeHeaderKey, cType)
+	ctx.writer.Header().Set(ContentTypeHeaderKey, cType)
 }
 
 // GetContentType returns the response writer's header value of "Content-Type"
 // which may, setted before with the 'ContentType'.
 func (ctx *context) GetContentType() string {
-	return ctx.writer.Header().Get(contentTypeHeaderKey)
+	return ctx.writer.Header().Get(ContentTypeHeaderKey)
 }
 
 // StatusCode sets the status code header to the response.
@@ -1672,79 +1637,103 @@ func (ctx *context) URLParamExists(name string) bool {
 
 // URLParamDefault returns the get parameter from a request, if not found then "def" is returned.
 func (ctx *context) URLParamDefault(name string, def string) string {
-	v := ctx.request.URL.Query().Get(name)
-	if v == "" {
-		return def
+	if v := ctx.request.URL.Query().Get(name); v != "" {
+		return v
 	}
-	return v
+
+	return def
 }
 
-// URLParam returns the get parameter from a request , if any.
+// URLParam returns the get parameter from a request, if any.
 func (ctx *context) URLParam(name string) string {
 	return ctx.URLParamDefault(name, "")
 }
 
-// URLParamTrim returns the url query parameter with trailing white spaces removed from a request,
-// returns an error if parse failed.
+// URLParamTrim returns the url query parameter with trailing white spaces removed from a request.
 func (ctx *context) URLParamTrim(name string) string {
 	return strings.TrimSpace(ctx.URLParam(name))
 }
 
-// URLParamTrim returns the escaped url query parameter from a request,
-// returns an error if parse failed.
+// URLParamTrim returns the escaped url query parameter from a request.
 func (ctx *context) URLParamEscape(name string) string {
 	return DecodeQuery(ctx.URLParam(name))
 }
 
-// URLParamIntDefault returns the url query parameter as int value from a request,
-// if not found then "def" is returned.
-// Returns an error if parse failed.
-func (ctx *context) URLParamIntDefault(name string, def int) (int, error) {
-	v := ctx.URLParam(name)
-	if v == "" {
-		return def, nil
-	}
-	return strconv.Atoi(v)
-}
+var errURLParamNotFound = errors.New("url param '%s' does not exist")
 
 // URLParamInt returns the url query parameter as int value from a request,
-// returns an error if parse failed.
+// returns -1 and an error if parse failed or not found.
 func (ctx *context) URLParamInt(name string) (int, error) {
-	return ctx.URLParamIntDefault(name, 0)
+	if v := ctx.URLParam(name); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil {
+			return -1, err
+		}
+		return n, nil
+	}
+
+	return -1, errURLParamNotFound.Format(name)
 }
 
-// URLParamInt64Default returns the url query parameter as int64 value from a request,
-// if not found then "def" is returned.
-// Returns an error if parse failed.
-func (ctx *context) URLParamInt64Default(name string, def int64) (int64, error) {
-	v := ctx.URLParam(name)
-	if v == "" {
-		return def, nil
+// URLParamIntDefault returns the url query parameter as int value from a request,
+// if not found or parse failed then "def" is returned.
+func (ctx *context) URLParamIntDefault(name string, def int) int {
+	v, err := ctx.URLParamInt(name)
+	if err != nil {
+		return def
 	}
-	return strconv.ParseInt(v, 10, 64)
+
+	return v
 }
 
 // URLParamInt64 returns the url query parameter as int64 value from a request,
-// returns an error if parse failed.
+// returns -1 and an error if parse failed or not found.
 func (ctx *context) URLParamInt64(name string) (int64, error) {
-	return ctx.URLParamInt64Default(name, 0.0)
+	if v := ctx.URLParam(name); v != "" {
+		n, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return -1, err
+		}
+		return n, nil
+	}
+
+	return -1, errURLParamNotFound.Format(name)
 }
 
-// URLParamFloat64Default returns the url query parameter as float64 value from a request,
-// if not found then "def" is returned.
-// Returns an error if parse failed.
-func (ctx *context) URLParamFloat64Default(name string, def float64) (float64, error) {
-	v := ctx.URLParam(name)
-	if v == "" {
-		return def, nil
+// URLParamInt64Default returns the url query parameter as int64 value from a request,
+// if not found or parse failed then "def" is returned.
+func (ctx *context) URLParamInt64Default(name string, def int64) int64 {
+	v, err := ctx.URLParamInt64(name)
+	if err != nil {
+		return def
 	}
-	return strconv.ParseFloat(v, 64)
+
+	return v
 }
 
 // URLParamFloat64 returns the url query parameter as float64 value from a request,
-// returns an error if parse failed.
+// returns an error and -1 if parse failed.
 func (ctx *context) URLParamFloat64(name string) (float64, error) {
-	return ctx.URLParamFloat64Default(name, 0.0)
+	if v := ctx.URLParam(name); v != "" {
+		n, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return -1, err
+		}
+		return n, nil
+	}
+
+	return -1, errURLParamNotFound.Format(name)
+}
+
+// URLParamFloat64Default returns the url query parameter as float64 value from a request,
+// if not found or parse failed then "def" is returned.
+func (ctx *context) URLParamFloat64Default(name string, def float64) float64 {
+	v, err := ctx.URLParamFloat64(name)
+	if err != nil {
+		return def
+	}
+
+	return v
 }
 
 // URLParamBool returns the url query parameter as boolean value from a request,
@@ -1867,54 +1856,64 @@ func (ctx *context) PostValueTrim(name string) string {
 	return strings.TrimSpace(ctx.PostValue(name))
 }
 
-// PostValueIntDefault returns the parsed form data from POST, PATCH,
-// or PUT body parameters based on a "name", as int.
-//
-// If not found returns the "def".
-func (ctx *context) PostValueIntDefault(name string, def int) (int, error) {
-	v := ctx.PostValue(name)
-	if v == "" {
-		return def, nil
-	}
-	return strconv.Atoi(v)
-}
+var errUnableToFindPostValue = errors.New("unable to find post value '%s'")
 
 // PostValueInt returns the parsed form data from POST, PATCH,
 // or PUT body parameters based on a "name", as int.
 //
-// If not found returns 0.
+// If not found returns -1 and a non-nil error.
 func (ctx *context) PostValueInt(name string) (int, error) {
-	return ctx.PostValueIntDefault(name, 0)
-}
-
-// PostValueInt64Default returns the parsed form data from POST, PATCH,
-// or PUT body parameters based on a "name", as int64.
-//
-// If not found returns the "def".
-func (ctx *context) PostValueInt64Default(name string, def int64) (int64, error) {
 	v := ctx.PostValue(name)
 	if v == "" {
-		return def, nil
+		return -1, errUnableToFindPostValue.Format(name)
 	}
-	return strconv.ParseInt(v, 10, 64)
+	return strconv.Atoi(v)
+}
+
+// PostValueIntDefault returns the parsed form data from POST, PATCH,
+// or PUT body parameters based on a "name", as int.
+//
+// If not found or parse errors returns the "def".
+func (ctx *context) PostValueIntDefault(name string, def int) int {
+	if v, err := ctx.PostValueInt(name); err == nil {
+		return v
+	}
+
+	return def
 }
 
 // PostValueInt64 returns the parsed form data from POST, PATCH,
 // or PUT body parameters based on a "name", as float64.
 //
-// If not found returns 0.0.
+// If not found returns -1 and a non-nil error.
 func (ctx *context) PostValueInt64(name string) (int64, error) {
-	return ctx.PostValueInt64Default(name, 0.0)
+	v := ctx.PostValue(name)
+	if v == "" {
+		return -1, errUnableToFindPostValue.Format(name)
+	}
+	return strconv.ParseInt(v, 10, 64)
+}
+
+// PostValueInt64Default returns the parsed form data from POST, PATCH,
+// or PUT body parameters based on a "name", as int64.
+//
+// If not found or parse errors returns the "def".
+func (ctx *context) PostValueInt64Default(name string, def int64) int64 {
+	if v, err := ctx.PostValueInt64(name); err == nil {
+		return v
+	}
+
+	return def
 }
 
 // PostValueInt64Default returns the parsed form data from POST, PATCH,
 // or PUT body parameters based on a "name", as float64.
 //
-// If not found returns the "def".
-func (ctx *context) PostValueFloat64Default(name string, def float64) (float64, error) {
+// If not found returns -1 and a non-nil error.
+func (ctx *context) PostValueFloat64(name string) (float64, error) {
 	v := ctx.PostValue(name)
 	if v == "" {
-		return def, nil
+		return -1, errUnableToFindPostValue.Format(name)
 	}
 	return strconv.ParseFloat(v, 64)
 }
@@ -1922,9 +1921,13 @@ func (ctx *context) PostValueFloat64Default(name string, def float64) (float64, 
 // PostValueInt64Default returns the parsed form data from POST, PATCH,
 // or PUT body parameters based on a "name", as float64.
 //
-// If not found returns 0.0.
-func (ctx *context) PostValueFloat64(name string) (float64, error) {
-	return ctx.PostValueFloat64Default(name, 0.0)
+// If not found or parse errors returns the "def".
+func (ctx *context) PostValueFloat64Default(name string, def float64) float64 {
+	if v, err := ctx.PostValueFloat64(name); err == nil {
+		return v
+	}
+
+	return def
 }
 
 // PostValueInt64Default returns the parsed form data from POST, PATCH,
@@ -1932,7 +1935,12 @@ func (ctx *context) PostValueFloat64(name string) (float64, error) {
 //
 // If not found or value is false, then it returns false, otherwise true.
 func (ctx *context) PostValueBool(name string) (bool, error) {
-	return strconv.ParseBool(ctx.PostValue(name))
+	v := ctx.PostValue(name)
+	if v == "" {
+		return false, errUnableToFindPostValue.Format(name)
+	}
+
+	return strconv.ParseBool(v)
 }
 
 // PostValues returns all the parsed form data from POST, PATCH,
@@ -2198,18 +2206,31 @@ func (ctx *context) WriteString(body string) (n int, err error) {
 	return ctx.writer.WriteString(body)
 }
 
-var (
-	// StaticCacheDuration expiration duration for INACTIVE file handlers, it's the only one global configuration
-	// which can be changed.
-	StaticCacheDuration = 20 * time.Second
+const (
+	// ContentTypeHeaderKey is the header key of "Content-Type".
+	ContentTypeHeaderKey = "Content-Type"
 
-	lastModifiedHeaderKey       = "Last-Modified"
-	ifModifiedSinceHeaderKey    = "If-Modified-Since"
-	contentDispositionHeaderKey = "Content-Disposition"
-	cacheControlHeaderKey       = "Cache-Control"
-	contentEncodingHeaderKey    = "Content-Encoding"
-	acceptEncodingHeaderKey     = "Accept-Encoding"
-	varyHeaderKey               = "Vary"
+	// LastModifiedHeaderKey is the header key of "Last-Modified".
+	LastModifiedHeaderKey = "Last-Modified"
+	// IfModifiedSinceHeaderKey is the header key of "If-Modified-Since".
+	IfModifiedSinceHeaderKey = "If-Modified-Since"
+	// CacheControlHeaderKey is the header key of "Cache-Control".
+	CacheControlHeaderKey = "Cache-Control"
+	// ETagHeaderKey is the header key of "ETag".
+	ETagHeaderKey = "ETag"
+
+	// ContentDispositionHeaderKey is the header key of "Content-Disposition".
+	ContentDispositionHeaderKey = "Content-Disposition"
+	// ContentLengthHeaderKey is the header key of "Content-Length"
+	ContentLengthHeaderKey = "Content-Length"
+	// ContentEncodingHeaderKey is the header key of "Content-Encoding".
+	ContentEncodingHeaderKey = "Content-Encoding"
+	// GzipHeaderValue is the header value of "gzip".
+	GzipHeaderValue = "gzip"
+	// AcceptEncodingHeaderKey is the header key of "Accept-Encoding".
+	AcceptEncodingHeaderKey = "Accept-Encoding"
+	// VaryHeaderKey is the header key of "Vary".
+	VaryHeaderKey = "Vary"
 )
 
 var unixEpochTime = time.Unix(0, 0)
@@ -2250,7 +2271,7 @@ var FormatTime = func(ctx Context, t time.Time) string {
 // It's mostly internally on core/router and context packages.
 func (ctx *context) SetLastModified(modtime time.Time) {
 	if !IsZeroTime(modtime) {
-		ctx.Header(lastModifiedHeaderKey, FormatTime(ctx, modtime.UTC())) // or modtime.UTC()?
+		ctx.Header(LastModifiedHeaderKey, FormatTime(ctx, modtime.UTC())) // or modtime.UTC()?
 	}
 }
 
@@ -2272,7 +2293,7 @@ func (ctx *context) CheckIfModifiedSince(modtime time.Time) (bool, error) {
 	if method := ctx.Method(); method != http.MethodGet && method != http.MethodHead {
 		return false, errors.New("skip: method")
 	}
-	ims := ctx.GetHeader(ifModifiedSinceHeaderKey)
+	ims := ctx.GetHeader(IfModifiedSinceHeaderKey)
 	if ims == "" || IsZeroTime(modtime) {
 		return false, errors.New("skip: zero time")
 	}
@@ -2300,10 +2321,10 @@ func (ctx *context) WriteNotModified() {
 	// guiding cache updates (e.g.," Last-Modified" might be useful if the
 	// response does not have an ETag field).
 	h := ctx.ResponseWriter().Header()
-	delete(h, contentTypeHeaderKey)
-	delete(h, contentLengthHeaderKey)
-	if h.Get("Etag") != "" {
-		delete(h, lastModifiedHeaderKey)
+	delete(h, ContentTypeHeaderKey)
+	delete(h, ContentLengthHeaderKey)
+	if h.Get(ETagHeaderKey) != "" {
+		delete(h, LastModifiedHeaderKey)
 	}
 	ctx.StatusCode(http.StatusNotModified)
 }
@@ -2358,9 +2379,9 @@ func (ctx *context) StreamWriter(writer func(w io.Writer) bool) {
 
 // ClientSupportsGzip retruns true if the client supports gzip compression.
 func (ctx *context) ClientSupportsGzip() bool {
-	if h := ctx.GetHeader(acceptEncodingHeaderKey); h != "" {
+	if h := ctx.GetHeader(AcceptEncodingHeaderKey); h != "" {
 		for _, v := range strings.Split(h, ";") {
-			if strings.Contains(v, "gzip") { // we do Contains because sometimes browsers has the q=, we don't use it atm. || strings.Contains(v,"deflate"){
+			if strings.Contains(v, GzipHeaderValue) { // we do Contains because sometimes browsers has the q=, we don't use it atm. || strings.Contains(v,"deflate"){
 				return true
 			}
 		}
@@ -2895,11 +2916,6 @@ var (
 	errServeContent = errors.New("while trying to serve content to the client. Trace %s")
 )
 
-const (
-	// contentLengthHeaderKey represents the header["Content-Length"]
-	contentLengthHeaderKey = "Content-Length"
-)
-
 // ServeContent serves content, headers are autoset
 // receives three parameters, it's low-level function, instead you can use .ServeFile(string,bool)/SendFile(string,string)
 //
@@ -2915,8 +2931,7 @@ func (ctx *context) ServeContent(content io.ReadSeeker, filename string, modtime
 	ctx.SetLastModified(modtime)
 	var out io.Writer
 	if gzipCompression && ctx.ClientSupportsGzip() {
-		ctx.writer.Header().Add(varyHeaderKey, acceptEncodingHeaderKey)
-		ctx.Header(contentEncodingHeaderKey, "gzip")
+		AddGzipHeaders(ctx.writer)
 
 		gzipWriter := acquireGzipWriter(ctx.writer)
 		defer releaseGzipWriter(gzipWriter)
@@ -2955,7 +2970,7 @@ func (ctx *context) ServeFile(filename string, gzipCompression bool) error {
 //
 // Use this instead of ServeFile to 'force-download' bigger files to the client.
 func (ctx *context) SendFile(filename string, destinationName string) error {
-	ctx.writer.Header().Set(contentDispositionHeaderKey, "attachment;filename="+destinationName)
+	ctx.writer.Header().Set(ContentDispositionHeaderKey, "attachment;filename="+destinationName)
 	return ctx.ServeFile(filename, false)
 }
 
@@ -3029,7 +3044,7 @@ var maxAgeExp = regexp.MustCompile(`maxage=(\d+)`)
 // seconds as int64
 // if header not found or parse failed then it returns -1.
 func (ctx *context) MaxAge() int64 {
-	header := ctx.GetHeader(cacheControlHeaderKey)
+	header := ctx.GetHeader(CacheControlHeaderKey)
 	if header == "" {
 		return -1
 	}
@@ -3191,7 +3206,6 @@ func (ctx *context) Exec(method string, path string) {
 	req.RequestURI = path
 	req.URL.Path = path
 	req.Method = method
-	req.Host = req.Host
 
 	// execute the route from the (internal) context router
 	// this way we keep the sessions and the values

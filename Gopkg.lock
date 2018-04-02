@@ -16,8 +16,8 @@
 [[projects]]
   name = "github.com/PuerkitoBio/goquery"
   packages = ["."]
-  revision = "09540e565986583836b5fc792fe951ec5fd201dd"
-  version = "v1.3.0"
+  revision = "a86ea073017a6beddef78c8659e7224e8ca634b0"
+  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -85,18 +85,24 @@
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "internal/sdkio",
     "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
+    "service/dynamodb",
+    "service/dynamodb/dynamodbattribute",
+    "service/dynamodb/dynamodbiface",
     "service/sqs",
     "service/sqs/sqsiface",
     "service/sts"
   ]
-  revision = "d856824058f17a35c61cabdfb1c40559ce070cd9"
+  revision = "25253087ea42da08900c4c1fc34c04bdb4a97d5a"
 
 [[projects]]
   branch = "master"
@@ -107,7 +113,7 @@
     "lexer",
     "parser"
   ]
-  revision = "72acac2207479d21dd45898c2a4264246c818148"
+  revision = "b565731e1464263de0bda75f2e45d97b54b60110"
 
 [[projects]]
   branch = "master"
@@ -180,8 +186,8 @@
     ".",
     "currency"
   ]
-  revision = "e4cbcb5d0652150d40ad0646651076b6bd2be4f6"
-  version = "v0.11.2"
+  revision = "f63010822830b6fe52288ee52d5a1151088ce039"
+  version = "v0.12.1"
 
 [[projects]]
   name = "github.com/go-playground/universal-translator"
@@ -218,7 +224,7 @@
     "debug",
     "storage"
   ]
-  revision = "9e84f1c20874748ee93a85ebb6839af2a14dbe41"
+  revision = "d73266c15d1aac23078b8e5a45d69cc8f1603697"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -230,7 +236,7 @@
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "e7bb4b8ce29fb7beaf0765acda602bc516a56dd5"
+  revision = "437797734d06eec5394734a84cb5b59c82a66ee6"
 
 [[projects]]
   branch = "master"
@@ -242,7 +248,7 @@
   branch = "master"
   name = "github.com/hashicorp/go-version"
   packages = ["."]
-  revision = "4fe82ae3040f80a03d04d2cccb5606a626b8e1ee"
+  revision = "23480c0665776210b5fbbac6eaaee40e3e6a96b7"
 
 [[projects]]
   branch = "master"
@@ -286,7 +292,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "25fa392355a1247f99f8975710a2c4f0f55a081f"
+  revision = "fb4d53e4cc4fa39da388e317781b149dc09b7d94"
 
 [[projects]]
   branch = "master"
@@ -298,7 +304,7 @@
   branch = "master"
   name = "github.com/kataras/golog"
   packages = ["."]
-  revision = "dd676348ce75fa471fbbcd1bbbd131d00179756a"
+  revision = "03be101463868edc5a81f094fc68a5f6c1b5503a"
 
 [[projects]]
   name = "github.com/kataras/iris"
@@ -330,8 +336,8 @@
     "middleware/recover",
     "view"
   ]
-  revision = "0c841013385c284695f2336b672101168d748480"
-  version = "v10.3.0"
+  revision = "41b17aca9ec493f6eedf17c0e5545cf134f2d445"
+  version = "v10.5.0"
 
 [[projects]]
   branch = "master"
@@ -343,14 +349,10 @@
   revision = "825e39f34365e7db2c9fbc3692c16220e3bd7418"
 
 [[projects]]
-  branch = "master"
   name = "github.com/kataras/survey"
-  packages = [
-    ".",
-    "core",
-    "terminal"
-  ]
-  revision = "00934ae069eda15df26fa427ac393e67e239380c"
+  packages = ["."]
+  revision = "18a4dbb1d9d05349aea1a2bf9c84028c36817c10"
+  version = "v1.3.4"
 
 [[projects]]
   branch = "master"
@@ -407,7 +409,7 @@
   branch = "master"
   name = "github.com/microcosm-cc/bluemonday"
   packages = ["."]
-  revision = "542fd4642604d0d0c26112396ce5b1a9d01eee0b"
+  revision = "995366fdf961d03629cd17361bddd32745718e2c"
 
 [[projects]]
   name = "github.com/modern-go/concurrent"
@@ -434,7 +436,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "cd0139c2954c53f107687c8732742cc75d2b878a"
+  revision = "d55ae31c6b1b160156c78bdfdd422efa58c9ef41"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
@@ -486,7 +488,7 @@
   branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
-  revision = "d27ae102b8892a98ca4edb74539436af62577379"
+  revision = "8e4aba63da9fc5571e01c6a45dc809a58cbc5a68"
 
 [[projects]]
   branch = "master"
@@ -501,7 +503,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "c7dcf104e3a7a1417abc0230cb0d5240d764159d"
+  revision = "12892e8c234f4fe6f6803f052061de9057903bb2"
 
 [[projects]]
   branch = "master"
@@ -513,7 +515,7 @@
     "html/atom",
     "html/charset"
   ]
-  revision = "ae89d30ce0c63142b652837da33d782e2b0a9b25"
+  revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
 
 [[projects]]
   branch = "master"
@@ -522,13 +524,13 @@
     ".",
     "internal"
   ]
-  revision = "2f32c3ac0fa4fb807a0fcefb0b6f2468a0d99bd0"
+  revision = "fdc9e635145ae97e6c2cb777c48305600cf515cb"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "c28acc882ebcbfbe8ce9f0f14b9ac26ee138dd51"
+  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -572,10 +574,19 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "gopkg.in/AlecAivazis/survey.v1"
+  packages = [
+    "core",
+    "terminal"
+  ]
+  revision = "9d3458c219bae9653d267883634bdb5375281fd8"
+  version = "v1.5.1"
+
+[[projects]]
   name = "gopkg.in/go-playground/validator.v9"
   packages = ["."]
-  revision = "1b8c8e19cd250435025214492d9a08411d760fdd"
-  version = "v9.12.0"
+  revision = "8ce234ff024d85b3848e485decba806385d6e276"
+  version = "v9.13.0"
 
 [[projects]]
   branch = "v2"
@@ -599,7 +610,7 @@
   branch = "v2"
   name = "gopkg.in/russross/blackfriday.v2"
   packages = ["."]
-  revision = "cfdcce51965fe68951a5fa45454aa6278c3f9614"
+  revision = "c455fd41c6baf2f78fd7ff0aadc4e4b4d52698b0"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"

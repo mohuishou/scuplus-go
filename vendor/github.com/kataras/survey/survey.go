@@ -3,7 +3,7 @@ package survey
 import (
 	"errors"
 
-	"github.com/kataras/survey/core"
+	"gopkg.in/AlecAivazis/survey.v1/core"
 )
 
 // PageSize is the default maximum number of items to show in select/multiselect prompts
@@ -12,21 +12,13 @@ var PageSize = 7
 // Validator is a function passed to a Question after a user has provided a response.
 // If the function returns an error, then the user will be prompted again for another
 // response.
-type Validator func(ans interface{}) error
-
-// Transformer is a function passed to a Question after a user has provided a response.
-// The function can be used to implement a custom logic that will result to return
-// a different representation of the given answer.
-//
-// Look `TransformString`, `ToLower` `Title` and `ComposeTransformers` for more.
-type Transformer func(ans interface{}) (newAns interface{})
+type Validator func(interface{}) error
 
 // Question is the core data structure for a survey questionnaire.
 type Question struct {
-	Name      string
-	Prompt    Prompt
-	Validate  Validator
-	Transform Transformer
+	Name     string
+	Prompt   Prompt
+	Validate Validator
 }
 
 // Prompt is the primary interface for the objects that can take user input
@@ -73,7 +65,6 @@ matching name. For example:
 			Name:     "name",
 			Prompt:   &survey.Input{Message: "What is your name?"},
 			Validate: survey.Required,
-			Transform: survey.Title,
 		},
 	}
 
@@ -115,15 +106,6 @@ func Ask(qs []*Question, response interface{}) error {
 				if err != nil {
 					return err
 				}
-			}
-		}
-
-		if q.Transform != nil {
-			// check if we have a transformer available, if so
-			// then try to acquire the new representation of the
-			// answer, if the resulting answer is not nil.
-			if newAns := q.Transform(ans); newAns != nil {
-				ans = newAns
 			}
 		}
 
