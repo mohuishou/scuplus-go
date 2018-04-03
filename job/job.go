@@ -33,6 +33,7 @@ func init() {
 		"notify_book":     tasks.NotifyBook,
 		"notify_exam":     tasks.NotifyExam,
 		"notify_feedback": tasks.NotifyFeedback,
+		"update_new":      tasks.UpdateForNew,
 	}
 
 	if err = Server.RegisterTasks(t); err != nil {

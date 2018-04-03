@@ -3,6 +3,9 @@ package api
 import (
 	"log"
 
+	"github.com/RichardKnop/machinery/v1/tasks"
+	"github.com/mohuishou/scuplus-go/job"
+
 	"github.com/mohuishou/scu"
 
 	"github.com/kataras/iris"
@@ -70,6 +73,21 @@ func Bind(ctx iris.Context) {
 		log.Println("用户绑定账号失败: ", err)
 		Error(ctx, 30004, "系统错误！", nil)
 		return
+	}
+
+	// 绑定成功，异步任务获取数据信息
+	sign := &tasks.Signature{
+		Name: "update_new",
+		Args: []tasks.Arg{
+			{
+				Type:  "uint",
+				Value: uid,
+			},
+		},
+	}
+	_, err := job.Server.SendTask(sign)
+	if err != nil {
+		log.Println("cron error update all", err)
 	}
 	Success(ctx, "绑定成功！", nil)
 }

@@ -42,3 +42,12 @@ func UpdateAll(uid uint) error {
 
 	return nil
 }
+
+// UpdateForNew 新用户
+func UpdateForNew(uid uint) error {
+	err := UpdateAll(uid)
+	if err != nil {
+		return err
+	}
+	return model.UpdateSchedules(uid, "1")
+}
