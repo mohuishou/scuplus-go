@@ -89,15 +89,10 @@
     "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
-    "private/protocol/json/jsonutil",
-    "private/protocol/jsonrpc",
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
-    "service/dynamodb",
-    "service/dynamodb/dynamodbattribute",
-    "service/dynamodb/dynamodbiface",
     "service/sqs",
     "service/sqs/sqsiface",
     "service/sts"
@@ -432,11 +427,12 @@
     "jwc",
     "jwc/exam",
     "jwc/grade",
+    "jwc/info",
     "jwc/schedule",
     "jwc/util",
     "library"
   ]
-  revision = "d55ae31c6b1b160156c78bdfdd422efa58c9ef41"
+  revision = "cb9ce858d74e588f7b9c837f3c232685b0b6e7fe"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
@@ -621,6 +617,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "06230215d07f82231d71c72f664ae98f50e748351a46b49929c27177e8af4590"
+  inputs-digest = "cad77ab976deeba64a7852d078c14e8a4ce43df2808ec87ca212683aee602623"
   solver-name = "gps-cdcl"
   solver-version = 1
