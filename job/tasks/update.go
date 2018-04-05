@@ -45,9 +45,28 @@ func UpdateAll(uid uint) error {
 
 // UpdateForNew 新用户
 func UpdateForNew(uid uint) error {
-	err := UpdateAll(uid)
+	// 更新成绩
+	_, err := model.UpdateGrades(uid)
 	if err != nil {
-		return err
+		log.Println(err)
+	}
+
+	// 更新考表
+	err = model.UpdateExam(uid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// 更新借阅信息
+	_, err = model.UpdateLibraryBook(uid, 0)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// 交易流水
+	err = model.UpdateEcard(uid)
+	if err != nil {
+		log.Println(err)
 	}
 	return model.UpdateSchedules(uid, "1")
 }
