@@ -2,7 +2,6 @@ package util
 
 import (
 	"errors"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -17,35 +16,34 @@ func TeacherParse(t string) (teachers []string) {
 
 //WeekParse 上课时间解析
 func WeekParse(w string) (allWeek string) {
-	re, _ := regexp.Compile(`[1-9]\d*|单|双`)
-	s := re.FindAllStringSubmatch(w, -1)
-	if len(s) == 1 {
-		if s[0][0] == "单" {
-			return "1,3,5,7,9,11,13,15,17"
-		} else if s[0][0] == "双" {
-			return "2,4,6,8,10,12,14,16,18"
-		}
-	} else if len(s) == 2 {
-		start, _ := strconv.Atoi(s[0][0])
-		end, _ := strconv.Atoi(s[1][0])
-		for i := start; i < end; i++ {
-			is := strconv.Itoa(i)
-			allWeek = allWeek + is + ","
-		}
-		allWeek = allWeek + s[1][0]
-	} else if len(s) > 2 {
-		start, _ := strconv.Atoi(s[0][0])
-		end, _ := strconv.Atoi(s[1][0])
-		for i := start; i < end; i++ {
-			is := strconv.Itoa(i)
-			allWeek = allWeek + is + ","
-		}
-		allWeek = allWeek + s[1][0]
-		for i := 2; i < len(s); i++ {
-			allWeek = allWeek + "," + s[i][0]
+	// 判断是否是单双周
+	if strings.Contains(w, "单") {
+		return "1,3,5,7,9,11,13,15,17"
+	}
+	if strings.Contains(w, "双") {
+		return "2,4,6,8,10,12,14,16,18"
+	}
+
+	// 去除xx周上
+	w = strings.Trim(w, "周上")
+
+	// 根据逗号分割
+	strs := strings.Split(w, ",")
+	for _, s := range strs {
+		// 根据短横线分割
+		arr := strings.Split(strings.TrimSpace(s), "-")
+		if len(arr) == 1 {
+			allWeek = allWeek + arr[0] + ","
+		} else if len(arr) == 2 {
+			start, _ := strconv.Atoi(arr[0])
+			end, _ := strconv.Atoi(arr[1])
+			for i := start; i <= end; i++ {
+				is := strconv.Itoa(i)
+				allWeek = allWeek + is + ","
+			}
 		}
 	}
-	return allWeek
+	return strings.Trim(allWeek, ",")
 }
 
 // SessionParse 上课节次解析

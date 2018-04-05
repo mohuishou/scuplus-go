@@ -437,7 +437,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "c3fc2ca98405a42beb8467cbe4177957f4b7c8bf"
+  revision = "87f271d151b7477f2517ff115568da71e4ee86ef"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
