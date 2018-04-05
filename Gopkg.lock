@@ -89,15 +89,20 @@
     "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
+    "service/dynamodb",
+    "service/dynamodb/dynamodbattribute",
+    "service/dynamodb/dynamodbiface",
     "service/sqs",
     "service/sqs/sqsiface",
     "service/sts"
   ]
-  revision = "25253087ea42da08900c4c1fc34c04bdb4a97d5a"
+  revision = "aca27d26bd47540c95de6312c970f2727bd3e268"
 
 [[projects]]
   branch = "master"
@@ -172,8 +177,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "6333e38ac20b8949a8dd68baa3650f4dee8f39f0"
-  version = "v1.33.0"
+  revision = "5e9692864e22d02ac79e2fa499cffb00520b4fea"
+  version = "v1.34.0"
 
 [[projects]]
   name = "github.com/go-playground/locales"
@@ -219,7 +224,7 @@
     "debug",
     "storage"
   ]
-  revision = "d73266c15d1aac23078b8e5a45d69cc8f1603697"
+  revision = "a22e0d396c7abb406fb624397ee3d5f2e55134c0"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -231,7 +236,7 @@
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "437797734d06eec5394734a84cb5b59c82a66ee6"
+  revision = "88eb4e9dc91cb2db1bbc56c936f1ee39bbe72ba5"
 
 [[projects]]
   branch = "master"
@@ -287,7 +292,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "fb4d53e4cc4fa39da388e317781b149dc09b7d94"
+  revision = "885a41a0a6b44bdd0a4d476f83aa525ca3e453e3"
 
 [[projects]]
   branch = "master"
@@ -432,7 +437,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "cb9ce858d74e588f7b9c837f3c232685b0b6e7fe"
+  revision = "c3fc2ca98405a42beb8467cbe4177957f4b7c8bf"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"
@@ -499,7 +504,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "12892e8c234f4fe6f6803f052061de9057903bb2"
+  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
 
 [[projects]]
   branch = "master"
@@ -511,7 +516,7 @@
     "html/atom",
     "html/charset"
   ]
-  revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
+  revision = "b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e"
 
 [[projects]]
   branch = "master"
@@ -520,13 +525,13 @@
     ".",
     "internal"
   ]
-  revision = "fdc9e635145ae97e6c2cb777c48305600cf515cb"
+  revision = "921ae394b9430ed4fb549668d7b087601bd60a81"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
+  revision = "1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e"
 
 [[projects]]
   name = "golang.org/x/text"
