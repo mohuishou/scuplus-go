@@ -56,6 +56,7 @@ func autoMigrate() {
 		&Ecard{},
 		&Term{},
 		&TermEvent{},
+		&UserInfo{},
 	)
 }
 

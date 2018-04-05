@@ -91,7 +91,9 @@ type Collector struct {
 	ID uint32
 	// DetectCharset can enable character encoding detection for non-utf8 response bodies
 	// without explicit charset declaration. This feature uses https://github.com/saintfish/chardet
-	DetectCharset     bool
+	DetectCharset bool
+	// RedirectHandler allows control on how a redirect will be managed
+	RedirectHandler   func(req *http.Request, via []*http.Request) error
 	store             storage.Storage
 	debugger          debug.Debugger
 	robotsMap         map[string]*robotstxt.RobotsData
@@ -139,6 +141,11 @@ type xmlCallbackContainer struct {
 	Function XMLCallback
 }
 
+type cookieJarSerializer struct {
+	store storage.Storage
+	lock  *sync.RWMutex
+}
+
 var collectorCounter uint32
 
 var (
@@ -180,6 +187,13 @@ var envMap = map[string]func(*Collector, string){
 	},
 	"IGNORE_ROBOTSTXT": func(c *Collector, val string) {
 		c.IgnoreRobotsTxt = isYesString(val)
+	},
+	"FOLLOW_REDIRECTS": func(c *Collector, val string) {
+		if !isYesString(val) {
+			c.RedirectHandler = func(req *http.Request, via []*http.Request) error {
+				return http.ErrUseLastResponse
+			}
+		}
 	},
 	"MAX_BODY_SIZE": func(c *Collector, val string) {
 		size, err := strconv.Atoi(val)
@@ -326,7 +340,8 @@ func (c *Collector) Init() {
 	c.store.Init()
 	c.MaxBodySize = 10 * 1024 * 1024
 	c.backend = &httpBackend{}
-	c.backend.Init(c.store.GetCookieJar())
+	jar, _ := cookiejar.New(nil)
+	c.backend.Init(jar)
 	c.backend.Client.CheckRedirect = c.checkRedirectFunc()
 	c.wg = &sync.WaitGroup{}
 	c.lock = &sync.RWMutex{}
@@ -732,7 +747,7 @@ func (c *Collector) SetStorage(s storage.Storage) error {
 		return err
 	}
 	c.store = s
-	c.backend.Client.Jar = s.GetCookieJar()
+	c.backend.Client.Jar = createJar(s)
 	return nil
 }
 
@@ -957,7 +972,9 @@ func (c *Collector) Cookies(URL string) []*http.Cookie {
 func (c *Collector) Clone() *Collector {
 	return &Collector{
 		AllowedDomains:         c.AllowedDomains,
+		AllowURLRevisit:        c.AllowURLRevisit,
 		CacheDir:               c.CacheDir,
+		DetectCharset:          c.DetectCharset,
 		DisallowedDomains:      c.DisallowedDomains,
 		ID:                     atomic.AddUint32(&collectorCounter, 1),
 		IgnoreRobotsTxt:        c.IgnoreRobotsTxt,
@@ -970,8 +987,11 @@ func (c *Collector) Clone() *Collector {
 		backend:                c.backend,
 		debugger:               c.debugger,
 		Async:                  c.Async,
+		RedirectHandler:        c.RedirectHandler,
 		errorCallbacks:         make([]ErrorCallback, 0, 8),
 		htmlCallbacks:          make([]*htmlCallbackContainer, 0, 8),
+		xmlCallbacks:           make([]*xmlCallbackContainer, 0, 8),
+		scrapedCallbacks:       make([]ScrapedCallback, 0, 8),
 		lock:                   c.lock,
 		requestCallbacks:       make([]RequestCallback, 0, 8),
 		responseCallbacks:      make([]ResponseCallback, 0, 8),
@@ -984,6 +1004,10 @@ func (c *Collector) checkRedirectFunc() func(req *http.Request, via []*http.Requ
 	return func(req *http.Request, via []*http.Request) error {
 		if !c.isDomainAllowed(req.URL.Host) {
 			return fmt.Errorf("Not following redirect to %s because its not in AllowedDomains", req.URL.Host)
+		}
+
+		if c.RedirectHandler != nil {
+			return c.RedirectHandler(req, via)
 		}
 
 		// Honor golangs default of maximum of 10 redirects
@@ -1081,4 +1105,44 @@ func isYesString(s string) bool {
 		return true
 	}
 	return false
+}
+
+func createJar(s storage.Storage) http.CookieJar {
+	return &cookieJarSerializer{store: s, lock: &sync.RWMutex{}}
+}
+
+func (j *cookieJarSerializer) SetCookies(u *url.URL, cookies []*http.Cookie) {
+	j.lock.Lock()
+	defer j.lock.Unlock()
+	cookieStr := j.store.Cookies(u)
+
+	// Merge existing cookies, new cookies have precedence.
+	cnew := make([]*http.Cookie, len(cookies))
+	copy(cnew, cookies)
+	existing := storage.UnstringifyCookies(cookieStr)
+	for _, c := range existing {
+		if !storage.ContainsCookie(cnew, c.Name) {
+			cnew = append(cnew, c)
+		}
+	}
+	j.store.SetCookies(u, storage.StringifyCookies(cnew))
+}
+
+func (j *cookieJarSerializer) Cookies(u *url.URL) []*http.Cookie {
+	cookies := storage.UnstringifyCookies(j.store.Cookies(u))
+	// Filter.
+	now := time.Now()
+	cnew := make([]*http.Cookie, 0, len(cookies))
+	for _, c := range cookies {
+		// Drop expired cookies.
+		if c.RawExpires != "" && c.Expires.Before(now) {
+			continue
+		}
+		// Drop secure cookies if not over https.
+		if c.Secure && u.Scheme != "https" {
+			continue
+		}
+		cnew = append(cnew, c)
+	}
+	return cnew
 }

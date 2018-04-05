@@ -17,9 +17,71 @@
 
 **如何升级**: 打开命令行执行以下命令: `go get -u github.com/kataras/iris` 或者等待自动更新。
 
-# Sa, 10 March 2018 | v10.3.0
+# Sa, 24 March 2018 | v10.5.0
 
-This history entry is not translated yet to the Chinese language yet, please refer to the original [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#sa-10-march-2018--v1030) instead.
+This history entry is not translated yet to the Chinese language yet, please refer to the english version of the [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#sa-24-march-2018--v1050) instead.
+
+# 2018 3月14日 | v10.4.0 版本更新
+
+- 修正 `APIBuilder, Party#StaticWeb` 和 `APIBuilder, Party#StaticEmbedded` 子分组内的前缀错误
+- 保留 `iris, core/router#StaticEmbeddedHandler` 并移除 `core/router/APIBuilder#StaticEmbeddedHandler`,  (`Handler` 后缀) 这是全局性的，与 `Party` `APIBuilder` 无关。
+- 修正 路径 `{}` 中的路径清理 (我们已经在 [解释器](core/router/macro/interpreter) 级别转义了这些字符， 但是一些符号仍然被更高级别的API构建器删除) , 例如 `\\` 字符串的宏函数正则表达式内容 [927](https://github.com/kataras/iris/issues/927) by [commit e85b113476eeefffbc7823297cc63cd152ebddfd](https://github.com/kataras/iris/commit/e85b113476eeefffbc7823297cc63cd152ebddfd)
+- 同步 `golang.org/x/sys/unix`
+
+## 重要变更
+
+我们使用新工具将静态文件的速度提高了8倍, <https://github.com/kataras/bindata> 这是 go-bindata 的一个分支，对我们来说，一些不必要的东西被移除了，并且包含一些提高性能的补充。
+
+## Reqs/sec 使用 [shuLhan/go-bindata](https://github.com/shuLhan/go-bindata) 和 备选方案对比
+
+![go-bindata](https://github.com/kataras/bindata/raw/master/go-bindata-benchmark.png)
+
+## Reqs/sec 使用 [kataras/bindata](https://github.com/kataras/bindata)
+
+![bindata](https://github.com/kataras/bindata/raw/master/bindata-benchmark.png)
+
+**新增** 方法 `Party#StaticEmbeddedGzip` 与 `Party#StaticEmbedded` 参数相同. 不同处在于 **新增** `StaticEmbeddedGzip` 从 `bindata` 接收 `GzipAsset` 和 `GzipAssetNames` (go get -u github.com/kataras/bindata/cmd/bindata).
+
+你可以在同个文件夹里同时使用 `bindata` 和 `go-bindata` 工具, 第一个用于嵌入静态文件 (javascript, css, ...) 第二个用于静态编译模板!
+
+完整示例: [_examples/file-server/embedding-gziped-files-into-app/main.go](_examples/file-server/embedding-gziped-files-into-app/main.go).
+
+
+# 2018 3月10号 | v10.3.0 版本更新
+
+- 只有一项 API 更改 [Application/Context/Router#RouteExists](https://godoc.org/github.com/kataras/iris/core/router#Router.RouteExists), 将 `Context` 作为第一参数，而不是最后一个。
+
+- 修正 cors 中间件 https://github.com/iris-contrib/middleware/commit/048e2be034ed172c6754448b8a54a9c55debad46, 相关问题: https://github.com/kataras/iris/issues/922 (目前仍在等待验证).
+
+- 添加 `Context#NextOr` 和 `Context#NextOrNotFound` 方法
+
+```go
+// NextOr 检查程序链上是否有下一个处理程序，如果是，则执行它
+// 否则根据给定的处理程序设置分配给 Context 程序链，并且执行第一个控制器。
+//
+// 如果下一个处理器存在并执行，则返回true，否则返回false
+//
+// 请注意，如果没有找到下一个处理程序并且处理程序缺失，
+// 会发送 (404) 状态码到客户端，并停止执行。
+NextOr(handlers ...Handler) bool
+// NextOrNotFound 检查程序链上是否存在下一个处理程序，如果有则执行
+// 其他情况会发送 404 状态码，并停止执行。
+//
+// 如果下一个控制器存在并执行，返回 true , 其他情况 false.
+NextOrNotFound() bool
+```
+
+- 新增方法 `Party#AllowMethods` 如果在 `Handle, Get, Post...` 之前调用，则会将路由克隆到该方法.
+
+- 修复 POST 请求尾部斜杠重定向问题: https://github.com/kataras/iris/issues/921 https://github.com/kataras/iris/commit/dc589d9135295b4d080a9a91e942aacbfe5d56c5
+
+- 新增示例 通过 `iris#UnmarshalerFunc` 自定义解码， 新增 `context#ReadXML` 使用示例, [相关示例](https://github.com/kataras/iris/tree/master/_examples#how-to-read-from-contextrequest-httprequest)via https://github.com/kataras/iris/commit/78cd8e5f677fe3ff2c863c5bea7d1c161bf4c31e.
+
+- 新增自定义路由宏功能示例, 相关讨论 https://github.com/kataras/iris/issues/918, [示例代码](https://github.com/kataras/iris/blob/master/_examples/routing/dynamic-path/main.go#L144-L158), https://github.com/kataras/iris/commit/a7690c71927cbf3aa876592fab94f04cada91b72
+
+- 为 `Pongo` 新增 `AsValue()` 和 `AsSaveValue()` @neenar https://github.com/kataras/iris/pull/913
+
+- 删除 `context#UnmarshalBody` 上不必要的反射 https://github.com/kataras/iris/commit/4b9e41458b62035ea4933789c0a132c3ef2a90cc
 
 # 2018 2月15号 | v10.2.1 版本更新
 

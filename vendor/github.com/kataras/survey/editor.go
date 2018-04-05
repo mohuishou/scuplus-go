@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/kataras/survey/core"
-	"github.com/kataras/survey/terminal"
+	"gopkg.in/AlecAivazis/survey.v1/core"
+	"gopkg.in/AlecAivazis/survey.v1/terminal"
 )
 
 /*
@@ -163,6 +163,6 @@ func (e *Editor) Prompt() (interface{}, error) {
 func (e *Editor) Cleanup(val interface{}) error {
 	return e.Render(
 		EditorQuestionTemplate,
-		EditorTemplateData{Editor: *e, Answer: "<Received>", ShowAnswer: true},
+		EditorTemplateData{Editor: *e, Answer: "<Recieved>", ShowAnswer: true},
 	)
 }

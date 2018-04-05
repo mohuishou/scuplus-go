@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/mohuishou/scu/jwc/util"
@@ -82,9 +83,11 @@ func Get(c *colly.Collector) (data []Schedule) {
 
 				index++
 			}
-
-			if v, ok := td.Eq(2).Attr("rowspan"); ok && v == "2" {
-				tmpSchedule = schedule
+			rowspan, ok := td.Eq(2).Attr("rowspan")
+			if ok {
+				if span, err := strconv.Atoi(rowspan); err == nil && span > 1 {
+					tmpSchedule = schedule
+				}
 			}
 
 			//只有长度大于1，才说明这一行不是标题行

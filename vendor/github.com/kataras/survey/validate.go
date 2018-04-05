@@ -61,13 +61,13 @@ func ComposeValidators(validators ...Validator) Validator {
 	return func(val interface{}) error {
 		// execute each validator
 		for _, validator := range validators {
-			// if the answer's value is not valid
+			// if the string is not valid
 			if err := validator(val); err != nil {
 				// return the error
 				return err
 			}
 		}
-		// we passed all validators, the answer is valid
+		// we passed all validators, the string is valid
 		return nil
 	}
 }
@@ -77,14 +77,6 @@ func isZero(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Slice, reflect.Map:
 		return v.Len() == 0
-		// fixes:
-		// if confirm and `Validate: survey.Required` is used
-		// and answer is "No" (== false)
-		// then it shows "Sorry, your reply was invalid: Value is required"
-		// and it stucks there.
-		// This happens because 'false' is the zero value of a "bool" type.
-	case reflect.Bool: // another solution is just not to use the Required inside Confirms.
-		return false
 	}
 
 	// compare the types directly with more general coverage
