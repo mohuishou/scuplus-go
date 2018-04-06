@@ -102,7 +102,7 @@
     "service/sqs/sqsiface",
     "service/sts"
   ]
-  revision = "aca27d26bd47540c95de6312c970f2727bd3e268"
+  revision = "9126c903321d2b064c2d3b192b1cf352828ef3a4"
 
 [[projects]]
   branch = "master"
@@ -224,7 +224,7 @@
     "debug",
     "storage"
   ]
-  revision = "a22e0d396c7abb406fb624397ee3d5f2e55134c0"
+  revision = "679bc05d92965819d44bfd01f62be325959776e1"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -437,7 +437,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "87f271d151b7477f2517ff115568da71e4ee86ef"
+  revision = "42949d3e5103c1d116b84f5e76b0933c94342a96"
 
 [[projects]]
   name = "github.com/mohuishou/scujwc-go"

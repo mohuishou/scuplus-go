@@ -1,13 +1,12 @@
 package library
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/mohuishou/scu"
 
 	"github.com/PuerkitoBio/goquery"
 
@@ -36,28 +35,36 @@ type LoanBook struct {
 
 // NewLibrary 新建一个图书馆对象
 func NewLibrary(studentID, password string) (*Library, error) {
-	c, err := scu.NewCollector(studentID, password)
+	c := colly.NewCollector()
+	lib := &Library{c: c}
+
+	lib.URL = getURL()
+
+	if lib.URL == "" {
+		return nil, errors.New("获取url失败！")
+	}
+	loginErr := 0
+	lib.c.OnHTML("#feedbackbar", func(e *colly.HTMLElement) {
+		if strings.Contains(e.Text, "错") {
+			loginErr = 1 //账号或密码错误
+		}
+	})
+
+	// login
+	err := lib.c.Post(lib.URL, map[string]string{
+		"func":             "login-session",
+		"login_source":     "bor-info",
+		"bor_id":           studentID,
+		"bor_verification": password,
+		"bor_library":      "SCU50",
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	urlstr := ""
-	c.OnHTML("#header > a:nth-child(1)", func(e *colly.HTMLElement) {
-		urlstr = e.Attr("href")
-
-		if urlstr != "" {
-			uri, err := url.Parse(urlstr)
-			if err == nil {
-				urlstr = "http://opac.scu.edu.cn:8080" + uri.EscapedPath()
-			}
-		}
-	})
-
-	c.Visit("http://opac.scu.edu.cn:8118/ice/login_ice.jsp?type=borinfo")
-
-	lib := &Library{
-		URL: urlstr,
-		c:   c.Clone(),
+	if loginErr != 0 {
+		return nil, errors.New("账号或密码错误！")
 	}
 	return lib, nil
 }
