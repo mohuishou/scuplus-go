@@ -3,6 +3,8 @@ package api
 import (
 	"log"
 
+	"github.com/mohuishou/scu/library"
+
 	"github.com/RichardKnop/machinery/v1/tasks"
 	"github.com/mohuishou/scuplus-go/job"
 
@@ -41,8 +43,9 @@ func Login(ctx iris.Context) {
 	model.DB().Model(&user).Related(&userLibrary)
 
 	Success(ctx, "登录成功！", map[string]interface{}{
-		"token":  token,
-		"verify": user.Verify,
+		"token":          token,
+		"verify":         user.Verify,
+		"library_verify": userLibrary.Verify,
 	})
 }
 
@@ -102,37 +105,36 @@ func BindLibrary(ctx iris.Context) {
 		return
 	}
 
+	// 检查账号信息
+	_, err := library.NewLibrary(studentID, password)
+	if err != nil {
+		Error(ctx, 10401, err.Error(), nil)
+		return
+	}
+
 	// 保存图书馆账号
 	uid := middleware.GetUserID(ctx)
 	userLib := model.UserLibrary{
 		UserID:    uid,
 		StudentID: studentID,
 		Password:  password,
+		Verify:    1,
 	}
 	var oldUserLib model.UserLibrary
-
-	if model.DB().Where("user_id = ?", uid).Find(&oldUserLib).RecordNotFound() {
-		if err := model.DB().Create(&userLib).Error; err != nil {
+	tx := model.DB().Begin()
+	if tx.Where("user_id = ?", uid).Find(&oldUserLib).RecordNotFound() {
+		if err := tx.Create(&userLib).Error; err != nil {
 			Error(ctx, 10401, err.Error(), nil)
+			tx.Rollback()
 			return
 		}
 	} else {
-		if err := model.DB().Model(&oldUserLib).Updates(userLib).Error; err != nil {
+		if err := tx.Model(&oldUserLib).Updates(userLib).Error; err != nil {
 			Error(ctx, 10401, err.Error(), nil)
+			tx.Rollback()
 			return
 		}
 	}
-
-	// 更新借阅信息, 检查是否可以账号密码是否有误
-	if _, err := model.UpdateLibraryBook(uid, 0); err != nil {
-		Error(ctx, 10401, err.Error(), nil)
-		return
-	}
-
-	if err := model.DB().Model(&userLib).Update("verify", 1).Error; err != nil {
-		Error(ctx, 10401, err.Error(), nil)
-		return
-	}
-
+	tx.Commit()
 	Success(ctx, "绑定成功！", nil)
 }
