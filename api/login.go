@@ -91,3 +91,48 @@ func Bind(ctx iris.Context) {
 	}
 	Success(ctx, "绑定成功！", nil)
 }
+
+// BindLibrary 绑定图书馆账号
+func BindLibrary(ctx iris.Context) {
+	studentID := ctx.FormValue("student_id")
+	password := ctx.FormValue("password")
+
+	if studentID == "" || password == "" {
+		Error(ctx, 10400, "参数错误", nil)
+		return
+	}
+
+	// 保存图书馆账号
+	uid := middleware.GetUserID(ctx)
+	userLib := model.UserLibrary{
+		UserID:    uid,
+		StudentID: studentID,
+		Password:  password,
+	}
+	var oldUserLib model.UserLibrary
+
+	if model.DB().Where("user_id = ?", uid).Find(&oldUserLib).RecordNotFound() {
+		if err := model.DB().Create(&userLib).Error; err != nil {
+			Error(ctx, 10401, err.Error(), nil)
+			return
+		}
+	} else {
+		if err := model.DB().Model(&oldUserLib).Updates(userLib).Error; err != nil {
+			Error(ctx, 10401, err.Error(), nil)
+			return
+		}
+	}
+
+	// 更新借阅信息, 检查是否可以账号密码是否有误
+	if _, err := model.UpdateLibraryBook(uid, 0); err != nil {
+		Error(ctx, 10401, err.Error(), nil)
+		return
+	}
+
+	if err := model.DB().Model(&userLib).Update("verify", 1).Error; err != nil {
+		Error(ctx, 10401, err.Error(), nil)
+		return
+	}
+
+	Success(ctx, "绑定成功！", nil)
+}

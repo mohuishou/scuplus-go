@@ -95,9 +95,9 @@ func GetJwc(userID uint) (*colly.Collector, error) {
 
 // GetLibrary 获取图书馆实例
 func GetLibrary(userID uint) (*library.Library, error) {
-	user := User{}
-	if err := DB().Find(&user, userID).Error; err != nil {
+	userLib := UserLibrary{}
+	if err := DB().Where("user_id = ?", userID).Find(&userLib).Error; err != nil {
 		return nil, err
 	}
-	return library.NewLibrary(user.StudentID, user.Password)
+	return library.NewLibrary(userLib.StudentID, userLib.Password)
 }
