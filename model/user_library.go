@@ -18,6 +18,7 @@ type UserLibrary struct {
 
 // BeforeSave callback
 func (u *UserLibrary) BeforeSave(scope *gorm.Scope) error {
+	log.Println("lalal:", u.Password)
 	if u.Password != "" {
 		// 加密用户教务处密码
 		password, err := aes.Encrypt([]byte(u.Password))

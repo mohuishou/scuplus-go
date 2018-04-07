@@ -57,12 +57,6 @@ func UpdateForNew(uid uint) error {
 		log.Println(err)
 	}
 
-	// 更新借阅信息
-	_, err = model.UpdateLibraryBook(uid, 0)
-	if err != nil {
-		log.Println(err)
-	}
-
 	// 交易流水
 	err = model.UpdateEcard(uid)
 	if err != nil {
