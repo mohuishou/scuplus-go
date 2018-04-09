@@ -1,5 +1,0 @@
-*.exe
-main.go
-config.json
-0_test.go
-.idea
