@@ -97,7 +97,6 @@ func book() {
 					log.Println("cron error book", err)
 				}
 			}
-
 		}
 	}
 }

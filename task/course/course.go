@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"net/url"
 	"strconv"
 
@@ -17,12 +18,14 @@ import (
 func main() {
 	studentID := flag.String("u", "", "请输入用户学号")
 	password := flag.String("p", "", "请输入密码")
+	pages := flag.Int("page", 100, "请输入每页50条数据时，总页数")
 	flag.Parse()
+	log.Println(*studentID, *password)
 	c, err := jwc.Login(*studentID, *password)
 	if err != nil {
 		panic(err)
 	}
-
+	updateCourses(c, *pages)
 }
 
 // 更新课程信息
@@ -30,7 +33,7 @@ func main() {
 func updateCourses(c *colly.Collector, pageNo int) error {
 
 	params := url.Values{}
-
+	params.Set("pageSize", "50")
 	for i := 1; i <= pageNo; i++ {
 		params.Set("pageNumber", strconv.Itoa(i))
 		courses := course.Get(c, params)
@@ -104,7 +107,6 @@ func updateCourses(c *colly.Collector, pageNo int) error {
 					return err
 				}
 			}
-
 			tx.Commit()
 		}
 	}

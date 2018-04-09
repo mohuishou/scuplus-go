@@ -18,5 +18,8 @@ type Course struct {
 	Max         int       // 课容量
 	StudentNo   int       // 学生数
 	CourseLimit string    // 选课限制说明
+	FailRate    float64   // 挂科率
+	AvgGrade    float64   // 平均分
+	Star        float64   // 评教平均分
 	Teachers    []Teacher `gorm:"many2many:course_teachers;"` // 教师
 }
