@@ -58,6 +58,9 @@ func autoMigrate() {
 		&TermEvent{},
 		&UserInfo{},
 		&CourseGrade{},
+		&CourseEvaluate{},
+		&CourseEvaluateStar{},
+		&CourseCount{},
 	)
 }
 

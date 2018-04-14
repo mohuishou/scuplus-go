@@ -19,6 +19,6 @@ type Course struct {
 	StudentNo       int              // 学生数
 	CourseLimit     string           // 选课限制说明
 	CourseCount     CourseCount      // 课程统计信息
-	CourseEvaluates []CourseEvaluate `gorm:"many2many:course_evaluates;"` // 评价
-	Teachers        []Teacher        `gorm:"many2many:course_teachers;"`  // 教师
+	CourseEvaluates []CourseEvaluate `gorm:"many2many:course_and_evaluates;"` // 评价
+	Teachers        []Teacher        `gorm:"many2many:course_teachers;"`      // 教师
 }

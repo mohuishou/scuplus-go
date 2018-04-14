@@ -1,7 +1,10 @@
 package main
 
 import (
+	"strings"
 	"time"
+
+	"github.com/jinzhu/gorm"
 
 	"github.com/mohuishou/scuplus-go/model"
 )
@@ -26,6 +29,7 @@ func calCourceAll(course model.Course) {
 		}
 		fail float64
 	)
+	// 成绩信息统计
 	model.DB().Model(&model.Grade{}).Where(model.Grade{
 		CourseID: course.CourseID,
 		LessonID: course.LessonID,
@@ -34,15 +38,37 @@ func calCourceAll(course model.Course) {
 		CourseID: course.CourseID,
 		LessonID: course.LessonID,
 	}).Where("grade > ? and grade < ?", 0, 60).Count(&fail)
-
 	model.DB().Model(&model.Grade{}).Where(model.Grade{
 		CourseID: course.CourseID,
 		LessonID: course.LessonID,
 	}).Select("sum(grade) total").Scan(&sum)
+
+	courseCount := model.CourseCount{
+		CourseID: course.CourseID,
+		LessonID: course.LessonID,
+		Name:     course.Name,
+	}
 	// 计算平均分
-	course.AvgGrade = sum.Total / all
-	course.FailRate = fail / all
-	model.DB().Save(&course)
+	model.DB().Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).FirstOrCreate(&courseCount)
+	courseCount.AvgGrade = sum.Total / all
+	courseCount.FailRate = fail / all
+	// 评教信息统计
+	model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).Select([]string{"AVG(star) star"}).Scan(&courseCount)
+	countEva(course, "call_name").Scan(&courseCount)
+	countEva(course, "exam_type").Scan(&courseCount)
+	countEva(course, "task").Scan(&courseCount)
+	// 教师统计
+	teachers := []model.Teacher{}
+	model.DB().Model(&course).Related(&teachers, "Teachers")
+	for _, teacher := range teachers {
+		courseCount.Teacher = courseCount.Teacher + "," + teacher.Name
+	}
+	courseCount.Teacher = strings.Trim(courseCount.Teacher, ",")
+	model.DB().Save(&courseCount)
+}
+
+func countEva(course model.Course, name string) *gorm.DB {
+	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).Select([]string{name, "Count(*) c"}).Group(name).Order("c desc").Limit(1)
 }
 
 func calCourceGrade(course model.Course) {
