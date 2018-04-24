@@ -47,6 +47,9 @@ func calCourceAll(course model.Course) {
 		CourseID: course.CourseID,
 		LessonID: course.LessonID,
 		Name:     course.Name,
+		Day:      course.Day,
+		Credit:   course.Credit,
+		Campus:   course.Campus,
 	}
 	// 计算平均分
 	model.DB().Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).FirstOrCreate(&courseCount)
