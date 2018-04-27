@@ -4,7 +4,7 @@ package model
 // 统计方式: 评教平均分获取最近两年的平均分信息
 // 点名,考核,作业 取最近一年来的众数
 type CourseCount struct {
-	Model    `json:"model"`
+	Model
 	CourseID string  `json:"course_id"` // 课程号
 	LessonID string  `json:"lesson_id"` // 课序号
 	FailRate float64 `json:"fail_rate"` // 挂科率

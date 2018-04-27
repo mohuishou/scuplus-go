@@ -63,6 +63,7 @@ func calCourceAll(course model.Course) {
 	// 教师统计
 	teachers := []model.Teacher{}
 	model.DB().Model(&course).Related(&teachers, "Teachers")
+	courseCount.Teacher = ""
 	for _, teacher := range teachers {
 		courseCount.Teacher = courseCount.Teacher + "," + teacher.Name
 	}
