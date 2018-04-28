@@ -15,7 +15,7 @@ type CourseCount struct {
 	Campus   string  `json:"campus"`    // 校区
 	Day      int     `json:"day"`       // 周几上课
 	Credit   float64 `json:"credit"`    // 学分
-	CallName int     `json:"call_name"` // 点名/签到方式: 0: 不点名, 1: 偶尔抽点 2: 偶尔全点 3: 全点
-	ExamType int     `json:"exam_type"` // 考核方式: 0: 论文, 1: 考试, 2:大作业, 3: 其他
-	Task     int     `json:"task"`      // 作业: 0: 无作业, 2: 有作业
+	CallName int     `json:"call_name"` // 点名/签到方式: 1: 不点名, 2: 偶尔抽点 3: 偶尔全点 4: 全点
+	ExamType int     `json:"exam_type"` // 考核方式: 1: 论文, 2: 考试, 3:大作业, 4: 其他
+	Task     int     `json:"task"`      // 作业: 1: 无作业, 2: 有作业
 }

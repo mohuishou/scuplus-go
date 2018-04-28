@@ -24,7 +24,7 @@ func GetCourses(ctx iris.Context) {
 	params := GetParams{}
 	ctx.ReadForm(&params)
 	var courseCounts []model.CourseCount
-	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize).Order("avg_grade desc")
+	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize)
 	if params.CallName != "" {
 		scope = scope.Where("call_name = ?", params.CallName)
 	}
@@ -42,6 +42,8 @@ func GetCourses(ctx iris.Context) {
 	}
 	if params.Order != "" {
 		scope = scope.Order(params.Order)
+	} else {
+		scope = scope.Order("avg_grade desc")
 	}
 	if err := scope.Find(&courseCounts).Error; err != nil {
 		api.Error(ctx, 70001, "获取错误", nil)
@@ -67,7 +69,7 @@ func Search(ctx iris.Context) {
 	}
 	var courseCounts []model.CourseCount
 	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize).Order("avg_grade desc")
-	if err := scope.Where("%name% = ?", params.Name).Find(&courseCounts).Error; err != nil {
+	if err := scope.Where("name like ?", "%"+params.Name+"%").Find(&courseCounts).Error; err != nil {
 		api.Error(ctx, 70001, "获取错误", nil)
 		return
 	}
@@ -78,7 +80,7 @@ func Search(ctx iris.Context) {
 // 包括CourseCount\Cousre\CousreEva中的所有信息
 func Get(ctx iris.Context) {
 	courseID := ctx.URLParam("course_id")
-	lessonID := ctx.URLParam("course_id")
+	lessonID := ctx.URLParam("lesson_id")
 	if courseID == "" || lessonID == "" {
 		api.Error(ctx, 70400, "参数错误", nil)
 		return
@@ -90,7 +92,7 @@ func Get(ctx iris.Context) {
 		courses         []model.Course
 		courseEvaluates []model.CourseEvaluate
 	)
-	scope := model.DB().Where("course_id = ? and lesson_id = ?")
+	scope := model.DB().Where("course_id = ? and lesson_id = ?", courseID, lessonID)
 	scope.Find(&courseCount)
 	scope.Find(&courseEvaluates)
 	scope.Find(&courses)
