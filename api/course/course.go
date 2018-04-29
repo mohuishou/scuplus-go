@@ -94,17 +94,26 @@ func Get(ctx iris.Context) {
 	)
 	scope := model.DB().Where("course_id = ? and lesson_id = ?", courseID, lessonID)
 	scope.Find(&courseCount)
-	scope.Find(&courseEvaluates)
 	scope.Find(&courses)
+
+	// todo: 获取用户昵称，用户头像,用户是否已经点赞
+	scope.Find(&courseEvaluates)
 
 	// 获取用户是否有该门课程
 	uid := middleware.GetUserID(ctx)
-	has := !model.DB().Model(&model.Schedule{}).Where("user_id = ? and course_id = ? and lesson_id = ?", uid, courseID, lessonID).RecordNotFound()
+	has := !model.DB().Where("user_id = ? and course_id = ? and lesson_id = ?", uid, courseID, lessonID).Select([]string{"id"}).Find(&model.Schedule{}).RecordNotFound()
+
+	// 获取用户是否已经评价
+	evaluate := model.CourseEvaluate{}
+	model.DB().Where("user_id = ? and course_id = ? and lesson_id = ?", uid, courseID, lessonID).Select([]string{"id"}).Find(&evaluate)
+
+	// 返回成功信息
 	api.Success(ctx, "获取成功！", map[string]interface{}{
-		"course_count":    courseCount,
-		"courses":         courses,
-		"course_evalutes": courseEvaluates,
-		"has":             has, // true: 拥有该门课程, false: 不拥有
+		"course_count":     courseCount,
+		"courses":          courses,
+		"course_evaluates": courseEvaluates,
+		"has":              has,      // true: 拥有该门课程, false: 不拥有
+		"evaluate":         evaluate, // 是否已经评价
 	})
 }
 
@@ -118,6 +127,8 @@ type CommentParam struct {
 	CourseID string `form:"course_id"`
 	LessonID string `form:"lesson_id"`
 	Comment  string `form:"comment"`
+	NickName string `form:"nick_name"`
+	Avatar   string `form:"avatar"`
 }
 
 // Comment 课程评价，目前只能评价正在上的课程
@@ -127,14 +138,14 @@ func Comment(ctx iris.Context) {
 
 	// 获取用户是否有该门课程
 	uid := middleware.GetUserID(ctx)
-	hasRecord := model.DB().Where("user_id = ? and course_id = ? and lesson_id = ?", uid, params.CourseID, params.LessonID)
-	if hasRecord.Model(&model.Schedule{}).RecordNotFound() {
+	hasRecord := model.DB().Where("user_id = ? and course_id = ? and lesson_id = ?", uid, params.CourseID, params.LessonID).Select([]string{"id"})
+	if hasRecord.Find(&model.Schedule{}).RecordNotFound() {
 		api.Error(ctx, 70401, "您的课程表没有该课程！", nil)
 		return
 	}
 
 	// 检查用户是否已经评价过
-	if !hasRecord.Model(&model.CourseEvaluate{}).RecordNotFound() {
+	if !hasRecord.Find(&model.CourseEvaluate{}).RecordNotFound() {
 		api.Error(ctx, 70401, "该课程您已评价！", nil)
 		return
 	}
@@ -149,6 +160,8 @@ func Comment(ctx iris.Context) {
 		Comment:  params.Comment,
 		UserID:   uid,
 		Score:    1,
+		Avatar:   params.Avatar,
+		NickName: params.NickName,
 	}
 	if err := model.DB().Create(&courseEvaluate).Error; err != nil {
 		api.Error(ctx, 70002, "评教失败！", err)
@@ -173,6 +186,9 @@ func UpdateComment(ctx iris.Context) {
 		CourseID: params.CourseID,
 		LessonID: params.LessonID,
 		Comment:  params.Comment,
+		Star:     params.Star,
+		Avatar:   params.Avatar,
+		NickName: params.NickName,
 	}
 	if err := model.DB().Model(&model.CourseEvaluate{
 		Model: model.Model{ID: params.ID},
@@ -187,11 +203,11 @@ func UpdateComment(ctx iris.Context) {
 func GetComment(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	if id == 0 || err != nil {
-		api.Error(ctx, 70400, "参数错误！", nil)
+		api.Error(ctx, 70400, "参数错误！", err)
 		return
 	}
 	courseEvaluate := model.CourseEvaluate{}
-	if err := model.DB().Find(&courseEvaluate, id); err != nil {
+	if err := model.DB().Find(&courseEvaluate, id).Error; err != nil {
 		api.Error(ctx, 70003, "获取失败！", err)
 		return
 	}

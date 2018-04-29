@@ -3,6 +3,8 @@ package model
 // CourseEvaluate 评价表，包含用户的评价
 type CourseEvaluate struct {
 	Model
+	NickName string `json:"nick_name"`
+	Avatar   string `json:"avatar"`
 	UserID   uint   `json:"user_id"`
 	CourseID string `json:"course_id"` // 课程号
 	LessonID string `json:"lesson_id"` // 课序号
