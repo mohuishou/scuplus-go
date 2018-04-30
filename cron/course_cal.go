@@ -60,6 +60,11 @@ func calCourceAll(course model.Course) {
 	countEva(course, "call_name").Scan(&courseCount)
 	countEva(course, "exam_type").Scan(&courseCount)
 	countEva(course, "task").Scan(&courseCount)
+
+	countEvaStar(course, "good", "3").Scan(&courseCount)
+	countEvaStar(course, "normal", "2").Scan(&courseCount)
+	countEvaStar(course, "bad", "1").Scan(&courseCount)
+
 	// 教师统计
 	teachers := []model.Teacher{}
 	model.DB().Model(&course).Related(&teachers, "Teachers")
@@ -68,11 +73,16 @@ func calCourceAll(course model.Course) {
 		courseCount.Teacher = courseCount.Teacher + "," + teacher.Name
 	}
 	courseCount.Teacher = strings.Trim(courseCount.Teacher, ",")
+
 	model.DB().Save(&courseCount)
 }
 
 func countEva(course model.Course, name string) *gorm.DB {
 	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).Select([]string{name, "Count(*) c"}).Group(name).Order("c desc").Limit(1)
+}
+
+func countEvaStar(course model.Course, name, star string) *gorm.DB {
+	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ? and star = ?", course.CourseID, course.LessonID, star).Select([]string{"Count(*) " + name}).Group("star")
 }
 
 func calCourceGrade(course model.Course) {
