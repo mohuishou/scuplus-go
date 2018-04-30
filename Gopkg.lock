@@ -89,15 +89,10 @@
     "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
-    "private/protocol/json/jsonutil",
-    "private/protocol/jsonrpc",
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
-    "service/dynamodb",
-    "service/dynamodb/dynamodbattribute",
-    "service/dynamodb/dynamodbiface",
     "service/sqs",
     "service/sqs/sqsiface",
     "service/sts"
@@ -284,12 +279,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/jordic/goics"
-  packages = ["."]
-  revision = "826350cb6414a8014639473fb7e2db255fd1713c"
-
-[[projects]]
-  branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "885a41a0a6b44bdd0a4d476f83aa525ca3e453e3"
@@ -430,6 +419,7 @@
     ".",
     "ecard",
     "jwc",
+    "jwc/course",
     "jwc/exam",
     "jwc/grade",
     "jwc/info",
@@ -438,12 +428,6 @@
     "library"
   ]
   revision = "42949d3e5103c1d116b84f5e76b0933c94342a96"
-
-[[projects]]
-  name = "github.com/mohuishou/scujwc-go"
-  packages = ["."]
-  revision = "89e2dde6d42d8f6497ac669d8c41928d2096c80b"
-  version = "0.2.1"
 
 [[projects]]
   name = "github.com/opentracing/opentracing-go"
@@ -622,6 +606,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cad77ab976deeba64a7852d078c14e8a4ce43df2808ec87ca212683aee602623"
+  inputs-digest = "1901aefa1cdaeb059f0729e8f745588cf768c83a295f76e8ae02ed243701fd20"
   solver-name = "gps-cdcl"
   solver-version = 1

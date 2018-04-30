@@ -19,7 +19,7 @@ type Ecard struct {
 
 func convertEcard(tran ecard.Transaction) Ecard {
 	return Ecard{
-		TransTime: tran.Time.Unix(),
+		TransTime: tran.Time.Unix() - 3600*24, // 一卡通流水时间延迟了一天，校正
 		Addr:      tran.Addr,
 		Balance:   tran.Balance,
 		Money:     tran.Money,

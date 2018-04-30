@@ -27,6 +27,10 @@ func main() {
 	c.AddFunc("0 0 9 1/1 * ? ", func() {
 		exam()
 	})
+	// 每天凌晨4点执行一次
+	c.AddFunc("0 0 4 1/1 * ? ", func() {
+		calCourse()
+	})
 	c.Start()
 	select {}
 }
@@ -97,7 +101,6 @@ func book() {
 					log.Println("cron error book", err)
 				}
 			}
-
 		}
 	}
 }

@@ -82,8 +82,6 @@ func Get() Config {
 		if _, err := toml.DecodeFile(filepath, &config); err != nil {
 			log.Fatal("配置文件读取失败！", err)
 		}
-
-		log.Println("config init:", config)
 	}
 
 	return config

@@ -1,39 +1,43 @@
-package course
+package main
 
 import (
+	"flag"
 	"log"
 	"net/url"
 	"strconv"
 
-	"github.com/mohuishou/scujwc-go"
-	"github.com/mohuishou/scuplus-go/config"
+	"github.com/mohuishou/scu/jwc/course"
+
+	"github.com/gocolly/colly"
+
+	"github.com/mohuishou/scu/jwc"
+
 	"github.com/mohuishou/scuplus-go/model"
 )
 
-// Task 任务
-func Task(conf config.Config) {
-	c := conf.CourseTask
-	if err := updateCourses(c.StudentID, c.Password, c.PageNO); err != nil {
-		log.Println("[Error]:", err)
+func main() {
+	studentID := flag.String("u", "", "请输入用户学号")
+	password := flag.String("p", "", "请输入密码")
+	pages := flag.Int("page", 100, "请输入每页50条数据时，总页数")
+	flag.Parse()
+	log.Println(*studentID, *password)
+	c, err := jwc.Login(*studentID, *password)
+	if err != nil {
+		panic(err)
 	}
+	updateCourses(c, *pages)
 }
 
 // 更新课程信息
 // TODO: 课程更新信息有多次查询的问题，之后可以优化一下
-func updateCourses(studentID int, password string, pageNo int) error {
-	jwc, err := scujwc.NewJwc(studentID, password)
-	if err != nil {
-		return err
-	}
+func updateCourses(c *colly.Collector, pageNo int) error {
 
 	params := url.Values{}
-
+	params.Set("pageSize", "50")
 	for i := 1; i <= pageNo; i++ {
 		params.Set("pageNumber", strconv.Itoa(i))
-		courses, err := jwc.GetCourse(params)
-		if err != nil {
-			return err
-		}
+		courses := course.Get(c, params)
+
 		for _, course := range courses {
 			c := model.Course{
 				College:     course.College,
@@ -103,7 +107,6 @@ func updateCourses(studentID int, password string, pageNo int) error {
 					return err
 				}
 			}
-
 			tx.Commit()
 		}
 	}
