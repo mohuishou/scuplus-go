@@ -5,6 +5,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 // GetParams Get 参数
@@ -120,21 +121,30 @@ func Get(ctx iris.Context) {
 // CommentParam 课程评价参数
 type CommentParam struct {
 	ID       uint   `form:"id"`
-	CallName int    `form:"call_name"` // 点名方式
-	ExamType int    `form:"exam_type"` // 考核方式
-	Task     int    `form:"task"`      // 有无作业
-	Star     int    `form:"star"`
-	CourseID string `form:"course_id"`
-	LessonID string `form:"lesson_id"`
-	Comment  string `form:"comment"`
-	NickName string `form:"nick_name"`
-	Avatar   string `form:"avatar"`
+	CallName int    `form:"call_name" validate:"required,min=1,max=4"` // 点名方式
+	ExamType int    `form:"exam_type" validate:"required,min=1,max=4"` // 考核方式
+	Task     int    `form:"task" validate:"required,min=1,max=2"`      // 有无作业
+	Star     int    `form:"star" validate:"required,min=1,max=3"`
+	CourseID string `form:"course_id" validate:"required"`
+	LessonID string `form:"lesson_id" validate:"required"`
+	Comment  string `form:"comment" validate:"required"`
+	NickName string `form:"nick_name" validate:"required"`
+	Avatar   string `form:"avatar" validate:"required"`
 }
 
 // Comment 课程评价，目前只能评价正在上的课程
 func Comment(ctx iris.Context) {
 	params := CommentParam{}
-	ctx.ReadForm(&params)
+	if err := ctx.ReadForm(&params); err != nil {
+		api.Error(ctx, 70400, "参数错误！", err)
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(params); err != nil {
+		api.Error(ctx, 70400, "参数错误！", err)
+		return
+	}
 
 	// 获取用户是否有该门课程
 	uid := middleware.GetUserID(ctx)
@@ -158,10 +168,11 @@ func Comment(ctx iris.Context) {
 		CourseID: params.CourseID,
 		LessonID: params.LessonID,
 		Comment:  params.Comment,
+		Star:     params.Star,
 		UserID:   uid,
-		Score:    1,
 		Avatar:   params.Avatar,
 		NickName: params.NickName,
+		Score:    1,
 	}
 	if err := model.DB().Create(&courseEvaluate).Error; err != nil {
 		api.Error(ctx, 70002, "评教失败！", err)
@@ -173,7 +184,17 @@ func Comment(ctx iris.Context) {
 // UpdateComment 更新评价
 func UpdateComment(ctx iris.Context) {
 	params := CommentParam{}
-	ctx.ReadForm(&params)
+	if err := ctx.ReadForm(&params); err != nil {
+		api.Error(ctx, 70400, "参数错误！", err)
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(params); err != nil {
+		api.Error(ctx, 70400, "参数错误！", err)
+		return
+	}
+
 	if params.ID == 0 {
 		api.Error(ctx, 70400, "参数错误！", nil)
 		return
