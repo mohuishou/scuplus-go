@@ -20,11 +20,14 @@ import (
 // User 用户model
 type User struct {
 	Model
-	StudentID   string // 学号
-	Password    string // 密码
-	Verify      int    // 统一认证门户验证: 0: 无法登录, 1: 正常
-	Wechat      Wechat
-	UserLibrary UserLibrary
+	StudentID    string // 学号
+	Password     string // 密码
+	JwcStudentID string // 教务处学号
+	JwcPassword  string // 教务处密码
+	JwcVerify    int    // 教务处验证 0: 无法登录, 1: 正常
+	Verify       int    // 统一认证门户验证: 0: 无法登录, 1: 正常
+	Wechat       Wechat
+	UserLibrary  UserLibrary
 }
 
 // Login 用户登录， 用户不存在就新建
@@ -90,7 +93,7 @@ func GetJwc(userID uint) (*colly.Collector, error) {
 	if err := DB().Find(&user, userID).Error; err != nil {
 		return nil, err
 	}
-	return jwc.Login(user.StudentID, user.Password)
+	return jwc.Login(user.JwcStudentID, user.JwcPassword)
 }
 
 // GetLibrary 获取图书馆实例

@@ -31,6 +31,7 @@ func Routes(app *iris.Application) {
 	app.Post("/user/ecard", ecard.Update)
 	app.Post("/user/msg_id", user.MsgID)
 	app.Post("/login", api.Login)
+	app.Post("/jwc/bind", api.BindJwc)
 	app.Post("/bind", api.Bind)
 	app.Post("/library/bind", api.BindLibrary)
 	app.Get("/details", detail.GetDetails)

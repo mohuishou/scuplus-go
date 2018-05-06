@@ -11,6 +11,7 @@ import (
 	"github.com/mohuishou/scu"
 
 	"github.com/kataras/iris"
+	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
 )
@@ -44,9 +45,56 @@ func Login(ctx iris.Context) {
 
 	Success(ctx, "登录成功！", map[string]interface{}{
 		"token":          token,
+		"jwc_verify":     user.JwcVerify,
 		"verify":         user.Verify,
 		"library_verify": userLibrary.Verify,
 	})
+}
+
+// BindJwc 教务处绑定
+func BindJwc(ctx iris.Context) {
+	studentID := ctx.FormValue("student_id")
+	password := ctx.FormValue("password")
+
+	if studentID == "" || password == "" {
+		Error(ctx, 10400, "参数错误", nil)
+		return
+	}
+
+	// 验证教务处账号是否可以登录
+	if _, err := jwc.Login(studentID, password); err != nil {
+		Error(ctx, 10401, err.Error(), nil)
+		return
+	}
+
+	user := model.User{
+		JwcStudentID: studentID,
+		JwcPassword:  password,
+		JwcVerify:    1,
+	}
+
+	uid := middleware.GetUserID(ctx)
+	if err := model.DB().Model(&user).Where("id = ?", uid).Updates(&user).Error; err != nil {
+		log.Println("用户绑定账号失败: ", err)
+		Error(ctx, 30004, "系统错误！", nil)
+		return
+	}
+
+	// 绑定成功，异步任务获取数据信息
+	sign := &tasks.Signature{
+		Name: "update_new",
+		Args: []tasks.Arg{
+			{
+				Type:  "uint",
+				Value: uid,
+			},
+		},
+	}
+	_, err := job.Server.SendTask(sign)
+	if err != nil {
+		log.Println("cron error update all", err)
+	}
+	Success(ctx, "绑定成功！", nil)
 }
 
 // Bind 绑定统一认证账号
@@ -76,21 +124,6 @@ func Bind(ctx iris.Context) {
 		log.Println("用户绑定账号失败: ", err)
 		Error(ctx, 30004, "系统错误！", nil)
 		return
-	}
-
-	// 绑定成功，异步任务获取数据信息
-	sign := &tasks.Signature{
-		Name: "update_new",
-		Args: []tasks.Arg{
-			{
-				Type:  "uint",
-				Value: uid,
-			},
-		},
-	}
-	_, err := job.Server.SendTask(sign)
-	if err != nil {
-		log.Println("cron error update all", err)
 	}
 	Success(ctx, "绑定成功！", nil)
 }
