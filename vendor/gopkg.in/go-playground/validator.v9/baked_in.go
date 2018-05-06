@@ -1,7 +1,9 @@
 package validator
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
 	"fmt"
 	"net"
 	"net/url"
@@ -96,6 +98,7 @@ var (
 		"url":              isURL,
 		"uri":              isURI,
 		"base64":           isBase64,
+		"base64url":        isBase64URL,
 		"contains":         contains,
 		"containsany":      containsAny,
 		"containsrune":     containsRune,
@@ -105,6 +108,9 @@ var (
 		"isbn":             isISBN,
 		"isbn10":           isISBN10,
 		"isbn13":           isISBN13,
+		"eth_addr":         isEthereumAddress,
+		"btc_addr":         isBitcoinAddress,
+		"btc_addr_bech32":  isBitcoinBech32Address,
 		"uuid":             isUUID,
 		"uuid3":            isUUID3,
 		"uuid4":            isUUID4,
@@ -181,7 +187,7 @@ func isOneOf(fl FieldLevel) bool {
 	return false
 }
 
-// isUnique is the validation function for validating if each array|slice element is unique
+// isUnique is the validation function for validating if each array|slice|map value is unique
 func isUnique(fl FieldLevel) bool {
 
 	field := fl.Field()
@@ -189,10 +195,17 @@ func isUnique(fl FieldLevel) bool {
 
 	switch field.Kind() {
 	case reflect.Slice, reflect.Array:
-		m := reflect.MakeMap(reflect.MapOf(fl.Field().Type().Elem(), v.Type()))
+		m := reflect.MakeMap(reflect.MapOf(field.Type().Elem(), v.Type()))
 
 		for i := 0; i < field.Len(); i++ {
 			m.SetMapIndex(field.Index(i), v)
+		}
+		return field.Len() == m.Len()
+	case reflect.Map:
+		m := reflect.MakeMap(reflect.MapOf(field.Type().Elem(), v.Type()))
+
+		for _, k := range field.MapKeys() {
+			m.SetMapIndex(field.MapIndex(k), v)
 		}
 		return field.Len() == m.Len()
 	default:
@@ -385,6 +398,140 @@ func isISBN10(fl FieldLevel) bool {
 	}
 
 	return checksum%11 == 0
+}
+
+// IsEthereumAddress is the validation function for validating if the field's value is a valid ethereum address based currently only on the format
+func isEthereumAddress(fl FieldLevel) bool {
+	address := fl.Field().String()
+
+	if !ethAddressRegex.MatchString(address) {
+		return false
+	}
+
+	if ethaddressRegexUpper.MatchString(address) || ethAddressRegexLower.MatchString(address) {
+		return true
+	}
+
+	// checksum validation is blocked by https://github.com/golang/crypto/pull/28
+
+	return true
+}
+
+// IsBitcoinAddress is the validation function for validating if the field's value is a valid btc address
+func isBitcoinAddress(fl FieldLevel) bool {
+	address := fl.Field().String()
+
+	if !btcAddressRegex.MatchString(address) {
+		return false
+	}
+
+	alphabet := []byte("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+
+	decode := [25]byte{}
+
+	for _, n := range []byte(address) {
+		d := bytes.IndexByte(alphabet, n)
+
+		for i := 24; i >= 0; i-- {
+			d += 58 * int(decode[i])
+			decode[i] = byte(d % 256)
+			d /= 256
+		}
+	}
+
+	h := sha256.New()
+	_, _ = h.Write(decode[:21])
+	d := h.Sum([]byte{})
+	h = sha256.New()
+	_, _ = h.Write(d)
+
+	validchecksum := [4]byte{}
+	computedchecksum := [4]byte{}
+
+	copy(computedchecksum[:], h.Sum(d[:0]))
+	copy(validchecksum[:], decode[21:])
+
+	return validchecksum == computedchecksum
+}
+
+// IsBitcoinBech32Address is the validation function for validating if the field's value is a valid bech32 btc address
+func isBitcoinBech32Address(fl FieldLevel) bool {
+	address := fl.Field().String()
+
+	if !btcLowerAddressRegexBech32.MatchString(address) && !btcUpperAddressRegexBech32.MatchString(address) {
+		return false
+	}
+
+	am := len(address) % 8
+
+	if am == 0 || am == 3 || am == 5 {
+		return false
+	}
+
+	address = strings.ToLower(address)
+
+	alphabet := "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+
+	hr := []int{3, 3, 0, 2, 3} // the human readable part will always be bc
+	addr := address[3:]
+	dp := make([]int, 0, len(addr))
+
+	for _, c := range addr {
+		dp = append(dp, strings.IndexRune(alphabet, c))
+	}
+
+	ver := dp[0]
+
+	if ver < 0 || ver > 16 {
+		return false
+	}
+
+	if ver == 0 {
+		if len(address) != 42 && len(address) != 62 {
+			return false
+		}
+	}
+
+	values := append(hr, dp...)
+
+	GEN := []int{0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3}
+
+	p := 1
+
+	for _, v := range values {
+		b := p >> 25
+		p = (p&0x1ffffff)<<5 ^ v
+
+		for i := 0; i < 5; i++ {
+			if (b>>uint(i))&1 == 1 {
+				p ^= GEN[i]
+			}
+		}
+	}
+
+	if p != 1 {
+		return false
+	}
+
+	b := uint(0)
+	acc := 0
+	mv := (1 << 5) - 1
+	var sw []int
+
+	for _, v := range dp[1 : len(dp)-6] {
+		acc = (acc << 5) | v
+		b += 5
+		for b >= 8 {
+			b -= 8
+			sw = append(sw, (acc>>b)&mv)
+		}
+	}
+
+	if len(sw) < 2 || len(sw) > 40 {
+		return false
+	}
+
+	return true
 }
 
 // ExcludesRune is the validation function for validating that the field's value does not contain the rune specified within the param.
@@ -843,6 +990,11 @@ func isEq(fl FieldLevel) bool {
 // IsBase64 is the validation function for validating if the current field's value is a valid base 64.
 func isBase64(fl FieldLevel) bool {
 	return base64Regex.MatchString(fl.Field().String())
+}
+
+// IsBase64URL is the validation function for validating if the current field's value is a valid base64 URL safe string.
+func isBase64URL(fl FieldLevel) bool {
+	return base64URLRegex.MatchString(fl.Field().String())
 }
 
 // IsURI is the validation function for validating if the current field's value is a valid URI.

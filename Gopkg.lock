@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/Joker/jade"
   packages = ["."]
-  revision = "35b3f5bdbcc920cd31f4870536dbc63be8530541"
+  revision = "8828253bfc54f2f91aaef5f32b44a244b0a98e4f"
 
 [[projects]]
   name = "github.com/PuerkitoBio/goquery"
@@ -57,13 +57,13 @@
   branch = "master"
   name = "github.com/antchfx/xmlquery"
   packages = ["."]
-  revision = "f3845cf372319e5428e4c6704089452ddff8ef8b"
+  revision = "ef59655617182d3a989eaf19c37fec5cbc9b2a95"
 
 [[projects]]
   branch = "master"
   name = "github.com/antchfx/xpath"
   packages = ["."]
-  revision = "da6624a57bffc012f598c42f781bd5919fbfadb2"
+  revision = "ef88fac99c8a697d4b3869c05fe5c99cff6e7b4e"
 
 [[projects]]
   branch = "master"
@@ -89,15 +89,20 @@
     "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
+    "service/dynamodb",
+    "service/dynamodb/dynamodbattribute",
+    "service/dynamodb/dynamodbiface",
     "service/sqs",
     "service/sqs/sqsiface",
     "service/sts"
   ]
-  revision = "9126c903321d2b064c2d3b192b1cf352828ef3a4"
+  revision = "4aa9bfcedd69afca7252c09d53512b635ab08937"
 
 [[projects]]
   branch = "master"
@@ -158,7 +163,7 @@
   branch = "master"
   name = "github.com/flosch/pongo2"
   packages = ["."]
-  revision = "97eac295f74b5fbb7fd3113e35f4ccf3c816e389"
+  revision = "e7cf9ea5ca9c574f3fd5f83f7eed4a6162a67dea"
 
 [[projects]]
   name = "github.com/garyburd/redigo"
@@ -172,8 +177,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "5e9692864e22d02ac79e2fa499cffb00520b4fea"
-  version = "v1.34.0"
+  revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
+  version = "v1.36.0"
 
 [[projects]]
   name = "github.com/go-playground/locales"
@@ -219,19 +224,19 @@
     "debug",
     "storage"
   ]
-  revision = "679bc05d92965819d44bfd01f62be325959776e1"
+  revision = "92f9b58057ecb303d752ceea1436448153cc9940"
 
 [[projects]]
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "925541529c1fa6821df4e44ce2723319eb2be768"
-  version = "v1.0.0"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "88eb4e9dc91cb2db1bbc56c936f1ee39bbe72ba5"
+  revision = "eafdb6578137f78fe186e486a4bc633e1434cc89"
 
 [[projects]]
   branch = "master"
@@ -281,7 +286,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "885a41a0a6b44bdd0a4d476f83aa525ca3e453e3"
+  revision = "2ddf6d758266fcb080a4f9e054b9f292c85e6798"
 
 [[projects]]
   branch = "master"
@@ -427,7 +432,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "42949d3e5103c1d116b84f5e76b0933c94342a96"
+  revision = "4a944ab8d855f0b8fe5f77060bb09d6629d90eff"
 
 [[projects]]
   name = "github.com/opentracing/opentracing-go"
@@ -442,8 +447,8 @@
 [[projects]]
   name = "github.com/robfig/cron"
   packages = ["."]
-  revision = "b024fc5ea0e34bc3f83d9941c8d60b0622bfaca4"
-  version = "v1"
+  revision = "b41be1df696709bb6395fe435af20370037c0b4c"
+  version = "v1.1"
 
 [[projects]]
   branch = "master"
@@ -488,7 +493,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
+  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
 
 [[projects]]
   branch = "master"
@@ -500,7 +505,7 @@
     "html/atom",
     "html/charset"
   ]
-  revision = "b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e"
+  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
 
 [[projects]]
   branch = "master"
@@ -509,13 +514,13 @@
     ".",
     "internal"
   ]
-  revision = "921ae394b9430ed4fb549668d7b087601bd60a81"
+  revision = "cdc340f7c179dbbfa4afd43b7614e8fcadde4269"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e"
+  revision = "6f686a352de66814cdd080d970febae7767857a3"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -564,14 +569,14 @@
     "core",
     "terminal"
   ]
-  revision = "9d3458c219bae9653d267883634bdb5375281fd8"
-  version = "v1.5.1"
+  revision = "e752db451e07e09c7d7dc8cada807a44bdb0fd47"
+  version = "v1.5.3"
 
 [[projects]]
   name = "gopkg.in/go-playground/validator.v9"
   packages = ["."]
-  revision = "8ce234ff024d85b3848e485decba806385d6e276"
-  version = "v9.13.0"
+  revision = "ee0bbdea519c2c66777c6bfc943838291734ba6c"
+  version = "v9.16.0"
 
 [[projects]]
   branch = "v2"
@@ -595,7 +600,7 @@
   branch = "v2"
   name = "gopkg.in/russross/blackfriday.v2"
   packages = ["."]
-  revision = "c455fd41c6baf2f78fd7ff0aadc4e4b4d52698b0"
+  revision = "3420fef03359a232d74c2ac1d237ac357cfca298"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
