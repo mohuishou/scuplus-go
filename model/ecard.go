@@ -61,7 +61,7 @@ func UpdateEcard(uid uint) error {
 		eCard.UserID = uid
 		if err := DB().Create(&eCard).Error; err != nil {
 			log.Printf("[Error]: 更新一卡通数据错误,%s", err.Error())
-			return err
+			return nil
 		}
 	}
 	return nil
