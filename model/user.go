@@ -52,7 +52,6 @@ func (u *User) Login() (string, error) {
 
 // BeforeSave callback
 func (u *User) BeforeSave(scope *gorm.Scope) error {
-	log.Println("user", *u)
 	if u.Password != "" {
 		// 加密用户教务处密码
 		password, err := aes.Encrypt([]byte(u.Password))
@@ -61,6 +60,15 @@ func (u *User) BeforeSave(scope *gorm.Scope) error {
 			return err
 		}
 		scope.SetColumn("password", password)
+	}
+	if u.JwcPassword != "" {
+		// 加密用户教务处密码
+		password, err := aes.Encrypt([]byte(u.JwcPassword))
+		if err != nil {
+			log.Println("用户密码加密失败！", err, *u)
+			return err
+		}
+		scope.SetColumn("jwc_password", password)
 	}
 	return nil
 }
@@ -74,6 +82,14 @@ func (u *User) AfterFind(scope *gorm.Scope) error {
 			return err
 		}
 		scope.SetColumn("password", password)
+	}
+	if u.JwcPassword != "" {
+		password, err := aes.Decrypt(u.JwcPassword)
+		if err != nil {
+			log.Println("用户密码解密失败！", err, *u)
+			return err
+		}
+		scope.SetColumn("jwc_password", password)
 	}
 	return nil
 }
