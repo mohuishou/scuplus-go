@@ -34,6 +34,7 @@ func init() {
 		"notify_exam":     tasks.NotifyExam,
 		"notify_feedback": tasks.NotifyFeedback,
 		"update_new":      tasks.UpdateForNew,
+		"course_count":    tasks.CalCourse,
 	}
 
 	if err = Server.RegisterTasks(t); err != nil {

@@ -115,9 +115,12 @@ func NotifyExam(uid uint, courseName, date, time, address, site, courseType stri
 				"value": address,
 			},
 			"keyword5": map[string]interface{}{
-				"value": courseType,
+				"value": site,
 			},
 			"keyword6": map[string]interface{}{
+				"value": courseType,
+			},
+			"keyword7": map[string]interface{}{
 				"value": fmt.Sprintf("考试时间仅剩%d天，请抓紧时间复(yu)习,考试当天请携带好您的学生证，英语考试请携带听力耳机", day),
 			},
 		},

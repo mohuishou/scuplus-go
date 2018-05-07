@@ -128,8 +128,8 @@ type CommentParam struct {
 	CourseID string `form:"course_id" validate:"required"`
 	LessonID string `form:"lesson_id" validate:"required"`
 	Comment  string `form:"comment" validate:"required"`
-	NickName string `form:"nick_name" validate:"required"`
-	Avatar   string `form:"avatar" validate:"required"`
+	NickName string `form:"nick_name"`
+	Avatar   string `form:"avatar"`
 }
 
 // Comment 课程评价，目前只能评价正在上的课程
@@ -142,7 +142,7 @@ func Comment(ctx iris.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(params); err != nil {
-		api.Error(ctx, 70400, "参数错误！", err)
+		api.Error(ctx, 70400, "参数错误！", err.Error())
 		return
 	}
 

@@ -23,12 +23,12 @@ func main() {
 	c.AddFunc("0 0 20 1/1 * ? ", func() {
 		book()
 	})
-	// 每天早上10点执行一次
-	c.AddFunc("0 0 9 1/1 * ? ", func() {
+	// 每天早上8点执行一次
+	c.AddFunc("0 0 8 1/1 * ? ", func() {
 		exam()
 	})
 	// 每天凌晨4点执行一次
-	c.AddFunc("0 0 4 1/1 * ? ", func() {
+	c.AddFunc("0 0 1 1/1 * ? ", func() {
 		calCourse()
 	})
 	c.Start()
