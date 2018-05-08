@@ -35,6 +35,7 @@ func init() {
 		"notify_feedback": tasks.NotifyFeedback,
 		"update_new":      tasks.UpdateForNew,
 		"course_count":    tasks.CalCourse,
+		"card_ocr":        tasks.CardOCR,
 	}
 
 	if err = Server.RegisterTasks(t); err != nil {

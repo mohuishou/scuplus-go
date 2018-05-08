@@ -11,4 +11,5 @@ type LostFind struct {
 	Contact  string `json:"contact"`   // 联系方式
 	CardInfo string `json:"card_info"` // 一卡通信息,json字符串仅一卡通有
 	Category string `json:"category"`  // 分类: 一卡通,其他,遗失
+	Status   int    `json:"status"`    // 0: 准备中, 1: 已发布
 }
