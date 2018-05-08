@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	cache "github.com/mohuishou/scuplus-go/cache/details"
+	cache "github.com/mohuishou/scuplus-go/cache/lists"
 
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
@@ -74,7 +74,7 @@ func GetDetails(ctx iris.Context) {
 		"data": details,
 	})
 
-	// 缓存数据
+	// 缓存数据,缓存一小时
 	cache.Set(rkey, map[string]interface{}{
 		"status": 0,
 		"msg":    "文章列表获取成功！",
@@ -82,7 +82,7 @@ func GetDetails(ctx iris.Context) {
 			"page": params.Page,
 			"data": details,
 		},
-	})
+	}, 3600)
 }
 
 // GetDetail 获取文章详情

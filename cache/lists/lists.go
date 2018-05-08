@@ -1,4 +1,4 @@
-package details
+package lists
 
 import (
 	"errors"
@@ -8,9 +8,6 @@ import (
 
 	"github.com/mohuishou/scuplus-go/cache"
 )
-
-// 缓存1个小时
-const expireTime = 3600 * 1
 
 // Get 获取缓存,如果缓存不存在则新建缓存
 func Get(k string) ([]byte, error) {
@@ -27,8 +24,8 @@ func Get(k string) ([]byte, error) {
 }
 
 // Set set
-func Set(k string, details map[string]interface{}) error {
-	v, err := jsoniter.Marshal(&details)
+func Set(k string, data map[string]interface{}, expireTime int) error {
+	v, err := jsoniter.Marshal(&data)
 	if err != nil {
 		return err
 	}
