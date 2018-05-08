@@ -1,8 +1,11 @@
 package course
 
 import (
+	"fmt"
+
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
+	cache "github.com/mohuishou/scuplus-go/cache/lists"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
 	validator "gopkg.in/go-playground/validator.v9"
@@ -24,6 +27,15 @@ type GetParams struct {
 func GetCourses(ctx iris.Context) {
 	params := GetParams{}
 	ctx.ReadForm(&params)
+
+	rkey := fmt.Sprintf("courses.c%s.e%s.t%s.d%s.ca%s.o%s.p%d.ps%d", params.CallName, params.ExamType, params.Task, params.Day, params.Campus, params.Order, params.Page, params.PageSize)
+	// 获取缓存信息
+	data, err := cache.Get(rkey)
+	if err == nil {
+		ctx.Write(data)
+		return
+	}
+
 	var courseCounts []model.CourseCount
 	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize)
 	if params.CallName != "" {
@@ -51,6 +63,12 @@ func GetCourses(ctx iris.Context) {
 		return
 	}
 	api.Success(ctx, "获取成功！", courseCounts)
+	// 缓存数据,缓存12小时
+	cache.Set(rkey, map[string]interface{}{
+		"status": 0,
+		"msg":    "获取成功！",
+		"data":   courseCounts,
+	}, 3600*12)
 }
 
 // SearchParams Get 参数
