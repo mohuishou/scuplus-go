@@ -1,8 +1,11 @@
 package detail
 
 import (
+	"fmt"
 	"log"
 	"time"
+
+	cache "github.com/mohuishou/scuplus-go/cache/details"
 
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
@@ -26,6 +29,15 @@ func GetDetails(ctx iris.Context) {
 		t := model.Tag{}
 		model.DB().Find(&t, "name = ?", params.TagName)
 		params.TagID = t.ID
+	}
+
+	rkey := fmt.Sprintf("details.c%s.t%d.tn%s.ps%d.p%d", params.Category, params.TagID, params.TagName, params.PageSize, params.Page)
+
+	// 获取缓存信息
+	data, err := cache.Get(rkey)
+	if err == nil {
+		ctx.Write(data)
+		return
 	}
 
 	details := []model.Detail{}
@@ -52,15 +64,24 @@ func GetDetails(ctx iris.Context) {
 	} else {
 		scope = scope.Preload("Tags").Find(&details)
 	}
-	err := scope.Error
 
-	if err != nil {
+	if scope.Error != nil {
 		api.Error(ctx, 50001, "获取信息错误", nil)
 		return
 	}
 	api.Success(ctx, "文章列表获取成功！", map[string]interface{}{
 		"page": params.Page,
 		"data": details,
+	})
+
+	// 缓存数据
+	cache.Set(rkey, map[string]interface{}{
+		"status": 0,
+		"msg":    "文章列表获取成功！",
+		"data": map[string]interface{}{
+			"page": params.Page,
+			"data": details,
+		},
 	})
 }
 
