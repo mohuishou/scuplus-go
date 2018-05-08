@@ -47,6 +47,14 @@ type Redis struct {
 	Port string `toml:"port"`
 }
 
+// Youtu 腾讯优图配置
+type Youtu struct {
+	AppID     string `toml:"app_id"`
+	SecretID  string `toml:"secret_id"`
+	SecretKey string `toml:"secret_key"`
+	QQ        string `toml:"qq"`
+}
+
 // Config 对应config.yml文件的位置
 type Config struct {
 	Port       string
@@ -57,6 +65,7 @@ type Config struct {
 	Wechat     `toml:"wechat"`
 	Github     `toml:"github"`
 	Redis      `toml:"redis"`
+	Youtu      `toml:"youtu"`
 }
 
 // config
