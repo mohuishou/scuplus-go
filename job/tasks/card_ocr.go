@@ -43,5 +43,7 @@ func CardOCR(id uint) error {
 	if err := model.DB().Model(&lost).Update("card_info", str).Error; err != nil {
 		return err
 	}
+
+	// 查询成功之后，查找一卡通所有者，如果为We川大用户尝试发送通知
 	return nil
 }
