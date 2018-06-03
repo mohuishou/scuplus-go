@@ -45,6 +45,7 @@ func Routes(app *iris.Application) {
 	app.Get("/term", api.GetTerm)
 	app.Get("/term/events", api.GetTermEvents)
 	app.Post("/webhook", api.WebHook)
+	app.Get("/cos", api.COS)
 
 	// 课程相关api
 	CourseRoutes(app)

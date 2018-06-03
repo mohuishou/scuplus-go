@@ -55,6 +55,15 @@ type Youtu struct {
 	QQ        string `toml:"qq"`
 }
 
+// COS cos配置
+type COS struct {
+	AppID     string `toml:"app_id"`
+	SecretID  string `toml:"secret_id"`
+	SecretKey string `toml:"secret_key"`
+	Bucket    string `toml:"bucket"`
+	Folder    string `toml:"folder"`
+}
+
 // Config 对应config.yml文件的位置
 type Config struct {
 	Port       string
@@ -66,6 +75,7 @@ type Config struct {
 	Github     `toml:"github"`
 	Redis      `toml:"redis"`
 	Youtu      `toml:"youtu"`
+	COS        `toml:"cos"`
 }
 
 // config
