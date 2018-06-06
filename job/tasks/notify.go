@@ -171,6 +171,91 @@ func NotifyFeedback(feedbackNumber int, content string) error {
 	return notify(uid, data)
 }
 
+// NotifyLostFind 给失主发送消息
+// userID 用户id
+// id 失物招领id
+func NotifyLostFind(uid, id uint) error {
+	// 获取失物招领详情
+	lostFind := model.LostFind{}
+	if err := model.DB().Find(&lostFind, id).Error; err != nil {
+		return err
+	}
+
+	// 获取模板id
+	msgID := msgid.Get(uid)
+	if msgID == "" {
+		return errors.New("没有模板id")
+	}
+	// 获取用户openid
+	wechatUser := model.Wechat{}
+	model.DB().Where("user_id = ?", uid).Find(&wechatUser)
+
+	// 构造请求参数
+	data := map[string]interface{}{
+		"touser":      wechatUser.Openid,
+		"template_id": config.Get().Wechat.TemplateLostFind,
+		"page":        fmt.Sprintf("pages/lostFind/item?id=%d", id),
+		"form_id":     msgID,
+		"data": map[string]interface{}{
+			"keyword1": map[string]interface{}{
+				"value": lostFind.Title,
+			},
+			"keyword2": map[string]interface{}{
+				"value": lostFind.Info,
+			},
+			"keyword3": map[string]interface{}{
+				"value": lostFind.CreatedAt.Format("2006-01-02 15:04"),
+			},
+			"keyword4": map[string]interface{}{
+				"value": lostFind.Contact,
+			},
+			"keyword5": map[string]interface{}{
+				"value": "您的校园卡被同学拾到了，点击查看详情",
+			},
+		},
+	}
+	return notify(uid, data)
+}
+
+// NotifyLostFind 给失主发送消息
+// id 失物招领id
+// progress 进度
+// comment 备注
+func NotifyLostFindStatus(id uint, progress, comment string) error {
+	// 获取失物招领详情
+	lostFind := model.LostFind{}
+	if err := model.DB().Find(&lostFind, id).Error; err != nil {
+		return err
+	}
+
+	uid := lostFind.UserID
+	// 获取模板id
+	msgID := msgid.Get(uid)
+	if msgID == "" {
+		return errors.New("没有模板id")
+	}
+	// 获取用户openid
+	wechatUser := model.Wechat{}
+	model.DB().Where("user_id = ?", uid).Find(&wechatUser)
+
+	// 构造请求参数
+	data := map[string]interface{}{
+		"touser":      wechatUser.Openid,
+		"template_id": config.Get().Wechat.TemplateLostFindStatus,
+		"page":        fmt.Sprintf("pages/lostFind/item?id=%d", id),
+		"form_id":     msgID,
+		"data": map[string]interface{}{
+			"keyword1": map[string]interface{}{
+				"value": progress,
+			},
+			"keyword2": map[string]interface{}{
+				"value": comment,
+			},
+		},
+	}
+	return notify(uid, data)
+}
+
 func notify(uid uint, data map[string]interface{}) error {
 
 	// 获取access token

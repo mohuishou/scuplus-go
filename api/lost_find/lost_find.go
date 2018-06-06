@@ -71,9 +71,10 @@ func Get(ctx iris.Context) {
 type NewParam struct {
 	ID       uint   `form:"id"`
 	Title    string `form:"title" validate:"required"`           // 标题
-	Pictures string `form:"pictures" validate:"required"`        // 截图链接
+	Pictures string `form:"pictures"`                            // 截图链接
 	Info     string `form:"info" validate:"required,max=200"`    // 信息
 	Address  string `form:"address" validate:"required,max=200"` // 地点
+	UserName string `form:"user_name" validate:"required,max=200"`
 	Contact  string `form:"contact" validate:"required,max=200"` // 联系方式
 	Category string `form:"category" validate:"required"`        // 分类: 一卡通,其他,遗失
 }
@@ -84,13 +85,20 @@ func Create(ctx iris.Context) {
 	if data == nil {
 		return
 	}
+
+	// 一卡通需要识别之后再做展示
+	data.Status = model.LostFindShow
+	if data.Category == model.LostFindCard {
+		data.Status = model.LostFindReady
+	}
+
 	res := model.DB().Create(data)
 	if err := res.Error; err != nil {
 		api.Error(ctx, 80001, "创建失败！", err)
 		return
 	}
 
-	if data.Category == "一卡通" {
+	if data.Category == model.LostFindCard {
 		// 一卡通，异步调用腾讯优图识别关键信息
 		sign := &tasks.Signature{
 			Name: "card_ocr",

@@ -1,5 +1,14 @@
 package model
 
+const (
+	// LostFindReady 准备发布
+	LostFindReady = 0
+	// LostFindShow 已发布
+	LostFindShow = 1
+
+	LostFindCard = "一卡通招领"
+)
+
 // LostFind 失物招领
 type LostFind struct {
 	Model

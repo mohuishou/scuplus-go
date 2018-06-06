@@ -8,6 +8,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api/ecard"
 	"github.com/mohuishou/scuplus-go/api/jwc"
 	"github.com/mohuishou/scuplus-go/api/library"
+	"github.com/mohuishou/scuplus-go/api/lost_find"
 	"github.com/mohuishou/scuplus-go/api/user"
 	"github.com/mohuishou/scuplus-go/api/wechat"
 	"github.com/mohuishou/scuplus-go/model"
@@ -46,9 +47,17 @@ func Routes(app *iris.Application) {
 	app.Get("/term/events", api.GetTermEvents)
 	app.Post("/webhook", api.WebHook)
 	app.Get("/cos", api.COS)
-
+	app.Get("/wechat/token", wechat.Token)
 	// 课程相关api
 	CourseRoutes(app)
+
+	// 失物招领api
+	LostFindRoutes(app)
+}
+
+// LostFindRoutes 失物招领api
+func LostFindRoutes(app *iris.Application) {
+	app.Post("/lost_find", lostFind.Create)
 }
 
 // CourseRoutes 课程相关api
@@ -57,7 +66,7 @@ func CourseRoutes(app *iris.Application) {
 	courseApp := app.Party("/course", func(ctx iris.Context) {
 		uid := uint(ctx.Values().Get("user_id").(float64))
 		u := model.User{}
-		model.DB().Where("id = ? ", uid).Select([]string{"verify"}).Find(&u)
+		model.DB().Where("id = ? ", uid).Select([]string{"jwc_verify"}).Find(&u)
 		if u.Verify == 0 {
 			api.Error(ctx, 401, "用户尚未绑定！", nil)
 			ctx.StopExecution()

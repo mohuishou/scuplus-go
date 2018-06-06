@@ -25,12 +25,14 @@ type CourseTask struct {
 
 // Wechat 微信配置
 type Wechat struct {
-	Appid            string `toml:"appid"`
-	Secret           string `toml:"secret"`
-	TemplateGrade    string `toml:"template_grade"`
-	TemplateBook     string `toml:"template_book"`
-	TemplateExam     string `toml:"template_exam"`
-	TemplateFeedback string `toml:"template_feedback"`
+	Appid                  string `toml:"appid"`
+	Secret                 string `toml:"secret"`
+	TemplateGrade          string `toml:"template_grade"`
+	TemplateBook           string `toml:"template_book"`
+	TemplateExam           string `toml:"template_exam"`
+	TemplateFeedback       string `toml:"template_feedback"`
+	TemplateLostFind       string `toml:"template_lost_find"`
+	TemplateLostFindStatus string `toml:"template_lost_find_status"`
 }
 
 // Github 配置文件
