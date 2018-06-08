@@ -62,6 +62,7 @@ func autoMigrate() {
 		&CourseEvaluateStar{},
 		&CourseCount{},
 		&LostFind{},
+		&HelpItem{},
 	)
 }
 
