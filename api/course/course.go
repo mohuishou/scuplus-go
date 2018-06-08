@@ -3,11 +3,13 @@ package course
 import (
 	"fmt"
 
+	"github.com/json-iterator/go"
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
 	cache "github.com/mohuishou/scuplus-go/cache/lists"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
+	"github.com/mohuishou/scuplus-go/util/wechat"
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
@@ -145,28 +147,22 @@ type CommentParam struct {
 	Star     int    `form:"star" validate:"required,min=1,max=3"`
 	CourseID string `form:"course_id" validate:"required"`
 	LessonID string `form:"lesson_id" validate:"required"`
-	Comment  string `form:"comment" validate:"required"`
+	Comment  string `form:"comment" validate:"required,min=1,max=200"`
 	NickName string `form:"nick_name"`
 	Avatar   string `form:"avatar"`
 }
 
 // Comment 课程评价，目前只能评价正在上的课程
 func Comment(ctx iris.Context) {
-	params := CommentParam{}
-	if err := ctx.ReadForm(&params); err != nil {
-		api.Error(ctx, 70400, "参数错误！", err)
+	courseEvaluate := commentParam(ctx)
+	if courseEvaluate == nil {
 		return
 	}
-
-	validate := validator.New()
-	if err := validate.Struct(params); err != nil {
-		api.Error(ctx, 70400, "参数错误！", err.Error())
-		return
-	}
+	courseEvaluate.Score = 1
 
 	// 获取用户是否有该门课程
 	uid := middleware.GetUserID(ctx)
-	hasRecord := model.DB().Where("user_id = ? and course_id = ? and lesson_id = ?", uid, params.CourseID, params.LessonID).Select([]string{"id"})
+	hasRecord := model.DB().Where("user_id = ? and course_id = ? and lesson_id = ?", uid, courseEvaluate.CourseID, courseEvaluate.LessonID).Select([]string{"id"})
 	if hasRecord.Find(&model.Schedule{}).RecordNotFound() {
 		api.Error(ctx, 70401, "您的课程表没有该课程！", nil)
 		return
@@ -178,21 +174,7 @@ func Comment(ctx iris.Context) {
 		return
 	}
 
-	// 添加课程评价
-	courseEvaluate := model.CourseEvaluate{
-		CallName: params.CallName,
-		ExamType: params.ExamType,
-		Task:     params.Task,
-		CourseID: params.CourseID,
-		LessonID: params.LessonID,
-		Comment:  params.Comment,
-		Star:     params.Star,
-		UserID:   uid,
-		Avatar:   params.Avatar,
-		NickName: params.NickName,
-		Score:    1,
-	}
-	if err := model.DB().Create(&courseEvaluate).Error; err != nil {
+	if err := model.DB().Create(courseEvaluate).Error; err != nil {
 		api.Error(ctx, 70002, "评教失败！", err)
 		return
 	}
@@ -201,41 +183,59 @@ func Comment(ctx iris.Context) {
 
 // UpdateComment 更新评价
 func UpdateComment(ctx iris.Context) {
-	params := CommentParam{}
-	if err := ctx.ReadForm(&params); err != nil {
-		api.Error(ctx, 70400, "参数错误！", err)
+	courseEvaluate := commentParam(ctx)
+	if courseEvaluate == nil {
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(params); err != nil {
-		api.Error(ctx, 70400, "参数错误！", err)
-		return
-	}
-
-	if params.ID == 0 {
+	if courseEvaluate.ID == 0 {
 		api.Error(ctx, 70400, "参数错误！", nil)
 		return
 	}
 
-	courseEvaluate := model.CourseEvaluate{
+	if err := model.DB().Model(&model.CourseEvaluate{
+		Model: model.Model{ID: courseEvaluate.ID},
+	}).Updates(courseEvaluate).Error; err != nil {
+		api.Error(ctx, 70002, "更新失败！", err)
+		return
+	}
+	api.Success(ctx, "更新成功！", nil)
+}
+
+func commentParam(ctx iris.Context) *model.CourseEvaluate {
+	params := CommentParam{}
+	if err := ctx.ReadForm(&params); err != nil {
+		api.Error(ctx, 70400, "参数错误！", err)
+		return nil
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(params); err != nil {
+		api.Error(ctx, 70400, "参数错误！", err.Error())
+		return nil
+	}
+
+	// 内容安全检查
+	b, _ := jsoniter.Marshal(&params)
+	res, err := wechat.MsgCheck(string(b))
+	if !res {
+		api.Error(ctx, 70005, "包含违法违规内容！", err)
+		return nil
+	}
+
+	return &model.CourseEvaluate{
+		Model:    model.Model{ID: params.ID},
 		CallName: params.CallName,
 		ExamType: params.ExamType,
 		Task:     params.Task,
 		CourseID: params.CourseID,
 		LessonID: params.LessonID,
 		Comment:  params.Comment,
+		UserID:   middleware.GetUserID(ctx),
 		Star:     params.Star,
 		Avatar:   params.Avatar,
 		NickName: params.NickName,
 	}
-	if err := model.DB().Model(&model.CourseEvaluate{
-		Model: model.Model{ID: params.ID},
-	}).Updates(courseEvaluate).Error; err != nil {
-		api.Error(ctx, 70002, "更新失败！", err)
-		return
-	}
-	api.Success(ctx, "更新成功！", nil)
 }
 
 // GetComment 获取已经评价的课程

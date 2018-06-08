@@ -25,12 +25,14 @@ type CourseTask struct {
 
 // Wechat 微信配置
 type Wechat struct {
-	Appid            string `toml:"appid"`
-	Secret           string `toml:"secret"`
-	TemplateGrade    string `toml:"template_grade"`
-	TemplateBook     string `toml:"template_book"`
-	TemplateExam     string `toml:"template_exam"`
-	TemplateFeedback string `toml:"template_feedback"`
+	Appid                  string `toml:"appid"`
+	Secret                 string `toml:"secret"`
+	TemplateGrade          string `toml:"template_grade"`
+	TemplateBook           string `toml:"template_book"`
+	TemplateExam           string `toml:"template_exam"`
+	TemplateFeedback       string `toml:"template_feedback"`
+	TemplateLostFind       string `toml:"template_lost_find"`
+	TemplateLostFindStatus string `toml:"template_lost_find_status"`
 }
 
 // Github 配置文件
@@ -47,6 +49,23 @@ type Redis struct {
 	Port string `toml:"port"`
 }
 
+// Youtu 腾讯优图配置
+type Youtu struct {
+	AppID     string `toml:"app_id"`
+	SecretID  string `toml:"secret_id"`
+	SecretKey string `toml:"secret_key"`
+	QQ        string `toml:"qq"`
+}
+
+// COS cos配置
+type COS struct {
+	AppID     string `toml:"app_id"`
+	SecretID  string `toml:"secret_id"`
+	SecretKey string `toml:"secret_key"`
+	Bucket    string `toml:"bucket"`
+	Folder    string `toml:"folder"`
+}
+
 // Config 对应config.yml文件的位置
 type Config struct {
 	Port       string
@@ -57,6 +76,8 @@ type Config struct {
 	Wechat     `toml:"wechat"`
 	Github     `toml:"github"`
 	Redis      `toml:"redis"`
+	Youtu      `toml:"youtu"`
+	COS        `toml:"cos"`
 }
 
 // config
