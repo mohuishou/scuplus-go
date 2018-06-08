@@ -12,8 +12,9 @@ const (
 // LostFind 失物招领
 type LostFind struct {
 	Model
-	UserID   uint   `json:"user_id"`   // 用户id
-	Title    string `json:"title"`     // 标题
+	UserID   uint   `json:"user_id"` // 用户id
+	Title    string `json:"title"`   // 标题
+	Nickname string `json:"nickname"`
 	Pictures string `json:"pictures"`  // 截图链接
 	Info     string `json:"info"`      // 信息
 	Address  string `json:"address"`   // 地点
