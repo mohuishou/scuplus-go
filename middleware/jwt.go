@@ -73,6 +73,7 @@ func skipJWT(path string) bool {
 		"/webhook",
 		"/spider/webhook",
 		"/spider/jwc/cookies",
+		"/helps",
 	}
 	for _, v := range urls {
 		if v == path {

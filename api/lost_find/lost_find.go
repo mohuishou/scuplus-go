@@ -52,9 +52,11 @@ func Lists(ctx iris.Context) {
 	// 获取列表信息
 	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize)
 	scope = scope.Order("id desc").Select(fields)
-	scope = scope.Where("status = 1").Where("category = ?", params.Category)
+	scope = scope.Where("category = ?", params.Category)
 	if params.My == 1 {
 		scope = scope.Where("user_id = ?", middleware.GetUserID(ctx))
+	} else {
+		scope = scope.Where("status = 1")
 	}
 	scope.Find(&lists)
 	api.Success(ctx, "获取成功！", lists)

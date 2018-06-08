@@ -46,6 +46,7 @@ func Routes(app *iris.Application) {
 	app.Post("/webhook", api.WebHook)
 	app.Get("/cos", api.COS)
 	app.Get("/wechat/token", wechat.Token)
+	app.Get("/helps", api.GetHelps)
 	// 课程相关api
 	CourseRoutes(app)
 
