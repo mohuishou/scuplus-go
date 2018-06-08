@@ -9,6 +9,8 @@ import (
 
 	"github.com/mohuishou/scuplus-go/model"
 
+	"time"
+
 	"github.com/json-iterator/go"
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
@@ -35,7 +37,7 @@ func Lists(ctx iris.Context) {
 	}
 
 	// 获取缓存信息,个人列表不需要缓存
-	rkey := fmt.Sprintf("details.c%s.ps%d.p%d", params.Category, params.PageSize, params.Page)
+	rkey := fmt.Sprintf("lost_find.c%s.ps%d.p%d", params.Category, params.PageSize, params.Page)
 	if params.My == 0 {
 		data, err := cache.Get(rkey)
 		if err == nil {
@@ -56,7 +58,7 @@ func Lists(ctx iris.Context) {
 	if params.My == 1 {
 		scope = scope.Where("user_id = ?", middleware.GetUserID(ctx))
 	} else {
-		scope = scope.Where("status = 1")
+		scope = scope.Where("status = ?", model.LostFindShow)
 	}
 	scope.Find(&lists)
 	api.Success(ctx, "获取成功！", lists)
@@ -184,6 +186,7 @@ func Update(ctx iris.Context) {
 	if data.Category == model.LostFindCard && data.Pictures != lost.Pictures {
 		data.Status = 0
 		data.CardInfo = ""
+		data.CreatedAt = time.Now()
 		isOCR = true
 	}
 
