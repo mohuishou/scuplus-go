@@ -14,6 +14,7 @@ import (
 	"github.com/mohuishou/scuplus-go/api"
 	cache "github.com/mohuishou/scuplus-go/cache/lists"
 	"github.com/mohuishou/scuplus-go/middleware"
+	"github.com/mohuishou/scuplus-go/util/wechat"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -218,6 +219,14 @@ func param(ctx iris.Context) *model.LostFind {
 	validate := validator.New()
 	if err := validate.Struct(params); err != nil {
 		api.Error(ctx, 80400, "参数错误！", err.Error())
+		return nil
+	}
+
+	// 内容安全检查
+	b, _ := jsoniter.Marshal(&params)
+	res, err := wechat.MsgCheck(string(b))
+	if !res {
+		api.Error(ctx, 80005, "包含违法违规内容！", err)
 		return nil
 	}
 

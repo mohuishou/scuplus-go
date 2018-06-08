@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"errors"
+
 	"github.com/json-iterator/go"
 )
 
@@ -42,7 +44,7 @@ func MsgCheck(content string) (bool, error) {
 		return false, err
 	}
 	if data.ErrCode != 0 {
-		return false, err
+		return false, errors.New(data.ErrMsg)
 	}
 	return true, nil
 }
