@@ -63,6 +63,8 @@ func autoMigrate() {
 		&CourseCount{},
 		&LostFind{},
 		&HelpItem{},
+		&ContactCategory{},
+		&ContactBook{},
 	)
 }
 
