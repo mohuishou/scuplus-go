@@ -7,7 +7,6 @@ import (
 	"github.com/mohuishou/scuplus-go/api/ecard"
 	"github.com/mohuishou/scuplus-go/api/jwc"
 	"github.com/mohuishou/scuplus-go/api/library"
-	"github.com/mohuishou/scuplus-go/api/lost_find"
 	"github.com/mohuishou/scuplus-go/api/user"
 	"github.com/mohuishou/scuplus-go/api/wechat"
 )
@@ -47,17 +46,16 @@ func Routes(app *iris.Application) {
 	app.Get("/cos", api.COS)
 	app.Get("/wechat/token", wechat.Token)
 	app.Get("/helps", api.GetHelps)
+
 	// 课程相关api
 	CourseRoutes(app)
 
 	// 失物招领api
 	LostFindRoutes(app)
-}
 
-// LostFindRoutes 失物招领api
-func LostFindRoutes(app *iris.Application) {
-	app.Post("/lost_find", lostFind.Create)
-	app.Get("/lost_finds", lostFind.Lists)
-	app.Get("/lost_find/{id}", lostFind.Get)
-	app.Post("/lost_find/update", lostFind.Update)
+	// 校园通讯录
+	ContactRoutes(app)
+
+	// 学术讲座
+	LectureRoutes(app)
 }
