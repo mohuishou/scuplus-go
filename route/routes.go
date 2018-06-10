@@ -55,4 +55,7 @@ func Routes(app *iris.Application) {
 
 	// 校园通讯录
 	ContactRoutes(app)
+
+	// 学术讲座
+	LectureRoutes(app)
 }

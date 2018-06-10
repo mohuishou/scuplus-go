@@ -65,6 +65,7 @@ func autoMigrate() {
 		&HelpItem{},
 		&ContactCategory{},
 		&ContactBook{},
+		&Lecture{},
 	)
 }
 
