@@ -55,6 +55,7 @@ func calCourceAll(course model.Course) {
 	model.DB().Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).FirstOrCreate(&courseCount)
 	courseCount.AvgGrade = sum.Total / all
 	courseCount.FailRate = fail / all
+	courseCount.GradeAll = int(all)
 	// 评教信息统计
 	model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).Select([]string{"AVG(star) star"}).Scan(&courseCount)
 	countEva(course, "call_name").Scan(&courseCount)
