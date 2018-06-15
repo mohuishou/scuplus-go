@@ -36,18 +36,26 @@ func getVersion() (float64, error) {
 	if err != nil {
 		return -1, err
 	}
+	lines := stdout.String()
+	start := strings.IndexByte(lines, '[')
+	end := strings.IndexByte(lines, ']')
 
-	// The output should be like "Microsoft Windows [Version XX.X.XXXXXX]"
-	version := strings.Replace(stdout.String(), "\n", "", -1)
-	version = strings.Replace(version, "\r\n", "", -1)
-
-	x1 := strings.Index(version, "[Version")
-
-	if x1 == -1 || strings.Index(version, "]") == -1 {
+	winLine := lines[start+1 : end]
+	if len(winLine) < 10 {
+		return -1, errors.New("can't determine Windows version")
+	}
+	// Version 10.0.15063
+	versionsLine := winLine[strings.IndexByte(winLine, ' ')+1:]
+	// 10.0.15063
+	versionSems := strings.Split(versionsLine, ".")
+	// 10
+	// 0
+	// 15063
+	if len(versionSems) < 3 {
 		return -1, errors.New("can't determine Windows version")
 	}
 
-	return strconv.ParseFloat(version[x1+9:x1+13], 64)
+	return strconv.ParseFloat(versionSems[0], 64)
 }
 
 func init() {

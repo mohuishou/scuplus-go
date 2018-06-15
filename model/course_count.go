@@ -15,6 +15,7 @@ type CourseCount struct {
 	Good     int     `json:"good"`      // 好评人数
 	Normal   int     `json:"normal"`    // 一般评价人数
 	Bad      int     `json:"bad"`       // 差评人数
+	GradeAll int     `json:"grade_all"` // 成绩统计人数
 	Campus   string  `json:"campus"`    // 校区
 	Day      int     `json:"day"`       // 周几上课
 	Credit   float64 `json:"credit"`    // 学分

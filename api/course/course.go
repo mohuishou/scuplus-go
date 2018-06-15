@@ -3,6 +3,8 @@ package course
 import (
 	"fmt"
 
+	"strings"
+
 	"github.com/json-iterator/go"
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
@@ -12,6 +14,9 @@ import (
 	"github.com/mohuishou/scuplus-go/util/wechat"
 	validator "gopkg.in/go-playground/validator.v9"
 )
+
+// MinGradeAll 最少需要多少条统计
+const MinGradeAll = 10
 
 // GetParams Get 参数
 type GetParams struct {
@@ -55,11 +60,15 @@ func GetCourses(ctx iris.Context) {
 	if params.Campus != "" {
 		scope = scope.Where("campus = ?", params.Campus)
 	}
-	if params.Order != "" {
-		scope = scope.Order(params.Order)
-	} else {
-		scope = scope.Order("avg_grade desc")
+
+	if params.Order == "" {
+		params.Order = "avg_grade desc"
 	}
+	scope = scope.Order(params.Order)
+	if strings.Contains(params.Order, "avg_grade") {
+		scope = scope.Where("grade_all > ?", MinGradeAll)
+	}
+
 	if err := scope.Find(&courseCounts).Error; err != nil {
 		api.Error(ctx, 70001, "获取错误", nil)
 		return

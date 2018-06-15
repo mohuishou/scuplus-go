@@ -4,6 +4,12 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"io"
+	"io/ioutil"
+	"bytes"
+	"log"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 //TeacherParse 教师解析，返回包含每个教师名字的数组
@@ -62,4 +68,25 @@ func SessionParse(session string) (data string, err error) {
 	}
 	data = data + sessions[1]
 	return data, nil
+}
+
+//GbkToUtf8 编码转换
+func GbkToUtf8(body io.Reader) (io.Reader, error) {
+	reader := transform.NewReader(body, simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	utfBody := bytes.NewReader(d)
+	return utfBody, nil
+}
+
+//Utf8ToGbk 编码转换
+func Utf8ToGbk(s string) string {
+	data, err := ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(s)), simplifiedchinese.GBK.NewEncoder()))
+	if err != nil {
+		log.Println("编码转换错误:", err)
+		return ""
+	}
+	return string(data)
 }
