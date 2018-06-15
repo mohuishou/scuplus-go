@@ -112,10 +112,12 @@ func Get(ctx iris.Context) {
 		courseCount     model.CourseCount
 		courses         []model.Course
 		courseEvaluates []model.CourseEvaluate
+		courseGrades    []model.CourseGrade
 	)
 	scope := model.DB().Where("course_id = ? and lesson_id = ?", courseID, lessonID)
 	scope.Find(&courseCount)
 	scope.Find(&courses)
+	scope.Find(&courseGrades)
 
 	// todo: 获取用户昵称，用户头像,用户是否已经点赞
 	scope.Find(&courseEvaluates)
@@ -133,6 +135,7 @@ func Get(ctx iris.Context) {
 		"course_count":     courseCount,
 		"courses":          courses,
 		"course_evaluates": courseEvaluates,
+		"course_grades":    courseGrades,
 		"has":              has,      // true: 拥有该门课程, false: 不拥有
 		"evaluate":         evaluate, // 是否已经评价
 	})
