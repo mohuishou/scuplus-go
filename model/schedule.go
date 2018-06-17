@@ -30,6 +30,12 @@ type Schedule struct {
 	UserID       uint
 }
 
+// AfterCreate 新建之后回调
+func (s *Schedule) AfterCreate() error {
+	CBNewCourseEvaluate(s.UserID, s.CourseID, s.LessonID, s.CourseName)
+	return nil
+}
+
 // ScheduleList 课程表数组
 type ScheduleList []Schedule
 

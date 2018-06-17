@@ -429,7 +429,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "78a821b3af489836c62a1c8044b8b57b908a227e"
+  revision = "56708c720c457ab6dc1e4f20872d435e73573ad0"
 
 [[projects]]
   name = "github.com/opentracing/opentracing-go"
@@ -609,6 +609,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "46b54f0fd9592b1b628083a978ba840dbb2cfd0fa050eec8d1062301be66b027"
+  inputs-digest = "cb15e746904344ffb9a8c4f2ea6eea4ac95021b27072a16ab3382257e6e9515c"
   solver-name = "gps-cdcl"
   solver-version = 1

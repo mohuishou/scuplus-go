@@ -58,4 +58,7 @@ func Routes(app *iris.Application) {
 
 	// 学术讲座
 	LectureRoutes(app)
+
+	// 评教
+	EvaluateRoutes(app)
 }
