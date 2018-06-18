@@ -41,7 +41,7 @@ func EvaluateList(ctx iris.Context) {
 	var evaList []model.Evaluate
 	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize)
 	scope = scope.Select([]string{"id", "teacher_name", "evaluate_type", "course_name", "status", "year", "term"})
-	scope.Order("year desc").Order("term desc").Find(&evaList)
+	scope.Where("user_id = ?", uid).Order("year desc").Order("term desc").Find(&evaList)
 	api.Success(ctx, msg, evaList)
 }
 
