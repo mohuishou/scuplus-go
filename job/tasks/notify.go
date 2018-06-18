@@ -12,6 +12,8 @@ import (
 
 	"io/ioutil"
 
+	"log"
+
 	"github.com/mohuishou/scuplus-go/cache/msgid"
 	"github.com/mohuishou/scuplus-go/config"
 	"github.com/mohuishou/scuplus-go/model"
@@ -20,6 +22,10 @@ import (
 
 // NotifyGrade 发送成绩更新通知
 func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
+	if !notifyCheck(uid, "grade") {
+		log.Println("用户关闭了成绩通知", uid)
+		return nil
+	}
 	// 获取模板id
 	msgID := msgid.Get(uid)
 	if msgID == "" {
@@ -55,6 +61,11 @@ func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
 
 // NotifyBook 发送图书到期通知
 func NotifyBook(uid uint, bookName, end string, day int64) error {
+	if !notifyCheck(uid, "library") {
+		log.Println("用户关闭了图书通知", uid)
+		return nil
+	}
+
 	// 获取模板id
 	msgID := msgid.Get(uid)
 	if msgID == "" {
@@ -87,6 +98,11 @@ func NotifyBook(uid uint, bookName, end string, day int64) error {
 
 // NotifyExam 发送考试提醒
 func NotifyExam(uid uint, courseName, date, time, address, site, courseType string, day int64) error {
+	if !notifyCheck(uid, "exam") {
+		log.Println("用户关闭了考试通知", uid)
+		return nil
+	}
+
 	// 获取模板id
 	msgID := msgid.Get(uid)
 	if msgID == "" {
@@ -292,4 +308,21 @@ func notify(uid uint, data map[string]interface{}) error {
 		return errors.New(res["errmsg"].(string))
 	}
 	return nil
+}
+
+func notifyCheck(uid uint, notifyType string) bool {
+	userConf := model.UserConfig{}
+	if err := model.DB().Where("user_id = ?", uid).Find(&userConf).Error; err != nil {
+		log.Println("用户配置获取错误：", uid, err)
+		return true
+	}
+	switch notifyType {
+	case "grade":
+		return (userConf.Notify & model.NotifyGrade) == model.NotifyGrade
+	case "exam":
+		return (userConf.Notify & model.NotifyExam) == model.NotifyExam
+	case "library":
+		return (userConf.Notify & model.NotifyLibrary) == model.NotifyLibrary
+	}
+	return true
 }

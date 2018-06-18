@@ -19,5 +19,4 @@ func TestUpdateGrades(t *testing.T) {
 
 	grades, err := UpdateGrades(1)
 	t.Log(grades, err)
-
 }

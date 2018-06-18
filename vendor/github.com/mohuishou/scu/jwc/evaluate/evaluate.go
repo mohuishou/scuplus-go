@@ -128,6 +128,9 @@ func AddEvaluate(c *colly.Collector, evaluate *Evaluate) (err error) {
 		return errors.New("您已评价：" + evaluate.CourseName + "-" + evaluate.TeacherName)
 	}
 
+	// 准备工作，必须先访问列表页
+	c.Visit(EvaluateListURL)
+
 	// 第一步：获取评教w问卷页面
 	params := evaluate.getParams()
 	var names []string

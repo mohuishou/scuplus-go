@@ -24,7 +24,7 @@ func CourseRoutes(app *iris.Application) {
 	courseApp.Get("/", course.Get)
 	courseApp.Get("/all", course.GetCourses)
 	courseApp.Post("/search", course.Search)
-	courseApp.Post("/comment", course.Comment)
-	courseApp.Post("/comment/update", course.UpdateComment)
+	courseApp.Post("/comment", course.UpdateComment)
 	courseApp.Get("/comment", course.GetComment)
+	courseApp.Get("/comments", course.CommentList)
 }

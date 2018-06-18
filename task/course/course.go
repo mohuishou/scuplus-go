@@ -12,6 +12,8 @@ import (
 
 	"github.com/mohuishou/scu/jwc"
 
+	"time"
+
 	"github.com/mohuishou/scuplus-go/model"
 )
 
@@ -74,6 +76,14 @@ func updateCourses(c *colly.Collector, pageNo int) error {
 				teachers = append(teachers, teacher)
 			}
 			c.Teachers = teachers
+
+			// 如果数据库有10天之前的相同课程号课序号的课程，则删除
+			tx.Where(model.Course{
+				CourseID: c.CourseID,
+				LessonID: c.LessonID,
+			}).Where("updated_at < ?",
+				time.Now().AddDate(0, 0, -10),
+			).Delete(model.Course{})
 
 			// 获取数据库已有信息, 存在则更新不存在则新建
 			oldCourse := model.Course{}

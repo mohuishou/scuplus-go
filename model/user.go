@@ -50,6 +50,15 @@ func (u *User) Login() (string, error) {
 	return middleware.CreateToken(uid)
 }
 
+func (u *User) AfterCreate(scope *gorm.Scope) error {
+	// 新增用户之后，新增用户设置
+	DB().Create(&UserConfig{
+		UserID: u.ID,
+		Notify: NotifyAll,
+	})
+	return nil
+}
+
 // BeforeSave callback
 func (u *User) BeforeSave(scope *gorm.Scope) error {
 	if u.Password != "" {

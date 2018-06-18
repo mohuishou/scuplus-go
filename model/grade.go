@@ -20,9 +20,15 @@ type Grade struct {
 	Credit     string `json:"credit"`
 	CourseType string `json:"course_type"`
 	Grade      string `json:"grade"`
-	Term       int    `json:"term"`
+	Term       int    `json:"term"` //0: 秋季学期, 1: 春季学期
 	Year       int    `json:"year"`
 	TermName   string `json:"term_name"`
+}
+
+// AfterCreate 新建之后回调
+func (g *Grade) AfterCreate() error {
+	CBNewCourseEvaluate(g.UserID, g.CourseID, g.LessonID, g.CourseName)
+	return nil
 }
 
 // GetGrades 获取用户的所有成绩
