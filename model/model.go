@@ -33,7 +33,7 @@ func initDB() {
 		log.Fatal("数据库连接错误：", err, conf)
 	}
 	db.DB().SetMaxOpenConns(5)
-	db.LogMode(true)
+	//db.LogMode(true)
 
 	autoMigrate()
 }
@@ -67,6 +67,7 @@ func autoMigrate() {
 		&ContactBook{},
 		&Lecture{},
 		&Evaluate{},
+		&UserConfig{},
 	)
 }
 
