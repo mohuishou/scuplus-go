@@ -33,7 +33,7 @@ func main() {
 func updateGrade() {
 	w := sync.WaitGroup{}
 	count := 0
-	page, pageSize := 1, 1000
+	page, pageSize := 1, 200
 	model.DB().Model(&model.Grade{}).Count(&count)
 	log.Println("成绩总计", count, "条")
 	for ; page < ((count / pageSize) + 1); page++ {
@@ -58,7 +58,7 @@ func updateGrade() {
 func updateSch() {
 	w := sync.WaitGroup{}
 	count := 0
-	page, pageSize := 1, 1000
+	page, pageSize := 1, 200
 	model.DB().Model(&model.Schedule{}).Count(&count)
 	log.Println("课程表总计", count, "条")
 	for ; page < ((count / pageSize) + 1); page++ {
