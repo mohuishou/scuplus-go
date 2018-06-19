@@ -57,7 +57,7 @@ func calCourceAll(course model.Course) {
 	courseCount.FailRate = fail / all
 	courseCount.GradeAll = int(all)
 	// 评教信息统计
-	model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).Select([]string{"AVG(star) star"}).Scan(&courseCount)
+	model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ? and status = 1", course.CourseID, course.LessonID).Select([]string{"AVG(star) star"}).Scan(&courseCount)
 	countEva(course, "call_name").Scan(&courseCount)
 	countEva(course, "exam_type").Scan(&courseCount)
 	countEva(course, "task").Scan(&courseCount)
