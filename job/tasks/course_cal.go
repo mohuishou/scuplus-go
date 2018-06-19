@@ -79,11 +79,11 @@ func calCourceAll(course model.Course) {
 }
 
 func countEva(course model.Course, name string) *gorm.DB {
-	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).Select([]string{name, "Count(*) c"}).Group(name).Order("c desc").Limit(1)
+	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ? and status = 1", course.CourseID, course.LessonID).Select([]string{name, "Count(*) c"}).Group(name).Order("c desc").Limit(1)
 }
 
 func countEvaStar(course model.Course, name, star string) *gorm.DB {
-	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ? and star = ?", course.CourseID, course.LessonID, star).Select([]string{"Count(*) " + name}).Group("star")
+	return model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ? and star = ? and status = 1", course.CourseID, course.LessonID, star).Select([]string{"Count(*) " + name}).Group("star")
 }
 
 func calCourceGrade(course model.Course) {
