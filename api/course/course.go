@@ -61,7 +61,7 @@ func GetCourses(ctx iris.Context) {
 	if params.Order == "" {
 		params.Order = "avg_grade desc"
 	}
-	scope = scope.Order(params.Order)
+	scope = scope.Order(params.Order).Order("good desc")
 	if strings.Contains(params.Order, "avg_grade") {
 		scope = scope.Where("grade_all > ?", MinGradeAll)
 	}
