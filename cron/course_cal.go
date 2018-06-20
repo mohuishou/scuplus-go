@@ -11,7 +11,7 @@ import (
 
 // 计算课程分数
 func calCourse() {
-	courses := []model.Course{}
+	courses := []model.CourseCount{}
 	model.DB().Find(&courses)
 	for _, course := range courses {
 		sign := &tasks.Signature{

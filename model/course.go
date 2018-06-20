@@ -1,5 +1,11 @@
 package model
 
+import (
+	"strings"
+
+	"github.com/jinzhu/gorm"
+)
+
 // Course 课程
 type Course struct {
 	Model
@@ -21,4 +27,27 @@ type Course struct {
 	CourseCount     CourseCount      `json:"course_count"`                                            // 课程统计信息
 	CourseEvaluates []CourseEvaluate `gorm:"many2many:course_and_evaluates;" json:"course_evaluates"` // 评价
 	Teachers        []Teacher        `gorm:"many2many:course_teachers;" json:"teachers"`              // 教师
+}
+
+// AfterSave 回调
+func (c *Course) AfterSave(scope *gorm.Scope) error {
+	cc := CourseCount{}
+	DB().FirstOrCreate(&cc, CourseCount{
+		CourseID: c.CourseID,
+		LessonID: c.LessonID,
+	})
+	cc.Name = c.Name
+	cc.Day = c.Day
+	cc.Credit = c.Credit
+	cc.Campus = c.Campus
+	// 教师统计
+	teachers := []Teacher{}
+	DB().Model(c).Related(&teachers, "Teachers")
+	cc.Teacher = ""
+	for _, teacher := range teachers {
+		cc.Teacher = cc.Teacher + "," + teacher.Name
+	}
+	cc.Teacher = strings.Trim(cc.Teacher, ",")
+	DB().Save(&cc)
+	return nil
 }
