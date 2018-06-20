@@ -68,6 +68,7 @@ type COS struct {
 
 // Config 对应config.yml文件的位置
 type Config struct {
+	Debug      bool `toml:"debug"`
 	Port       string
 	Secret     string
 	JwtSecret  string `toml:"jwt_secret"`
