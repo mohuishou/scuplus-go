@@ -150,6 +150,7 @@ func AddEvaluate(ctx iris.Context) {
 		ExamType: params.ExamType,
 		Comment:  params.Comment,
 		Task:     params.Task,
+		Status:   1,
 	}
 	oldCourseEva := model.CourseEvaluate{}
 	model.DB().Where(
