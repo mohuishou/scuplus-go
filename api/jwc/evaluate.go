@@ -145,11 +145,13 @@ func AddEvaluate(ctx iris.Context) {
 
 	// we川大评教
 	courseEva := model.CourseEvaluate{
-		Star:     int(params.Star),
+		Star:     int(params.Star - 2),
 		CallName: params.CallName,
 		ExamType: params.ExamType,
 		Comment:  params.Comment,
 		Task:     params.Task,
+		Status:   1,
+		Score:    1,
 	}
 	oldCourseEva := model.CourseEvaluate{}
 	model.DB().Where(
