@@ -151,6 +151,7 @@ func AddEvaluate(ctx iris.Context) {
 		Comment:  params.Comment,
 		Task:     params.Task,
 		Status:   1,
+		Score:    1,
 	}
 	oldCourseEva := model.CourseEvaluate{}
 	model.DB().Where(
