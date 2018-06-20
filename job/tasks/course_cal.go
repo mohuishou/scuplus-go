@@ -6,6 +6,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 
+	"log"
+
 	"github.com/mohuishou/scuplus-go/model"
 )
 
@@ -80,7 +82,7 @@ func calCourceAll(course model.Course) {
 		courseCount.Teacher = courseCount.Teacher + "," + teacher.Name
 	}
 	courseCount.Teacher = strings.Trim(courseCount.Teacher, ",")
-
+	log.Println("即将更新课程数据：", courseCount)
 	model.DB().Save(&courseCount)
 }
 
