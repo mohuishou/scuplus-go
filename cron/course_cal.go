@@ -47,23 +47,28 @@ func courseCountEvaluate() {
 		callNameCount map[int]int
 		taskCount     map[int]int
 		examTypeCount map[int]int
+
+		// 运行统计
+		runCount int
 	)
-	for _, courseEva := range courseEvas {
+	for k, courseEva := range courseEvas {
 		if courseID != courseEva.CourseID || lessonID != courseEva.LessonID {
 			if courseID != "" && lessonID != "" {
 				star = float64(sum) / float64(all)
 				courseCount := model.CourseCount{}
 				if err := model.DB().Where("course_id = ? and lesson_id = ?", courseID, lessonID).First(&courseCount).Error; err != nil {
-					return
+					log.Printf("%s -- %s -- %s,不存在", courseID, lessonID, courseEvas[k-1].CourseName)
+				} else {
+					courseCount.Star = star
+					courseCount.Good = good
+					courseCount.Normal = normal
+					courseCount.Bad = bad
+					courseCount.ExamType = max(examTypeCount)
+					courseCount.Task = max(taskCount)
+					courseCount.CallName = max(callNameCount)
+					model.DB().Save(&courseCount)
+					runCount++
 				}
-				courseCount.Star = star
-				courseCount.Good = good
-				courseCount.Normal = normal
-				courseCount.Bad = bad
-				courseCount.ExamType = max(examTypeCount)
-				courseCount.Task = max(taskCount)
-				courseCount.CallName = max(callNameCount)
-				model.DB().Save(&courseCount)
 			}
 			courseID = courseEva.CourseID
 			lessonID = courseEva.LessonID
@@ -88,6 +93,7 @@ func courseCountEvaluate() {
 			bad++
 		}
 	}
+	log.Println("总计成功统计课程:", runCount)
 }
 
 func max(data map[int]int) int {
