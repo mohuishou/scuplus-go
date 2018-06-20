@@ -6,6 +6,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 
+	"log"
+
 	"github.com/mohuishou/scuplus-go/model"
 )
 
@@ -53,8 +55,14 @@ func calCourceAll(course model.Course) {
 	}
 	// 计算平均分
 	model.DB().Where("course_id = ? and lesson_id = ?", course.CourseID, course.LessonID).FirstOrCreate(&courseCount)
-	courseCount.AvgGrade = sum.Total / all
-	courseCount.FailRate = fail / all
+	if all > 0 {
+		courseCount.AvgGrade = sum.Total / all
+		courseCount.FailRate = fail / all
+	} else {
+		courseCount.AvgGrade = 0
+		courseCount.FailRate = 0
+	}
+
 	courseCount.GradeAll = int(all)
 	// 评教信息统计
 	model.DB().Model(&model.CourseEvaluate{}).Where("course_id = ? and lesson_id = ? and status = 1", course.CourseID, course.LessonID).Select([]string{"AVG(star) star"}).Scan(&courseCount)
@@ -74,7 +82,7 @@ func calCourceAll(course model.Course) {
 		courseCount.Teacher = courseCount.Teacher + "," + teacher.Name
 	}
 	courseCount.Teacher = strings.Trim(courseCount.Teacher, ",")
-
+	log.Println("即将更新课程数据：", courseCount)
 	model.DB().Save(&courseCount)
 }
 
