@@ -37,6 +37,9 @@ func (c *Course) AfterSave(scope *gorm.Scope) error {
 		LessonID: c.LessonID,
 	})
 	cc.Name = c.Name
+	cc.Day = c.Day
+	cc.Credit = c.Credit
+	cc.Campus = c.Campus
 	// 教师统计
 	teachers := []Teacher{}
 	DB().Model(c).Related(&teachers, "Teachers")
