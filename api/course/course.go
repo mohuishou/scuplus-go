@@ -61,7 +61,7 @@ func GetCourses(ctx iris.Context) {
 	if params.Order == "" {
 		params.Order = "avg_grade desc"
 	}
-	scope = scope.Order(params.Order)
+	scope = scope.Order(params.Order).Order("good desc")
 	if strings.Contains(params.Order, "avg_grade") {
 		scope = scope.Where("grade_all > ?", MinGradeAll)
 	}
@@ -81,22 +81,38 @@ func GetCourses(ctx iris.Context) {
 
 // SearchParams Get 参数
 type SearchParams struct {
-	Name     string `form:"name"` // 搜索的课程名
-	Page     int    `form:"page"`
-	PageSize int    `form:"page_size"`
+	Name        string `form:"name"`         // 搜索的课程名
+	TeacherName string `form:"teacher_name"` // 搜索的教师名
+	Order       string `form:"order"`        // 排序方式
+	Page        int    `form:"page"`
+	PageSize    int    `form:"page_size"`
 }
 
 // Search 课程搜索
 func Search(ctx iris.Context) {
 	params := SearchParams{}
 	ctx.ReadForm(&params)
-	if params.Name == "" {
+	if params.Name == "" && params.TeacherName == "" {
 		api.Error(ctx, 70400, "参数错误", nil)
 		return
 	}
 	var courseCounts []model.CourseCount
-	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize).Order("avg_grade desc")
-	if err := scope.Where("name like ?", "%"+params.Name+"%").Find(&courseCounts).Error; err != nil {
+	scope := model.DB().Offset((params.Page - 1) * params.PageSize).Limit(params.PageSize)
+
+	if params.Name != "" {
+		scope = scope.Where("name like ?", "%"+params.Name+"%")
+	}
+
+	if params.TeacherName != "" {
+		scope = scope.Where("teacher like ?", "%"+params.TeacherName+"%")
+	}
+
+	if params.Order == "" {
+		params.Order = "avg_grade desc"
+	}
+	scope = scope.Order(params.Order).Order("good desc")
+
+	if err := scope.Find(&courseCounts).Error; err != nil {
 		api.Error(ctx, 70001, "获取错误", nil)
 		return
 	}
