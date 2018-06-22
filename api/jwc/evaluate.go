@@ -160,6 +160,8 @@ func AddEvaluate(ctx iris.Context) {
 		eva.CourseID,
 		eva.LessonID,
 	).Find(&oldCourseEva)
-	model.DB().Model(&oldCourseEva).Updates(courseEva)
+	if oldCourseEva.ID > 0 {
+		model.DB().Model(&oldCourseEva).Updates(courseEva)
+	}
 	api.Success(ctx, "评教成功", nil)
 }
