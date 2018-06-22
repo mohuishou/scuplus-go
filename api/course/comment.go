@@ -1,6 +1,8 @@
 package course
 
 import (
+	"log"
+
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scuplus-go/api"
@@ -66,9 +68,19 @@ func UpdateComment(ctx iris.Context) {
 		return
 	}
 
-	if err := model.DB().Model(&model.CourseEvaluate{
-		Model: model.Model{ID: courseEvaluate.ID},
-	}).Updates(courseEvaluate).Error; err != nil {
+	// 获取权限
+	old := model.CourseEvaluate{}
+	if err := model.DB().Find(&old, courseEvaluate.ID).Error; err != nil {
+		api.Error(ctx, 70400, "参数错误！", nil)
+		return
+	}
+	if old.UserID != courseEvaluate.UserID {
+		api.Error(ctx, 70401, "参数错误！", nil)
+		log.Println("用户权限错误！", courseEvaluate.UserID)
+		return
+	}
+
+	if err := model.DB().Model(&old).Updates(courseEvaluate).Error; err != nil {
 		api.Error(ctx, 70002, "更新失败！", err)
 		return
 	}
