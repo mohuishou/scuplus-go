@@ -17,6 +17,7 @@ func TestUpdateGrades(t *testing.T) {
 
 	// fmt.Println(bs.Difference(as))
 
-	grades, err := UpdateGrades(1)
-	t.Log(grades, err)
+	//grades, err := UpdateGrades(1)
+	//t.Log(grades, err)
+	t.Log(UpdateGraduateSchedule(1, 2017, 2))
 }

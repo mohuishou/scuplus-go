@@ -421,6 +421,7 @@
     "ecard",
     "ehall",
     "ehall/grade",
+    "ehall/schdule",
     "jwc",
     "jwc/course",
     "jwc/evaluate",
@@ -611,6 +612,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bd9c0db9a823f1d9ac506b3188281a34a5ebe30c5dfe37cd8067615ab35057c0"
+  inputs-digest = "1e16ade5e5df2690fdc8aee5170b24e985311b901fc0e1a221c09d2f640a1b02"
   solver-name = "gps-cdcl"
   solver-version = 1

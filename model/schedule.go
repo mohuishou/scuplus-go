@@ -55,10 +55,6 @@ func UpdateSchedules(userID uint, term string) error {
 	}
 
 	schedules := schedule.Get(c)
-	if len(schedules) == 0 {
-		return errors.New("没有获取课程表数据")
-	}
-
 	if len(schedules) < 1 {
 		return errors.New("没有获取到新的数据，请查看教务处")
 	}
