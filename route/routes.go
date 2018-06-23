@@ -31,6 +31,7 @@ func Routes(app *iris.Application) {
 	app.Post("/user/msg_id", user.MsgID)
 	app.Post("/user/config/notify", user.UpdateNotify)
 	app.Get("/user/config/notify", user.GetNotify)
+	app.Post("/user/config/type", user.UpdateUserType)
 
 	app.Post("/login", api.Login)
 	app.Post("/jwc/bind", api.BindJwc)
