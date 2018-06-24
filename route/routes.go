@@ -40,4 +40,7 @@ func Routes(app *iris.Application) {
 
 	// 评教
 	EvaluateRoutes(app)
+
+	// 研究生
+	GraduateRoutes(app)
 }

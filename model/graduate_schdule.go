@@ -15,7 +15,7 @@ type GraduateSchedule struct {
 	Address    string `json:"address"`     // 上课地点
 	Day        int    `json:"day"`         // 上课星期
 	SessionInt int    `json:"session_int"` // 上课节次
-	Week       string `json:"week"`        // 上课周次
+	AllWeek    string `json:"all_week"`    // 上课周次
 	YearTerm   string `json:"year_term"`   // 学年学期
 	Term       int    `json:"term"`        //0: 秋季学期, 1: 春季学期
 	Year       int    `json:"year"`
@@ -31,7 +31,7 @@ func UpdateGraduateSchedule(uid uint, year, term int) error {
 	}
 
 	// 2. get new schedules
-	schedules, err := schdule.Get(c, fmt.Sprintf("%d%d", year, term))
+	schedules, err := schdule.Get(c, fmt.Sprintf("%d%d", year, term+1))
 	if err != nil {
 		return err
 	}
@@ -65,9 +65,9 @@ func (s *GraduateSchedule) convert(sch schdule.Schedule, uid uint) {
 	s.Address = sch.Address
 	s.Day = sch.Day
 	s.SessionInt = sch.SessionInt
-	s.Week = sch.Week
+	s.AllWeek = sch.Week
 	s.YearTerm = sch.YearTerm
-	s.Term = sch.Term
+	s.Term = sch.Term - 1
 	s.Year = sch.Year
 	s.Session = sch.Session
 	s.UserID = uid
