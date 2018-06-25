@@ -28,8 +28,6 @@ func EvaluateList(ctx iris.Context) {
 		api.Error(ctx, 84400, "参数错误！", err)
 		return
 	}
-	// Todo: 前端有个bug，暂时将所有课程返回，新版本之后再去除掉
-	//params.PageSize = 100
 
 	msg := "获取成功"
 

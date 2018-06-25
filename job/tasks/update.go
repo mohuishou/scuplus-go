@@ -62,5 +62,5 @@ func UpdateForNew(uid uint) error {
 	if err != nil {
 		log.Println(err)
 	}
-	return model.UpdateSchedules(uid, "1")
+	return err
 }

@@ -7,8 +7,9 @@ import (
 
 // EvaluateRoutes 评教API
 func EvaluateRoutes(app *iris.Application) {
-	app.Get("/evaluates", jwc.EvaluateList)
-	app.Post("/evaluates", jwc.UpdateEvaluateList)
-	app.Get("/evaluate/{id}", jwc.Evaluate)
-	app.Post("/evaluate", jwc.AddEvaluate)
+	evaluateApp := app.Party("/", VerifyJWC)
+	evaluateApp.Get("/evaluates", jwc.EvaluateList)
+	evaluateApp.Post("/evaluates", jwc.UpdateEvaluateList)
+	evaluateApp.Get("/evaluate/{id}", jwc.Evaluate)
+	evaluateApp.Post("/evaluate", jwc.AddEvaluate)
 }

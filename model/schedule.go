@@ -26,7 +26,8 @@ type Schedule struct {
 	Campus       string `json:"campus"`
 	Building     string `json:"building"`
 	Classroom    string `json:"classroom"`
-	Term         string // 学期，例如：2017-2018年春季学期
+	Term         int    // 学期
+	Year         int
 	UserID       uint
 }
 
@@ -41,56 +42,56 @@ type ScheduleList []Schedule
 
 // GetSchedules 获取某个用户的某个学期课程表信息
 // TODO: 待完善
-func GetSchedules(userID uint, term string) []Schedule {
+func GetSchedules(userID uint, year, term int) []Schedule {
 	var schedules []Schedule
-	DB().Where(Schedule{UserID: userID, Term: term}).Find(&schedules)
+	DB().Where(Schedule{
+		UserID: userID,
+		Term:   term,
+		Year:   year,
+	}).Find(&schedules)
 	return schedules
 }
 
 // UpdateSchedules 更新课程表
-func UpdateSchedules(userID uint, term string) error {
+func UpdateSchedules(userID uint, year, term int) error {
 	c, err := GetJwc(userID)
 	if err != nil {
 		return err
 	}
 
 	schedules := schedule.Get(c)
-	if len(schedules) == 0 {
-		return errors.New("没有获取课程表数据")
-	}
-
 	if len(schedules) < 1 {
 		return errors.New("没有获取到新的数据，请查看教务处")
 	}
 
-	// 删除所有的数据，软删除只保留一个版本
-	// TODO: 待后期优化
-	DB().Unscoped().Where("deleted_at IS NOT NULL").Delete(Schedule{}, Schedule{UserID: userID, Term: term})
+	// 删除所有的数据
+	DB().Unscoped().Delete(Schedule{}, Schedule{
+		UserID: userID,
+		Term:   term,
+		Year:   year,
+	})
 
-	if err := DB().Delete(Schedule{}, Schedule{UserID: userID, Term: term}).Error; err != nil {
-		return err
-	}
-
-	for _, schedule := range schedules {
+	for _, v := range schedules {
 		newSchedule := Schedule{
+			Year:         year,
 			Term:         term,
 			UserID:       userID,
-			Project:      schedule.Project,
-			CourseID:     schedule.CourseID,
-			CourseName:   schedule.CourseName,
-			LessonID:     schedule.LessonID,
-			Credit:       schedule.Credit,
-			CourseType:   schedule.CourseType,
-			ExamType:     schedule.ExamType,
-			Teachers:     strings.Join(schedule.Teachers, ","),
-			StudyWay:     schedule.StudyWay,
-			ChooseStatus: schedule.ChooseType,
-			AllWeek:      schedule.AllWeek,
-			Day:          schedule.Day,
-			Session:      schedule.Session,
-			Campus:       schedule.Campus,
-			Building:     schedule.Building,
-			Classroom:    schedule.Classroom,
+			Project:      v.Project,
+			CourseID:     v.CourseID,
+			CourseName:   v.CourseName,
+			LessonID:     v.LessonID,
+			Credit:       v.Credit,
+			CourseType:   v.CourseType,
+			ExamType:     v.ExamType,
+			Teachers:     strings.Join(v.Teachers, ","),
+			StudyWay:     v.StudyWay,
+			ChooseStatus: v.ChooseType,
+			AllWeek:      v.AllWeek,
+			Day:          v.Day,
+			Session:      v.Session,
+			Campus:       v.Campus,
+			Building:     v.Building,
+			Classroom:    v.Classroom,
 		}
 
 		if err := DB().Create(&newSchedule).Error; err != nil {

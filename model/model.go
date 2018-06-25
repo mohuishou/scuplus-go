@@ -68,6 +68,8 @@ func autoMigrate() {
 		&Lecture{},
 		&Evaluate{},
 		&UserConfig{},
+		&GraduateGrade{},
+		&GraduateSchedule{},
 	)
 }
 

@@ -42,12 +42,15 @@ func Login(ctx iris.Context) {
 
 	userLibrary := model.UserLibrary{}
 	model.DB().Model(&user).Related(&userLibrary)
+	userConf := model.UserConfig{}
+	model.DB().Where("user_id = ?", user.ID).Find(&userConf)
 
 	Success(ctx, "登录成功！", map[string]interface{}{
 		"token":          token,
 		"jwc_verify":     user.JwcVerify,
 		"verify":         user.Verify,
 		"library_verify": userLibrary.Verify,
+		"user_type":      userConf.UserType,
 	})
 }
 
