@@ -11,12 +11,12 @@ import (
 // Exam 考表
 type Exam struct {
 	Model
-	UserID     uint      `json:"user_id"`
-	Name       string    `json:"name"`
+	UserID     uint      `json:"user_id" gorm:"unique_index:uid_name_course"`
+	Name       string    `json:"name" gorm:"unique_index:uid_name_course"`
 	Campus     string    `json:"campus"`
 	Building   string    `json:"building"`
 	Classroom  string    `json:"classroom"`
-	CourseName string    `json:"course_name"`
+	CourseName string    `json:"course_name" gorm:"unique_index:uid_name_course"`
 	Week       string    `json:"week"`
 	Day        string    `json:"day"`
 	Date       string    `json:"date"`
@@ -68,11 +68,14 @@ func UpdateExam(uid uint) error {
 
 	for _, value := range exams {
 		e := convertExam(value, uid)
-		// 仅创建最新的考表
-		if e.StartTime.Unix() > lastExam.StartTime.Unix() {
-			if err := DB().Create(&e).Error; err != nil {
-				log.Println("[Error] 考表更新失败，数据库错误", err)
-			}
+		old := Exam{}
+		DB().FirstOrCreate(&old, Exam{
+			UserID:     uid,
+			Name:       value.Name,
+			CourseName: value.CourseName,
+		})
+		if err := DB().Model(&old).Updates(e).Error; err != nil {
+			log.Println("[Error] 考表更新失败，数据库错误", err)
 		}
 	}
 
