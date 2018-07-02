@@ -65,6 +65,9 @@ func GetCourses(ctx iris.Context) {
 	if strings.Contains(params.Order, "avg_grade") {
 		scope = scope.Where("grade_all > ?", MinGradeAll)
 	}
+	if strings.Contains(params.Order, "star") {
+		scope = scope.Where("star > 0")
+	}
 
 	if err := scope.Find(&courseCounts).Error; err != nil {
 		api.Error(ctx, 70001, "获取错误", nil)
@@ -142,7 +145,7 @@ func Get(ctx iris.Context) {
 	scope.Find(&courseGrades)
 
 	// todo: 获取用户昵称，用户头像,用户是否已经点赞
-	scope.Where("status = 1").Find(&courseEvaluates)
+	scope.Where("status = 1").Order("updated_at desc").Find(&courseEvaluates)
 
 	// 获取用户是否有该门课程
 	uid := middleware.GetUserID(ctx)
