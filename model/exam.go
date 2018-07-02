@@ -30,7 +30,7 @@ type Exam struct {
 // convertExam 转换为model
 func convertExam(e exam.Exam, uid uint) Exam {
 	timeStr := e.Date + " " + strings.Split(e.Time, "-")[0]
-	startTime, err := time.Parse("2006-01-02 15:04", timeStr)
+	startTime, err := time.ParseInLocation("2006-01-02 15:04", timeStr, time.Local)
 	if err != nil {
 		log.Println("时间转换失败！")
 	}
