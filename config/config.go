@@ -71,6 +71,7 @@ type Config struct {
 	Debug      bool `toml:"debug"`
 	Port       string
 	Secret     string
+	JobWorkers int    `toml:"job_workers"`
 	JwtSecret  string `toml:"jwt_secret"`
 	Mysql      `toml:"mysql"`
 	CourseTask `toml:"course_task"`
