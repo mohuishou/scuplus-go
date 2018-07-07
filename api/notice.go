@@ -7,6 +7,16 @@ import (
 	"github.com/mohuishou/scuplus-go/model"
 )
 
+func GetNewestNotice(ctx iris.Context) {
+	notice := model.Notice{}
+	err := model.DB().Select([]string{"id", "abstract"}).Where("newest = 1").Last(&notice).Error
+	if err != nil {
+		Error(ctx, 404, "没有最新通知", nil)
+		return
+	}
+	Success(ctx, "获取成功", notice)
+}
+
 // GetNotices 获取公告列表，公告最多四条
 func GetNotices(ctx iris.Context) {
 	res := []model.Notice{}
