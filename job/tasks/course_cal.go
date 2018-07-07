@@ -56,52 +56,57 @@ func countGradeAll(courseCount *model.CourseCount) {
 
 // calCourseGrade 统计历史成绩数据
 func calCourseGrade(courseCount *model.CourseCount) {
+	// 统计不及格人数
+	// year = -1 尚不及格
+	countGrades(courseCount, -1)
+	// year = -2 曾不及格
+	countGrades(courseCount, -2)
+
 	// 开始年份
 	startYear := 2014
 	// 获取当前年份
 	endYear := time.Now().Year()
 	// 从数据库统计相关人数
 	for i := startYear; i <= endYear; i++ {
-		cg := model.CourseGrade{
-			CourseID: courseCount.CourseID,
-			LessonID: courseCount.LessonID,
-			Year:     i,
-		}
-		model.DB().Where(cg).FirstOrCreate(&cg)
-		// 0 ~ 60
-		model.DB().Model(&model.Grade{}).Where(model.Grade{
-			Year:     i,
-			CourseID: courseCount.CourseID,
-			LessonID: courseCount.LessonID,
-		}).Where("grade > ? and grade < ?", 0, 60).Count(&cg.G0)
-		// 60 ~ 70
-		model.DB().Model(&model.Grade{}).Where(model.Grade{
-			Year:     i,
-			CourseID: courseCount.CourseID,
-			LessonID: courseCount.LessonID,
-		}).Where("grade > ? and grade < ?", 60, 70).Count(&cg.G60)
-		// 70 ~ 80
-		model.DB().Model(&model.Grade{}).Where(model.Grade{
-			Year:     i,
-			CourseID: courseCount.CourseID,
-			LessonID: courseCount.LessonID,
-		}).Where("grade > ? and grade < ?", 70, 80).Count(&cg.G70)
-		// 80 ~ 90
-		model.DB().Model(&model.Grade{}).Where(model.Grade{
-			Year:     i,
-			CourseID: courseCount.CourseID,
-			LessonID: courseCount.LessonID,
-		}).Where("grade > ? and grade < ?", 80, 90).Count(&cg.G80)
-		// 90 ~ 100
-		model.DB().Model(&model.Grade{}).Where(model.Grade{
-			Year:     i,
-			CourseID: courseCount.CourseID,
-			LessonID: courseCount.LessonID,
-		}).Where("grade > ? and grade < ?", 90, 100).Count(&cg.G90)
+		countGrades(courseCount, i)
+	}
+}
 
-		// 计算是否每一项都为0
-		if cg.G0 != 0 || cg.G60 != 0 || cg.G70 != 0 || cg.G80 != 0 || cg.G90 != 0 {
-			model.DB().Save(&cg)
-		}
+func countGrades(courseCount *model.CourseCount, year int) {
+	cg := model.CourseGrade{
+		CourseID: courseCount.CourseID,
+		LessonID: courseCount.LessonID,
+		Year:     year,
+	}
+	model.DB().Where(cg).FirstOrCreate(&cg)
+
+	// 60 ~ 100 分统计， 不及格成绩的年份为-1 或者 -2
+	for i := 60; i < 100; i += 10 {
+		countGradesRange(courseCount, cg, year, i)
+	}
+
+	// 计算是否每一项都为0
+	if (cg.G0 + cg.G60 + cg.G70 + cg.G80 + cg.G90) != 0 {
+		model.DB().Save(&cg)
+	}
+}
+
+func countGradesRange(cc *model.CourseCount, cg model.CourseGrade, year, gradeRange int) {
+	scope := model.DB().Model(&model.Grade{}).Where(model.Grade{
+		Year:     year,
+		CourseID: cc.CourseID,
+		LessonID: cc.LessonID,
+	}).Where("grade > ? and grade < ?", gradeRange, gradeRange+10)
+	switch gradeRange {
+	case 0:
+		scope.Count(&cg.G0)
+	case 60:
+		scope.Count(&cg.G60)
+	case 70:
+		scope.Count(&cg.G70)
+	case 80:
+		scope.Count(&cg.G80)
+	case 90:
+		scope.Count(&cg.G90)
 	}
 }

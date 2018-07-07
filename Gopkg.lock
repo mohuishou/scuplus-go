@@ -432,7 +432,7 @@
     "jwc/util",
     "library"
   ]
-  revision = "e11f8b266b68b42c9b4aa454e677b3b8ef75e23b"
+  revision = "5a6796c8b1fbc5d653de0df346ef980e86a2b107"
 
 [[projects]]
   name = "github.com/opentracing/opentracing-go"

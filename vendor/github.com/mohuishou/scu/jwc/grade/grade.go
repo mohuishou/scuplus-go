@@ -23,7 +23,7 @@ type Grade struct {
 	CourseType        string `json:"course_type"`
 	Grade             string `json:"grade"`
 	Term              int    `json:"term"` //0: 秋季学期, 1: 春季学期
-	Year              int    `json:"year"`
+	Year              int    `json:"year"` //-1: 尚不及格，-2: 曾不及格
 	TermName          string `json:"term_name"`
 }
 
@@ -45,6 +45,12 @@ func get(doc *goquery.Selection, year, term int, termName string) Grades {
 				break
 			}
 			elem.Field(k).SetString(strings.TrimSpace(s.Find("td").Eq(k).Text()))
+		}
+		switch termName {
+		case "尚不及格":
+			grade.Year = -1
+		case "曾不及格":
+			grade.Year = -2
 		}
 		grades = append(grades, grade)
 	})
