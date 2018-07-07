@@ -11,6 +11,7 @@ import (
 func Routes(app *iris.Application) {
 	app.Get("/notices", api.GetNotices)
 	app.Get("/notice/{id}", api.GetNotice)
+	app.Get("/notice/new", api.GetNewestNotice)
 
 	app.Post("/login", api.Login)
 	app.Post("/jwc/bind", api.BindJwc)
