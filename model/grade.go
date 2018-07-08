@@ -35,8 +35,8 @@ func (g *Grade) AfterCreate() error {
 func GetGrades(userID uint) []Grade {
 	grades := make([]Grade, 0)
 	failGrades := make([]Grade, 0)
-	DB().Where("user_id = ? and year < 0", userID).Order("year desc").Find(&failGrades)
-	if err := DB().Where("user_id = ? and year >= 0", userID).Order("year desc, term desc").Find(&grades).Error; err != nil {
+	DB().Where("user_id = ? and year = -1", userID).Order("year desc").Find(&failGrades)
+	if err := DB().Where("user_id = ? and year != -1", userID).Order("year desc, term desc").Find(&grades).Error; err != nil {
 		log.Printf("[Error] GetGrades Fail, userID: %d, err: %s", userID, err.Error())
 	}
 	return append(failGrades, grades...)
