@@ -18,7 +18,7 @@ func UpdateGrade(ctx iris.Context) {
 	uid := middleware.GetUserID(ctx)
 
 	if _, err := model.UpdateGrades(uid); err != nil {
-		api.Error(ctx, 20001, "更新失败", err)
+		api.Error(ctx, 20001, err.Error(), nil)
 		return
 	}
 	api.Success(ctx, "成绩更新成功", nil)

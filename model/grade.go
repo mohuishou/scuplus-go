@@ -125,9 +125,9 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 		g.UserID = userID
 		updateGrades = append(updateGrades, g)
 		if err := tx.Create(&g).Error; err != nil {
-			tx.Rollback()
-			log.Println("[Error]: UpdateGrades", err)
-			return nil, err
+			//tx.Rollback()
+			//log.Println("[Error]: UpdateGrades", err)
+			//return nil, err
 		}
 	}
 
