@@ -13,15 +13,15 @@ import (
 // Grade 成绩
 type Grade struct {
 	Model
-	UserID     uint   `json:"user_id"`
-	CourseID   string `json:"course_id"`
-	LessonID   string `json:"lesson_id"`
+	UserID     uint   `json:"user_id" gorm:"unique_index:u_grade"`
+	CourseID   string `json:"course_id" gorm:"unique_index:u_grade"`
+	LessonID   string `json:"lesson_id" gorm:"unique_index:u_grade"`
 	CourseName string `json:"course_name"`
 	Credit     string `json:"credit"`
 	CourseType string `json:"course_type"`
 	Grade      string `json:"grade"`
-	Term       int    `json:"term"` //0: 秋季学期, 1: 春季学期
-	Year       int    `json:"year"`
+	Term       int    `json:"term" gorm:"unique_index:u_grade"` //0: 秋季学期, 1: 春季学期
+	Year       int    `json:"year" gorm:"unique_index:u_grade"`
 	TermName   string `json:"term_name"`
 }
 
@@ -34,10 +34,12 @@ func (g *Grade) AfterCreate() error {
 // GetGrades 获取用户的所有成绩
 func GetGrades(userID uint) []Grade {
 	grades := make([]Grade, 0)
-	if err := DB().Where("user_id = ?", userID).Order("year desc, term desc").Find(&grades).Error; err != nil {
+	failGrades := make([]Grade, 0)
+	DB().Where("user_id = ? and year = -1", userID).Order("year desc").Find(&failGrades)
+	if err := DB().Where("user_id = ? and year != -1", userID).Order("year desc, term desc").Find(&grades).Error; err != nil {
 		log.Printf("[Error] GetGrades Fail, userID: %d, err: %s", userID, err.Error())
 	}
-	return grades
+	return append(failGrades, grades...)
 }
 
 // UpdateGrades 更新用户的所有成绩
@@ -56,6 +58,15 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 	if len(grades) == 0 {
 		return nil, errors.New("没有从教务处获取到成绩信息")
 	}
+	// 获取教务处句柄
+	c, err = GetJwc(userID)
+	if err != nil {
+		return nil, err
+	}
+	// 获取不及格成绩
+	failGrades := grade.GetNotPass(c)
+	grades = append(grades, failGrades...)
+
 	// slice to set
 	newGradeSet := mapset.NewSet()
 	for _, g := range grades {
