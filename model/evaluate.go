@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scu/jwc/evaluate"
 	"github.com/mohuishou/scuplus-go/util"
 )
@@ -60,6 +61,7 @@ func UpdateEvaluateList(uid uint) error {
 	if err != nil {
 		return err
 	}
+	defer jwc.Logout(c)
 
 	// 从教务处获取评教列表
 	list, err := evaluate.GetEvaList(c)
