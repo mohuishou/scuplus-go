@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scu/jwc/schedule"
 )
 
@@ -58,6 +59,7 @@ func UpdateSchedules(userID uint, year, term int) error {
 	if err != nil {
 		return err
 	}
+	defer jwc.Logout(c)
 
 	schedules := schedule.Get(c)
 	if len(schedules) < 1 {

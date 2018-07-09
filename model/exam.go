@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scu/jwc/exam"
 )
 
@@ -60,6 +61,7 @@ func UpdateExam(uid uint) error {
 	if err != nil {
 		return err
 	}
+	defer jwc.Logout(c)
 	exams := exam.Get(c)
 
 	// 获取最新一条记录

@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/deckarep/golang-set"
+	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scu/jwc/grade"
 )
 
@@ -55,18 +56,21 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 
 	// 获取全部成绩
 	grades := grade.GetALL(c)
-	if len(grades) == 0 {
-		return nil, errors.New("没有从教务处获取到成绩信息")
-	}
+
 	// 获取教务处句柄
 	c, err = GetJwc(userID)
 	if err != nil {
 		return nil, err
 	}
+
+	defer jwc.Logout(c)
+
 	// 获取不及格成绩
 	failGrades := grade.GetNotPass(c)
 	grades = append(grades, failGrades...)
-
+	if len(grades) == 0 {
+		return nil, errors.New("没有从教务处获取到成绩信息")
+	}
 	// slice to set
 	newGradeSet := mapset.NewSet()
 	for _, g := range grades {
