@@ -11,7 +11,7 @@ import (
 	"github.com/mohuishou/scuplus-go/model"
 )
 
-const pageSize = 1000
+const pageSize = 200
 
 func main() {
 	c := cron.New()
@@ -21,11 +21,11 @@ func main() {
 	})
 	// 每天晚上八点执行一次
 	c.AddFunc("0 0 20 1/1 * ? ", func() {
-		book()
+		//book()
 	})
 	// 每天早上8点执行一次
 	c.AddFunc("0 0 8 1/1 * ? ", func() {
-		exam()
+		//exam()
 	})
 	// 每天凌晨1点执行一次
 	c.AddFunc("0 0 1 1/1 * ? ", func() {
@@ -38,10 +38,12 @@ func main() {
 
 func updateAll() {
 	count := 0
-	model.DB().Table("users").Where("verify = 1").Count(&count)
+	model.DB().Table("users").Where("jwc_verify = 1").Count(&count)
+	log.Println("教务处绑定用户总计：", count)
 	for i := 0; i < (count/pageSize + 1); i++ {
+		log.Printf("第%d批，每批%d", i, pageSize)
 		users := []model.User{}
-		model.DB().Where("verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
+		model.DB().Where("jwc_verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
 		for _, user := range users {
 			sign := &tasks.Signature{
 				Name: "update_all",
@@ -111,7 +113,7 @@ func exam() {
 	model.DB().Table("users").Where("verify = 1").Count(&count)
 	for i := 0; i < (count/pageSize + 1); i++ {
 		users := []model.User{}
-		model.DB().Where("verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
+		model.DB().Where("jwc_verify = 1").Select([]string{"id"}).Offset((i - 1) * pageSize).Limit(pageSize).Find(&users)
 		for _, user := range users {
 			// 获取最近的考试
 			now := time.Now()
