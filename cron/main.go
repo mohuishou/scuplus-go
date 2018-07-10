@@ -29,8 +29,8 @@ func main() {
 	})
 	// 每天凌晨1点执行一次
 	c.AddFunc("0 0 1 1/1 * ? ", func() {
-		calCourse()
 		courseCountEvaluate()
+		calCourse()
 	})
 	c.Start()
 	select {}

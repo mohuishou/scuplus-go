@@ -28,20 +28,17 @@ func countGradeAll(courseCount *model.CourseCount) {
 		fail float64
 	)
 	// 成绩信息统计
-	model.DB().Model(&model.Grade{}).Where(model.Grade{
+	scope := model.DB().Where(model.Grade{
 		CourseID: courseCount.CourseID,
 		LessonID: courseCount.LessonID,
-	}).Count(&all)
-	model.DB().Model(&model.Grade{}).Where(model.Grade{
-		CourseID: courseCount.CourseID,
-		LessonID: courseCount.LessonID,
-	}).Where("grade > ? and grade < ?", 0, 60).Count(&fail)
-	model.DB().Model(&model.Grade{}).Where(model.Grade{
-		CourseID: courseCount.CourseID,
-		LessonID: courseCount.LessonID,
-	}).Select("sum(grade) total").Scan(&sum)
+	})
+	gradeScope := scope.Model(&model.Grade{})
+	gradeScope.Count(&all)
+	gradeScope.Count(&all).Where("grade > ? and grade < ?", 0, 60).Count(&fail)
+	gradeScope.Count(&all).Select("sum(grade) total").Scan(&sum)
+
 	// 计算平均分
-	model.DB().Where("course_id = ? and lesson_id = ?", courseCount.CourseID, courseCount.LessonID).FirstOrCreate(courseCount)
+	scope.FirstOrCreate(courseCount)
 	// 数据更新
 	if all > 0 {
 		courseCount.AvgGrade = sum.Total / all
@@ -81,8 +78,12 @@ func countGrades(courseCount *model.CourseCount, year int) {
 	model.DB().Where(cg).FirstOrCreate(&cg)
 
 	// 60 ~ 100 分统计， 不及格成绩的年份为-1 或者 -2
-	for i := 60; i < 100; i += 10 {
-		countGradesRange(courseCount, cg, year, i)
+	if year > 0 {
+		for i := 60; i < 100; i += 10 {
+			countGradesRange(courseCount, &cg, year, i)
+		}
+	} else {
+		countGradesRange(courseCount, &cg, year, 0)
 	}
 
 	// 计算是否每一项都为0
@@ -91,12 +92,17 @@ func countGrades(courseCount *model.CourseCount, year int) {
 	}
 }
 
-func countGradesRange(cc *model.CourseCount, cg model.CourseGrade, year, gradeRange int) {
+func countGradesRange(cc *model.CourseCount, cg *model.CourseGrade, year, gradeRange int) {
+	min, max := gradeRange, gradeRange+10
+	if min == 0 {
+		max = 60
+	}
 	scope := model.DB().Model(&model.Grade{}).Where(model.Grade{
 		Year:     year,
 		CourseID: cc.CourseID,
 		LessonID: cc.LessonID,
-	}).Where("grade > ? and grade < ?", gradeRange, gradeRange+10)
+	}).Where("grade > ? and grade < ?", min, max)
+
 	switch gradeRange {
 	case 0:
 		scope.Count(&cg.G0)
