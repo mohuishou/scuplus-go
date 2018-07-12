@@ -103,9 +103,6 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 		oldGradeSet.Add(v)
 	}
 
-	// 新建事务，准备开始数据库操作
-	tx := DB().Begin()
-
 	// 删除需要删除的数据
 	deleteSet := oldGradeSet.Difference(newGradeSet)
 	it := deleteSet.Iterator()
@@ -117,7 +114,7 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 		}
 	}
 	if len(deleteIDs) != 0 {
-		tx.Unscoped().Where(deleteIDs).Delete(Grade{})
+		DB().Unscoped().Where(deleteIDs).Delete(Grade{})
 	}
 
 	// 新增更新的数据
@@ -128,15 +125,10 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 		g := elem.(Grade)
 		g.UserID = userID
 		updateGrades = append(updateGrades, g)
-		if err := tx.Create(&g).Error; err != nil {
-			//tx.Rollback()
-			//log.Println("[Error]: UpdateGrades", err)
-			//return nil, err
+		if err := DB().Create(&g).Error; err != nil {
+			log.Println("grade creat err:", err)
 		}
 	}
-
-	// 提交事务
-	tx.Commit()
 
 	return updateGrades, nil
 }
