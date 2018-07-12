@@ -32,7 +32,9 @@ func initDB() {
 	if err != nil {
 		log.Fatal("数据库连接错误：", err, conf)
 	}
-	db.DB().SetMaxOpenConns(5)
+	db.DB().SetMaxOpenConns(20)
+	db.DB().SetMaxIdleConns(5)
+	db.DB().SetConnMaxLifetime(10 * time.Second)
 	db.LogMode(config.Get().Debug)
 
 	autoMigrate()

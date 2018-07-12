@@ -8,6 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
+	"strings"
 )
 
 func jwtMiddle(ctx iris.Context) {
@@ -76,7 +77,7 @@ func skipJWT(path string) bool {
 		"/helps",
 	}
 	for _, v := range urls {
-		if v == path {
+		if v == path || strings.Contains(path,"debug") {
 			return true
 		}
 	}
