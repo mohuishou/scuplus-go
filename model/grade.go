@@ -91,21 +91,27 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("%d 从教务处获取成绩: %d条", userID, len(grades))
 
 	// 从数据库取出现有数据
 	var oldGrades Grades
 	DB().Where("user_id = ?", userID).Find(&oldGrades)
+	log.Printf("%d 已有成绩: %d条", userID, len(oldGrades))
 
 	// 获取需要删除的ids
 	_, ids := oldGrades.Difference(grades)
 	if len(ids) != 0 {
 		if err := DB().Unscoped().Where(ids).Delete(Grade{}).Error; err != nil {
+			log.Println("grade delete err:", err)
 			return nil, err
 		}
 	}
+	log.Printf("%d 删除成绩: %d条", userID, len(ids))
 
 	// 新增更新的数据
 	updateGrades, _ := grades.Difference(oldGrades)
+	log.Printf("%d 需要新增成绩: %d条", userID, len(ids))
+
 	updates := make(Grades, 0)
 	for _, g := range updateGrades {
 		if err := DB().Create(&g).Error; err != nil {
