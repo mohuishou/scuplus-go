@@ -6,7 +6,6 @@ import (
 
 	"fmt"
 
-	"github.com/deckarep/golang-set"
 	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scu/jwc/grade"
 )
@@ -24,6 +23,45 @@ type Grade struct {
 	Term       int    `json:"term" gorm:"unique_index:u_grade"` //0: 秋季学期, 1: 春季学期
 	Year       int    `json:"year" gorm:"unique_index:u_grade"`
 	TermName   string `json:"term_name"`
+}
+
+type Grades []Grade
+
+// getKey 一门成绩的唯一标识
+func (g Grade) getKey() string {
+	return fmt.Sprintf("%d-%s-%s-%s-%d-%d",
+		g.UserID,
+		g.CourseID,
+		g.LessonID,
+		g.Grade,
+		g.Year,
+		g.Term,
+	)
+}
+
+// getKeyMap 获取一组成绩的唯一标识集合
+func (grades Grades) getKeyMap() map[string]bool {
+	keyMap := make(map[string]bool)
+	for _, g := range grades {
+		keyMap[g.getKey()] = true
+	}
+	return keyMap
+}
+
+// Difference result = grades - others
+func (grades Grades) Difference(other Grades) (Grades, []uint) {
+	keyMap := other.getKeyMap()
+	differenceGrades := make(Grades, 0)
+	ids := make([]uint, 0)
+	for _, g := range grades {
+		if _, ok := keyMap[g.getKey()]; !ok {
+			differenceGrades = append(differenceGrades, g)
+			if g.ID != 0 {
+				ids = append(ids, g.ID)
+			}
+		}
+	}
+	return differenceGrades, ids
 }
 
 // AfterCreate 新建之后回调
@@ -48,6 +86,39 @@ func GetGrades(userID uint) []Grade {
 // 操作步骤: 抓取用户成绩(N) -> 获取数据用户已有成绩(M) -> 数据库删除数据(M-N) -> 数据库插入数据(N-M)
 // 用户成绩更新大多数情况都是新增，对于只是更新个别字段的成绩直接删除即可
 func UpdateGrades(userID uint) ([]Grade, error) {
+	// 从教务处获取成绩
+	grades, err := getAllGradesFromJwc(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 从数据库取出现有数据
+	var oldGrades Grades
+	DB().Where("user_id = ?", userID).Find(&oldGrades)
+
+	// 获取需要删除的ids
+	_, ids := oldGrades.Difference(grades)
+	if len(ids) != 0 {
+		if err := DB().Unscoped().Where(ids).Delete(Grade{}).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	// 新增更新的数据
+	updateGrades, _ := grades.Difference(oldGrades)
+	updates := make(Grades, 0)
+	for _, g := range updateGrades {
+		if err := DB().Create(&g).Error; err != nil {
+			log.Println("grade create err:", err)
+		} else {
+			updates = append(updates, g)
+		}
+	}
+	return updates, nil
+}
+
+// getAllGradesFromJwc 从教务处获取所有成绩
+func getAllGradesFromJwc(userID uint) (Grades, error) {
 	// 获取教务处句柄
 	c, err := GetJwc(userID)
 	if err != nil {
@@ -71,64 +142,26 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 	if len(grades) == 0 {
 		return nil, errors.New("没有从教务处获取到成绩信息")
 	}
-	// slice to set
-	newGradeSet := mapset.NewSet()
-	for _, g := range grades {
-		newGradeSet.Add(Grade{
-			CourseID:   g.CourseID,
-			LessonID:   g.LessonID,
-			CourseName: g.CourseName,
-			Credit:     g.Credit,
-			CourseType: g.CourseType,
-			Grade:      g.Grade,
-			TermName:   g.TermName,
-			Year:       g.Year,
-			Term:       g.Term,
-		})
-	}
 
-	// 从数据库取出现有数据
-	var oldGrades []Grade
-	err = DB().Where("user_id = ?", userID).Find(&oldGrades).Error
-	if err != nil {
-		return nil, err
+	// 类型转换
+	newGrades := make([]Grade, len(grades))
+	for i, g := range grades {
+		newGrades[i] = convertGrade(userID, g)
 	}
-	// slice to set
-	oldGradeSet := mapset.NewSet()
-	oldGradeIDs := map[string]uint{}
-	for _, v := range oldGrades {
-		oldGradeIDs[fmt.Sprintf("%s-%s", v.CourseID, v.LessonID)] = v.ID
-		v.UserID = 0
-		v.Model = Model{}
-		oldGradeSet.Add(v)
-	}
+	return newGrades, nil
+}
 
-	// 删除需要删除的数据
-	deleteSet := oldGradeSet.Difference(newGradeSet)
-	it := deleteSet.Iterator()
-	var deleteIDs []uint
-	for elem := range it.C {
-		g := elem.(Grade)
-		if id, ok := oldGradeIDs[fmt.Sprintf("%s-%s", g.CourseID, g.LessonID)]; ok {
-			deleteIDs = append(deleteIDs, id)
-		}
+func convertGrade(uid uint, g grade.Grade) Grade {
+	return Grade{
+		UserID:     uid,
+		CourseID:   g.CourseID,
+		LessonID:   g.LessonID,
+		CourseName: g.CourseName,
+		Credit:     g.Credit,
+		CourseType: g.CourseType,
+		Grade:      g.Grade,
+		TermName:   g.TermName,
+		Year:       g.Year,
+		Term:       g.Term,
 	}
-	if len(deleteIDs) != 0 {
-		DB().Unscoped().Where(deleteIDs).Delete(Grade{})
-	}
-
-	// 新增更新的数据
-	createSet := newGradeSet.Difference(oldGradeSet)
-	it = createSet.Iterator()
-	var updateGrades []Grade
-	for elem := range it.C {
-		g := elem.(Grade)
-		g.UserID = userID
-		updateGrades = append(updateGrades, g)
-		if err := DB().Create(&g).Error; err != nil {
-			log.Println("grade creat err:", err)
-		}
-	}
-
-	return updateGrades, nil
 }
