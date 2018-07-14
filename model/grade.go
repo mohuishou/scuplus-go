@@ -110,12 +110,12 @@ func UpdateGrades(userID uint) ([]Grade, error) {
 
 	// 新增更新的数据
 	updateGrades, _ := grades.Difference(oldGrades)
-	log.Printf("%d 需要新增成绩: %d条", userID, len(ids))
+	log.Printf("%d 需要新增成绩: %d条", userID, len(updateGrades))
 
 	updates := make(Grades, 0)
 	for _, g := range updateGrades {
 		if err := DB().Create(&g).Error; err != nil {
-			log.Println("grade create err:", err)
+			log.Println("grade create err:", g, err)
 		} else {
 			updates = append(updates, g)
 		}
