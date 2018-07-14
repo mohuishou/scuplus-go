@@ -11,6 +11,8 @@ import (
 )
 
 // Grade 成绩
+// Note: 唯一性索引添加上grade，因为在不及格成绩当中可能会出现同一个学期有两次不及格成绩的情况
+// 风险: 有导致其他成绩出现两个不同成绩的风险
 type Grade struct {
 	Model
 	UserID     uint   `json:"user_id" gorm:"unique_index:u_grade"`
@@ -19,7 +21,7 @@ type Grade struct {
 	CourseName string `json:"course_name"`
 	Credit     string `json:"credit"`
 	CourseType string `json:"course_type"`
-	Grade      string `json:"grade"`
+	Grade      string `json:"grade" gorm:"unique_index:u_grade"`
 	Term       int    `json:"term" gorm:"unique_index:u_grade"` //0: 秋季学期, 1: 春季学期
 	Year       int    `json:"year" gorm:"unique_index:u_grade"`
 	TermName   string `json:"term_name"`
