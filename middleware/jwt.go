@@ -5,10 +5,11 @@ import (
 
 	"github.com/mohuishou/scuplus-go/config"
 
+	"strings"
+
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
-	"strings"
 )
 
 func jwtMiddle(ctx iris.Context) {
@@ -62,7 +63,16 @@ func jwtMiddle(ctx iris.Context) {
 
 	// 设置用户id
 	ctx.Values().Set("user_id", userID)
-
+	// TODO: 临时手动封号
+	if userID == 18137 {
+		ctx.JSON(map[string]interface{}{
+			"status": 403,
+			"msg":    "账号更换次数过多，暂被封号！",
+			"data":   nil,
+		})
+		ctx.StopExecution()
+		return
+	}
 	ctx.Next()
 }
 
@@ -77,7 +87,7 @@ func skipJWT(path string) bool {
 		"/helps",
 	}
 	for _, v := range urls {
-		if v == path || strings.Contains(path,"debug") {
+		if v == path || strings.Contains(path, "debug") {
 			return true
 		}
 	}
