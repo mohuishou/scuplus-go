@@ -129,3 +129,33 @@ func GetLibrary(userID uint) (*library.Library, error) {
 	}
 	return library.NewLibrary(userLib.StudentID, userLib.Password)
 }
+
+func AfterUpdateBindJwc(uid uint) {
+	del := DB().Unscoped().Where("user_id = ?", uid).Delete
+	// 清空成绩表
+	del(Grade{})
+	// 清空课程表
+	del(Schedule{})
+	// 清空考表
+	del(Exam{})
+	// 清空评教表
+	del(CourseEvaluate{})
+	del(Evaluate{})
+}
+
+func AfterUpdateBindLibrary(uid uint) {
+	DB().Unscoped().Where("user_id = ?", uid).Delete(LibraryBook{})
+}
+
+func AfterUpdateBindMy(uid uint) {
+	del := DB().Unscoped().Where("user_id = ?", uid).Delete
+	// 清空一卡通数据
+	del(Ecard{})
+	// 判断是否是研究生
+	userConf := UserConfig{}
+	DB().Where("user_id = ?", uid).Last(&userConf)
+	if userConf.UserType == GraduateStudent {
+		del(GraduateGrade{})
+		del(GraduateSchedule{})
+	}
+}

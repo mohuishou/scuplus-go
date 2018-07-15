@@ -94,6 +94,8 @@ func BindJwc(ctx iris.Context) {
 	//if err != nil {
 	//	log.Println("cron error update all", err)
 	//}
+	// 删除已有信息
+	model.AfterUpdateBindJwc(uid)
 	Success(ctx, "绑定成功！", nil)
 }
 
@@ -125,6 +127,8 @@ func Bind(ctx iris.Context) {
 		Error(ctx, 30004, "系统错误！", nil)
 		return
 	}
+	// 删除已有账号信息
+	model.AfterUpdateBindMy(uid)
 	Success(ctx, "绑定成功！", nil)
 }
 
@@ -169,5 +173,8 @@ func BindLibrary(ctx iris.Context) {
 		}
 	}
 	tx.Commit()
+
+	// 删除已有账号数据
+	model.AfterUpdateBindLibrary(uid)
 	Success(ctx, "绑定成功！", nil)
 }
