@@ -33,7 +33,6 @@ func initDB() {
 		log.Fatal("数据库连接错误：", err, conf)
 	}
 	db.DB().SetMaxOpenConns(20)
-	db.DB().SetMaxIdleConns(5)
 	db.DB().SetConnMaxLifetime(10 * time.Second)
 	db.LogMode(config.Get().Debug)
 
@@ -72,6 +71,8 @@ func autoMigrate() {
 		&UserConfig{},
 		&GraduateGrade{},
 		&GraduateSchedule{},
+		&Detail{},
+		&DetailTag{},
 	)
 }
 
