@@ -9,6 +9,7 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/mohuishou/scu/jwc"
+	"github.com/mohuishou/scuplus-go/cache/bind"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
 )
@@ -61,6 +62,12 @@ func BindJwc(ctx iris.Context) {
 		return
 	}
 
+	uid := middleware.GetUserID(ctx)
+	if bind.Get(uid, "jwc") >= 3 {
+		Error(ctx, 403, "今日绑定账号切换次数超过限制", nil)
+		return
+	}
+
 	// 验证教务处账号是否可以登录
 	if _, err := jwc.Login(studentID, password); err != nil {
 		Error(ctx, 10401, err.Error(), nil)
@@ -73,7 +80,6 @@ func BindJwc(ctx iris.Context) {
 		JwcVerify:    1,
 	}
 
-	uid := middleware.GetUserID(ctx)
 	if err := model.DB().Model(&user).Where("id = ?", uid).Updates(&user).Error; err != nil {
 		log.Println("用户绑定账号失败: ", err)
 		Error(ctx, 30004, "系统错误！", nil)
@@ -96,6 +102,8 @@ func BindJwc(ctx iris.Context) {
 	//}
 	// 删除已有信息
 	model.AfterUpdateBindJwc(uid)
+	// 添加绑定次数
+	bind.Add(uid, "jwc")
 	Success(ctx, "绑定成功！", nil)
 }
 
@@ -106,6 +114,12 @@ func Bind(ctx iris.Context) {
 
 	if studentID == "" || password == "" {
 		Error(ctx, 10400, "参数错误", nil)
+		return
+	}
+
+	uid := middleware.GetUserID(ctx)
+	if bind.Get(uid, "my") >= 3 {
+		Error(ctx, 403, "今日绑定账号切换次数超过限制", nil)
 		return
 	}
 
@@ -120,7 +134,6 @@ func Bind(ctx iris.Context) {
 		Password:  password,
 	}
 
-	uid := middleware.GetUserID(ctx)
 	user.Verify = 1
 	if err := model.DB().Model(&user).Where("id = ?", uid).Updates(&user).Error; err != nil {
 		log.Println("用户绑定账号失败: ", err)
@@ -129,6 +142,7 @@ func Bind(ctx iris.Context) {
 	}
 	// 删除已有账号信息
 	model.AfterUpdateBindMy(uid)
+	bind.Add(uid, "my")
 	Success(ctx, "绑定成功！", nil)
 }
 
@@ -142,6 +156,12 @@ func BindLibrary(ctx iris.Context) {
 		return
 	}
 
+	uid := middleware.GetUserID(ctx)
+	if bind.Get(uid, "library") >= 3 {
+		Error(ctx, 403, "今日绑定账号切换次数超过限制", nil)
+		return
+	}
+
 	// 检查账号信息
 	_, err := library.NewLibrary(studentID, password)
 	if err != nil {
@@ -150,7 +170,6 @@ func BindLibrary(ctx iris.Context) {
 	}
 
 	// 保存图书馆账号
-	uid := middleware.GetUserID(ctx)
 	userLib := model.UserLibrary{
 		UserID:    uid,
 		StudentID: studentID,
@@ -176,5 +195,6 @@ func BindLibrary(ctx iris.Context) {
 
 	// 删除已有账号数据
 	model.AfterUpdateBindLibrary(uid)
+	bind.Add(uid, "library")
 	Success(ctx, "绑定成功！", nil)
 }
