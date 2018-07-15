@@ -10,6 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
+	"github.com/mohuishou/scuplus-go/cache/api"
 )
 
 func jwtMiddle(ctx iris.Context) {
@@ -63,16 +64,16 @@ func jwtMiddle(ctx iris.Context) {
 
 	// 设置用户id
 	ctx.Values().Set("user_id", userID)
-	// TODO: 临时手动封号
-	if userID == 18137 {
+	uid := uint(userID.(float64))
+	if api.Get(uid) > 300 {
 		ctx.JSON(map[string]interface{}{
 			"status": 403,
-			"msg":    "账号更换次数过多，暂被封号！",
-			"data":   nil,
+			"msg":    "访问过于频繁，休息一会儿吧",
 		})
 		ctx.StopExecution()
 		return
 	}
+	api.Add(uid)
 	ctx.Next()
 }
 
@@ -82,8 +83,6 @@ func skipJWT(path string) bool {
 		"/login",
 		"/notices",
 		"/webhook",
-		"/spider/webhook",
-		"/spider/jwc/cookies",
 		"/helps",
 	}
 	for _, v := range urls {
@@ -96,7 +95,12 @@ func skipJWT(path string) bool {
 
 // GetUserID 获取用户的id
 func GetUserID(ctx iris.Context) uint {
-	return uint(ctx.Values().Get("user_id").(float64))
+	uid := ctx.Values().Get("user_id")
+	switch uid.(type) {
+	case float64:
+		return uint(uid.(float64))
+	}
+	return 0
 }
 
 // CreateToken 新建一个Token
