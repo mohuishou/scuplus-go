@@ -81,7 +81,7 @@ func (e *Evaluate) params() map[string]string {
 }
 
 // getInfo 获取评教的详细信息
-func (e *Evaluate) getInfo(c *colly.Collector) (answers Answers, questions Questions, err error) {
+func (e *Evaluate) getInfo(c *colly.Collector) (comment string, answers Answers, questions Questions, err error) {
 
 	params := e.params()
 
@@ -98,6 +98,7 @@ func (e *Evaluate) getInfo(c *colly.Collector) (answers Answers, questions Quest
 			PageDate struct {
 				Questions Questions `json:"questionsList"`
 			} `json:"pageDate"`
+			Comment string `json:"subjectiveResult"`
 		}
 		data := &tmp{}
 		err = json.Unmarshal(r.Body, data)
@@ -106,11 +107,12 @@ func (e *Evaluate) getInfo(c *colly.Collector) (answers Answers, questions Quest
 		}
 		answers = data.Answers
 		questions = data.PageDate.Questions
+		comment = data.Comment
 	})
 
 	c.Post(baseURL+"/evaluationReusltPage", params)
 	c.Wait()
-	return answers, questions, err
+	return comment, answers, questions, err
 }
 
 func (e *Evaluate) getToken(c *colly.Collector) (token string) {
@@ -132,7 +134,7 @@ func AddEvaluate(c *colly.Collector, evaluate *Evaluate) (err error) {
 	}
 
 	// 获取params
-	_, questions, err := evaluate.getInfo(c)
+	_, _, questions, err := evaluate.getInfo(c)
 	if err != nil {
 		return err
 	}
@@ -184,8 +186,9 @@ func GetEvaList(c *colly.Collector) (evaluates Evaluates, err error) {
 		e := &v
 		e.update()
 		if e.Status == 1 {
-			answer, _, _ := e.getInfo(c.Clone())
+			comment, answer, _, _ := e.getInfo(c.Clone())
 			e.Star = answer.average(e.TeacherType)
+			e.Comment = comment
 		}
 		evaluates[i] = *e
 	}
