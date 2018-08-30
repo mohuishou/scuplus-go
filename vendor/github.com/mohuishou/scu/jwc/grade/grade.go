@@ -1,116 +1,147 @@
 package grade
 
 import (
-	"reflect"
-	"regexp"
+	"encoding/json"
+	"errors"
 	"strconv"
 	"strings"
 
 	"github.com/mohuishou/scu/jwc"
 
 	"github.com/gocolly/colly"
-
-	"github.com/PuerkitoBio/goquery"
 )
 
 //Grade 成绩
 type Grade struct {
-	CourseID          string `json:"course_id"`
-	LessonID          string `json:"lesson_id"`
-	CourseName        string `json:"course_name"`
-	CourseEnglishName string `json:"course_english_name"`
-	Credit            string `json:"credit"`
-	CourseType        string `json:"course_type"`
-	Grade             string `json:"grade"`
-	Term              int    `json:"term"` //0: 秋季学期, 1: 春季学期
-	Year              int    `json:"year"` //-1: 尚不及格，-2: 曾不及格
-	TermName          string `json:"term_name"`
+	// 新版新增，获取到之后会赋值给之前的字段
+	ID struct {
+		CourseID string `json:"courseNumber"`
+		LessonID string `json:"coureSequenceNumber"`
+	} `json:"id"`
+	CourseID          string  `json:"-"`
+	LessonID          string  `json:"-"`
+	CourseName        string  `json:"courseName"`
+	CourseEnglishName string  `json:"englishCourseName"`
+	Credit            string  `json:"credit"`
+	CourseType        string  `json:"courseAttributeName"`
+	GradeShow         string  `json:"cj"`
+	Grade             float64 `json:"courseScore"`
+	GPA               float64 `json:"gradePointScore"`
+	TermCode          string  `json:"termCode"` // 1: 秋季学期, 2: 春季学期
+	Term              int     `json:"-"`        //0: 秋季学期, 1: 春季学期
+	YearCode          string  `json:"academicYearCode"`
+	Year              int     `json:"-"` //-1: 尚不及格，-2: 曾不及格
+	TermName          string  `json:"-"`
 }
 
 // Grades 成绩列表
 type Grades []Grade
 
-func get(doc *goquery.Selection, year, term int, termName string) Grades {
-	grades := make(Grades, 0)
-	//抓取数据
-	doc.Find("tr").Each(func(i int, s *goquery.Selection) {
-		if i == 0 {
+// Term 一个学期的成绩
+type Term struct {
+	Grades    Grades  `json:"cjList"`
+	TermName  string  `json:"cjlx"`
+	AllCredit float64 `json:"yxxf"`
+}
+
+// Terms terms
+type Terms []Term
+
+func (terms Terms) getGrades() Grades {
+	var grades Grades
+
+	for _, term := range terms {
+		grades = append(grades, term.getGrades()...)
+	}
+
+	return grades
+}
+
+func (term Term) getGrades() Grades {
+	grades := make(Grades, len(term.Grades))
+	for i, grade := range term.Grades {
+		g := &grade
+		g.update()
+		g.TermName = term.TermName
+		switch term.TermName {
+		case "尚不及格":
+			g.Year = -1
+		case "曾不及格":
+			g.Year = -2
+		}
+		grades[i] = *g
+	}
+	return grades
+}
+
+func (grade *Grade) update() {
+	grade.CourseID = grade.ID.CourseID
+	grade.LessonID = grade.ID.LessonID
+
+	// 学期代码转换
+	if grade.TermCode == "2" {
+		grade.Term = 1
+	}
+
+	grade.Year, _ = strconv.Atoi(strings.Split(grade.YearCode, "-")[0])
+}
+
+var modes = map[string]string{
+	"not_pass": "/student/integratedQuery/scoreQuery/unpassedScores/callback",
+	"all":      "/student/integratedQuery/scoreQuery/allPassingScores/callback",
+}
+
+func get(c *colly.Collector, mode string) (Grades, error) {
+	var (
+		terms Terms
+		err   error
+	)
+	c.OnResponse(func(r *colly.Response) {
+		// 只处理json
+		contentType := r.Headers.Get("Content-Type")
+		if !strings.Contains(contentType, "application/json") {
 			return
 		}
-		grade := Grade{Term: term, Year: year, TermName: termName}
-		v := reflect.ValueOf(&grade)
-		elem := v.Elem()
-		for k := 0; k < elem.NumField(); k++ {
-			if k > 6 {
-				break
-			}
-			elem.Field(k).SetString(strings.TrimSpace(s.Find("td").Eq(k).Text()))
+
+		type tmp struct {
+			Terms Terms `json:"lnList"`
 		}
-		switch termName {
-		case "尚不及格":
-			grade.Year = -1
-		case "曾不及格":
-			grade.Year = -2
+
+		switch mode {
+		case "all":
+			data := &tmp{}
+			err = json.Unmarshal(r.Body, data)
+			terms = data.Terms
+		case "not_pass":
+			err = json.Unmarshal(r.Body, &terms)
 		}
-		grades = append(grades, grade)
 	})
-	return grades
+
+	c.OnHTML(".alert", func(e *colly.HTMLElement) {
+		err = errors.New(strings.TrimSpace(e.Text))
+	})
+
+	c.Visit(jwc.DOMAIN + modes[mode])
+	c.Wait()
+	if err != nil {
+		return nil, err
+	}
+
+	return terms.getGrades(), nil
 }
 
 // GetNow 获取本学期成绩
 func GetNow(c *colly.Collector) Grades {
-	var grades Grades
-	c.OnHTML("#user", func(e *colly.HTMLElement) {
-		grades = get(e.DOM, 0, 0, "本学期成绩")
-	})
-	c.Visit(jwc.DOMAIN + "/bxqcjcxAction.do?pageSize=200")
-	return grades
+	// TODO 暂时不知道api
+	return nil
 }
 
 // GetALL 获取所有及格成绩
-func GetALL(c *colly.Collector) Grades {
-	var grades Grades
-	tmps := map[string][]string{
-		"term":  []string{},
-		"year":  []string{},
-		"title": []string{},
-	}
-	r, _ := regexp.Compile(`(\d+)-\d+学年(.)`)
-	c.OnHTML("table b", func(e *colly.HTMLElement) {
-		tmps["title"] = append(tmps["title"], e.Text)
-		res := r.FindAllStringSubmatch(e.Text, -1)
-		if len(res[0]) == 3 {
-			tmps["year"] = append(tmps["year"], res[0][1])
-			tmps["term"] = append(tmps["term"], res[0][2])
-		}
-	})
-	i := 0
-	c.OnHTML("#user", func(e *colly.HTMLElement) {
-		year, term := 0, 0
-		title := ""
-		if len(tmps["year"]) > i {
-			title = tmps["title"][i]
-			year, _ = strconv.Atoi(tmps["year"][i])
-			if tmps["term"][i] == "春" {
-				term = 1
-			}
-			i++
-		}
-		grades = append(grades, get(e.DOM, year, term, title)...)
-	})
-	c.Visit(jwc.DOMAIN + "/gradeLnAllAction.do?type=ln&oper=qbinfo&lnxndm")
-	return grades
+func GetALL(c *colly.Collector) (grades Grades, err error) {
+	return get(c, "all")
 }
 
 // GetNotPass 获取所有不及格成绩
-func GetNotPass(c *colly.Collector) Grades {
-	termNames := []string{"尚不及格", "曾不及格"}
-	i := 0
-	var grades Grades
-	c.OnHTML("#user", func(e *colly.HTMLElement) {
-		grades = append(grades, get(e.DOM, 0, 0, termNames[i])...)
-		i++
-	})
-	c.Visit(jwc.DOMAIN + "/gradeLnAllAction.do?type=ln&oper=bjg")
-	return grades
+func GetNotPass(c *colly.Collector) (grades Grades, err error) {
+	return get(c, "not_pass")
 }

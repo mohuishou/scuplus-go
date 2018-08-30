@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/mohuishou/scu/jwc"
@@ -11,23 +10,23 @@ import (
 // Schedule 课程表
 type Schedule struct {
 	Model
-	Project      string `json:"project"`
-	CourseID     string `json:"course_id"`
-	CourseName   string `json:"course_name"`
-	LessonID     string `json:"lesson_id"`
-	Credit       string `json:"credit"`
-	CourseType   string `json:"course_type"`
-	ExamType     string `json:"exam_type"`
-	Teachers     string `json:"teachers"`
-	StudyWay     string `json:"study_way"`
-	ChooseStatus string `json:"choose_status"`
-	AllWeek      string `json:"all_week"`
-	Day          string `json:"day"`
-	Session      string `json:"session"`
-	Campus       string `json:"campus"`
-	Building     string `json:"building"`
-	Classroom    string `json:"classroom"`
-	Term         int    // 学期
+	Project      string  `json:"project"`
+	CourseID     string  `json:"course_id"`
+	CourseName   string  `json:"course_name"`
+	LessonID     string  `json:"lesson_id"`
+	Credit       float64 `json:"credit"`
+	CourseType   string  `json:"course_type"`
+	ExamType     string  `json:"exam_type"`
+	Teachers     string  `json:"teachers"`
+	StudyWay     string  `json:"study_way"`
+	ChooseStatus string  `json:"choose_status"`
+	AllWeek      string  `json:"all_week"`
+	Day          int     `json:"day"`
+	Session      string  `json:"session"`
+	Campus       string  `json:"campus"`
+	Building     string  `json:"building"`
+	Classroom    string  `json:"classroom"`
+	Term         int     // 学期
 	Year         int
 	UserID       uint
 }
@@ -61,9 +60,9 @@ func UpdateSchedules(userID uint, year, term int) error {
 	}
 	defer jwc.Logout(c)
 
-	schedules := schedule.Get(c)
-	if len(schedules) < 1 {
-		return errors.New("没有获取到新的数据，请查看教务处")
+	schedules, err := schedule.Get(c)
+	if err != nil {
+		return err
 	}
 
 	// 删除所有的数据

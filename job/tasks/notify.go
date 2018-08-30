@@ -21,7 +21,7 @@ import (
 )
 
 // NotifyGrade 发送成绩更新通知
-func NotifyGrade(uid uint, courseName, grade, credit string, num int) error {
+func NotifyGrade(uid uint, courseName string, grade float64, credit string, num int) error {
 	if !notifyCheck(uid, "grade") {
 		log.Println("用户关闭了成绩通知", uid)
 		return nil
