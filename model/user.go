@@ -130,6 +130,19 @@ func GetLibrary(userID uint) (*library.Library, error) {
 	return library.NewLibrary(userLib.StudentID, userLib.Password)
 }
 
+func RemoveAll(uid uint) {
+	AfterUpdateBindJwc(uid)
+	AfterUpdateBindLibrary(uid)
+	AfterUpdateBindMy(uid)
+	// 用户相关
+	del := DB().Unscoped().Where("user_id = ?", uid).Delete
+	del(UserLibrary{})
+	del(UserConfig{})
+	del(UserInfo{})
+	del(Wechat{})
+	DB().Unscoped().Where("id = ?", uid).Delete(User{})
+}
+
 func AfterUpdateBindJwc(uid uint) {
 	del := DB().Unscoped().Where("user_id = ?", uid).Delete
 	// 清空成绩表
