@@ -15,23 +15,24 @@ import (
 // 风险: 有导致其他成绩出现两个不同成绩的风险
 type Grade struct {
 	Model
-	UserID     uint   `json:"user_id" gorm:"unique_index:u_grade"`
-	CourseID   string `json:"course_id" gorm:"unique_index:u_grade"`
-	LessonID   string `json:"lesson_id" gorm:"unique_index:u_grade"`
-	CourseName string `json:"course_name"`
-	Credit     string `json:"credit"`
-	CourseType string `json:"course_type"`
-	Grade      string `json:"grade" gorm:"unique_index:u_grade"`
-	Term       int    `json:"term" gorm:"unique_index:u_grade"` //0: 秋季学期, 1: 春季学期
-	Year       int    `json:"year" gorm:"unique_index:u_grade"`
-	TermName   string `json:"term_name"`
+	UserID     uint    `json:"user_id" gorm:"unique_index:u_grade"`
+	CourseID   string  `json:"course_id" gorm:"unique_index:u_grade"`
+	LessonID   string  `json:"lesson_id" gorm:"unique_index:u_grade"`
+	CourseName string  `json:"course_name"`
+	Credit     string  `json:"credit"`
+	CourseType string  `json:"course_type"`
+	Grade      float64 `json:"grade" gorm:"unique_index:u_grade"`
+	GPA        float64 `json:"gpa"`
+	Term       int     `json:"term" gorm:"unique_index:u_grade"` //0: 秋季学期, 1: 春季学期
+	Year       int     `json:"year" gorm:"unique_index:u_grade"`
+	TermName   string  `json:"term_name"`
 }
 
 type Grades []Grade
 
 // getKey 一门成绩的唯一标识
 func (g Grade) getKey() string {
-	return fmt.Sprintf("%d-%s-%s-%s-%d-%d",
+	return fmt.Sprintf("%d-%s-%s-%f-%d-%d",
 		g.UserID,
 		g.CourseID,
 		g.LessonID,
@@ -134,7 +135,10 @@ func getAllGradesFromJwc(userID uint) (Grades, error) {
 	}
 
 	// 获取全部成绩
-	grades := grade.GetALL(c)
+	grades, err := grade.GetALL(c)
+	if err != nil {
+		return nil, err
+	}
 
 	// 获取教务处句柄
 	c, err = GetJwc(userID)
@@ -145,7 +149,10 @@ func getAllGradesFromJwc(userID uint) (Grades, error) {
 	defer jwc.Logout(c)
 
 	// 获取不及格成绩
-	failGrades := grade.GetNotPass(c)
+	failGrades, err := grade.GetNotPass(c)
+	if err != nil {
+		return nil, err
+	}
 	grades = append(grades, failGrades...)
 	if len(grades) == 0 {
 		return nil, errors.New("没有从教务处获取到成绩信息")
@@ -170,6 +177,7 @@ func convertGrade(uid uint, g grade.Grade) Grade {
 		Grade:      g.Grade,
 		TermName:   g.TermName,
 		Year:       g.Year,
+		GPA:        g.GPA,
 		Term:       g.Term,
 	}
 }

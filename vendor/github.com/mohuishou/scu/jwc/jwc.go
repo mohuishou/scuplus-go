@@ -14,16 +14,15 @@ func Login(studentID, password string) (*colly.Collector, error) {
 	c := colly.NewCollector()
 	// 判定是否登录失败
 	var logErr error
-	c.OnHTML("font[color=\"#990000\"]", func(e *colly.HTMLElement) {
-		if e.Text != "" {
-			logErr = errors.New(e.Text)
-		}
+	c.OnHTML("form.form-signin", func(e *colly.HTMLElement) {
+		logErr = errors.New("登陆失败，请检查用户名密码是否正确！")
 	})
 
 	// 尝试登录
-	if err := c.Post(DOMAIN+"/loginAction.do", map[string]string{
-		"zjh": studentID,
-		"mm":  password,
+	if err := c.Post(DOMAIN+"/j_spring_security_check", map[string]string{
+		"j_username": studentID,
+		"j_password": password,
+		"j_captcha1": "error",
 	}); err != nil {
 		return nil, err
 	}

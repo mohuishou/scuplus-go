@@ -108,16 +108,20 @@ func UpdateEvaluateList(uid uint) error {
 // DoEvaluate 评教
 func DoEvaluate(eva *Evaluate, star float64, comment string) error {
 	e := evaluate.Evaluate{
-		EvaluateID:   eva.EvaluateID,
-		EvaluateType: eva.EvaluateType,
-		TeacherName:  eva.TeacherName,
-		TeacherID:    eva.TeacherID,
-		TeacherType:  eva.TeacherType,
-		CourseName:   eva.TeacherName,
-		CourseID:     eva.CourseID,
-		Status:       eva.Status,
-		Star:         star,
-		Comment:      comment,
+		ID: evaluate.ID{
+			EvaluateID: eva.EvaluateID,
+			TeacherID:  eva.TeacherID,
+			CourseID:   eva.CourseID,
+		},
+		Info: evaluate.Info{
+			EvaluateType: eva.EvaluateType,
+		},
+		TeacherName: eva.TeacherName,
+		TeacherType: eva.TeacherType,
+		CourseName:  eva.TeacherName,
+		Status:      eva.Status,
+		Star:        star,
+		Comment:     comment,
 	}
 	c, err := GetJwc(eva.UserID)
 	if err != nil {
