@@ -52,6 +52,14 @@ func Login(ctx iris.Context) {
 	})
 }
 
+// Remove 注销账号，所有数据会被移除
+func Remove(ctx iris.Context) {
+	uid := middleware.GetUserID(ctx)
+	// 移除
+	model.RemoveAll(uid)
+	Success(ctx, "数据清除成功！如需继续使用，请退出小程序之后重新登录，再会", nil)
+}
+
 // BindJwc 教务处绑定
 func BindJwc(ctx iris.Context) {
 	studentID := ctx.FormValue("student_id")

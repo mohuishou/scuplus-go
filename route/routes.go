@@ -9,6 +9,7 @@ import (
 
 // Routes 路由
 func Routes(app *iris.Application) {
+	app.Post("/goodbye", api.Remove)
 	app.Get("/notices", api.GetNotices)
 	app.Get("/notice/{id}", api.GetNotice)
 	app.Get("/notice/new", api.GetNewestNotice)
