@@ -67,10 +67,10 @@ func getAllWeek(week string) string {
 }
 
 func getSession(start, n int) (session string) {
-	for i := 0; i <= n; i++ {
+	for i := 0; i < n; i++ {
 		session = fmt.Sprintf("%s%d,", session, start+i)
 	}
-	return session
+	return strings.Trim(session, ",")
 }
 
 // TimeAndAddr 上课时间地点

@@ -105,6 +105,8 @@ github.com/mohuishou/scu v0.0.0-20180829170301-2bc7d4336d36 h1:g/BH8kF7hoSlC0MGn
 github.com/mohuishou/scu v0.0.0-20180829170301-2bc7d4336d36/go.mod h1:KYyIuojzgOTzYjLGCN/UwXs4y4BgTQacj9QApQDYOAE=
 github.com/mohuishou/scu v0.0.0-20180830153744-634c9b29f12d h1:AqLRkVNRJOLJTvOY1SWYNnyonDNK900DH7LPHvdvJJQ=
 github.com/mohuishou/scu v0.0.0-20180830153744-634c9b29f12d/go.mod h1:KYyIuojzgOTzYjLGCN/UwXs4y4BgTQacj9QApQDYOAE=
+github.com/mohuishou/scu v0.0.0-20180901032653-e9b032885fe4 h1:7KV4HFroVKSiKwfH58QOXeN57E8fWtFFDFdm595PXf4=
+github.com/mohuishou/scu v0.0.0-20180901032653-e9b032885fe4/go.mod h1:KYyIuojzgOTzYjLGCN/UwXs4y4BgTQacj9QApQDYOAE=
 github.com/opentracing/opentracing-go v1.0.2 h1:edAcHT/WYoCrCmpv0DUs19ZnSMWctDA/IjFLP/RFA2s=
 github.com/opentracing/opentracing-go v1.0.2/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
 github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967 h1:KDRpTQTO+F3czlMACOYDSJfvR6OXPirn04KknDNNicE=
