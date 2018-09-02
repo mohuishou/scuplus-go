@@ -96,10 +96,10 @@ func Get(c *colly.Collector) (schedules []Schedule, err error) {
 		data := &tmp{}
 
 		err = json.Unmarshal(r.Body, data)
-
-		if len(data.DataList) == 1 {
-			schedules = data.DataList[0].Schedules
+		for _, v := range data.DataList {
+			schedules = append(schedules, v.Schedules...)
 		}
+
 	})
 
 	c.Visit(jwc.DOMAIN + "/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/callback")

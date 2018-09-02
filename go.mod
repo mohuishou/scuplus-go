@@ -52,7 +52,7 @@ require (
 	github.com/microcosm-cc/bluemonday v0.0.0-20180327211928-995366fdf961 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180228065516-1df9eeb2bb81 // indirect
-	github.com/mohuishou/scu v0.0.0-20180901032653-e9b032885fe4
+	github.com/mohuishou/scu v0.0.0-20180902150456-f18709083717
 	github.com/opentracing/opentracing-go v1.0.2 // indirect
 	github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967
 	github.com/ryanuber/columnize v0.0.0-20170703205827-abc90934186a // indirect

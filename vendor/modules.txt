@@ -177,7 +177,7 @@ github.com/microcosm-cc/bluemonday
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v0.0.0-20180228065516-1df9eeb2bb81
 github.com/modern-go/reflect2
-# github.com/mohuishou/scu v0.0.0-20180901032653-e9b032885fe4
+# github.com/mohuishou/scu v0.0.0-20180902150456-f18709083717
 github.com/mohuishou/scu
 github.com/mohuishou/scu/jwc
 github.com/mohuishou/scu/library
