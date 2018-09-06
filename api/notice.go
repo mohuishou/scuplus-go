@@ -20,7 +20,7 @@ func GetNewestNotice(ctx iris.Context) {
 // GetNotices 获取公告列表，公告最多四条
 func GetNotices(ctx iris.Context) {
 	res := []model.Notice{}
-	if err := model.DB().Where("status > -1").Limit(4).Order("status desc").Select([]string{"id", "cover"}).Find(&res).Error; err != nil {
+	if err := model.DB().Where("status > -1").Limit(4).Order("status desc").Select([]string{"id", "wxid", "abstract", "cover"}).Find(&res).Error; err != nil {
 		Error(ctx, 50001, "公告获取失败！", err.Error())
 		return
 	}

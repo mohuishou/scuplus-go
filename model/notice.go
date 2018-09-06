@@ -9,4 +9,5 @@ type Notice struct {
 	Content  string `gorm:"type:text" json:"content"`
 	Status   int    `json:"status"`                  // 0: 正常, -1: 已关闭
 	Newest   int    `json:"newest" gorm:"default:0"` // 1: 最新通知，弹窗提醒
+	Wxid     string `json:"wxid"`
 }

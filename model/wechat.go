@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/mohuishou/scuplus-go/config"
@@ -33,6 +34,7 @@ func (w *Wechat) GetOpenid(code string) error {
 	if err != nil {
 		return err
 	}
+	log.Println(string(body))
 	json.Unmarshal(body, &w)
 	return nil
 }
