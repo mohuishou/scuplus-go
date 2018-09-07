@@ -20,6 +20,8 @@ require (
 	github.com/fatih/structs v1.0.0 // indirect
 	github.com/flosch/pongo2 v0.0.0-20180611110828-67f4ff8560df // indirect
 	github.com/garyburd/redigo v1.6.0
+	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
+	github.com/gin-gonic/gin v1.3.0 // indirect
 	github.com/go-ini/ini v1.37.0 // indirect
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
@@ -53,6 +55,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180228065516-1df9eeb2bb81 // indirect
 	github.com/mohuishou/scu v0.0.0-20180902150456-f18709083717
+	github.com/newrelic/go-agent v2.1.0+incompatible // indirect
 	github.com/opentracing/opentracing-go v1.0.2 // indirect
 	github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967
 	github.com/ryanuber/columnize v0.0.0-20170703205827-abc90934186a // indirect
@@ -61,6 +64,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95 // indirect
 	github.com/streadway/amqp v0.0.0-20180528204448-e5adc2ada8b8 // indirect
 	github.com/temoto/robotstxt v0.0.0-20170603013557-9e4646fa7053 // indirect
+	github.com/ugorji/go/codec v0.0.0-20180831062425-e253f1f20942 // indirect
 	golang.org/x/crypto v0.0.0-20180614221331-a8fb68e7206f // indirect
 	golang.org/x/net v0.0.0-20180611182652-db08ff08e862 // indirect
 	golang.org/x/oauth2 v0.0.0-20180603041954-1e0a3fa8ba9a
@@ -68,6 +72,7 @@ require (
 	golang.org/x/text v0.3.0 // indirect
 	google.golang.org/appengine v1.0.0 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.5.3 // indirect
+	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/go-playground/validator.v9 v9.17.1
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528 // indirect
 	gopkg.in/redsync.v1 v1.0.1 // indirect

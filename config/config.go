@@ -7,6 +7,11 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+type NewRelic struct {
+	AppName string `toml:"app_name"`
+	Key     string `toml:"key"`
+}
+
 // Mysql 配置
 type Mysql struct {
 	Host     string
@@ -80,6 +85,7 @@ type Config struct {
 	Redis      `toml:"redis"`
 	Youtu      `toml:"youtu"`
 	COS        `toml:"cos"`
+	NewRelic   NewRelic `toml:"new_relic"`
 }
 
 // config

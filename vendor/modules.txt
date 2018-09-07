@@ -108,6 +108,7 @@ github.com/hashicorp/go-version
 github.com/iris-contrib/formBinder
 # github.com/iris-contrib/middleware v0.0.0-20171114084220-1060fbb0ce08
 github.com/iris-contrib/middleware/jwt
+github.com/iris-contrib/middleware/newrelic
 # github.com/jinzhu/gorm v1.9.1
 github.com/jinzhu/gorm
 github.com/jinzhu/gorm/dialects/mysql
@@ -192,6 +193,14 @@ github.com/mohuishou/scu/jwc/schedule
 github.com/mohuishou/scu/jwc/course
 github.com/mohuishou/scu/ehall
 github.com/mohuishou/scu/jwc/util
+# github.com/newrelic/go-agent v2.1.0+incompatible
+github.com/newrelic/go-agent
+github.com/newrelic/go-agent/internal
+github.com/newrelic/go-agent/internal/logger
+github.com/newrelic/go-agent/internal/utilization
+github.com/newrelic/go-agent/internal/cat
+github.com/newrelic/go-agent/internal/jsonx
+github.com/newrelic/go-agent/internal/sysinfo
 # github.com/opentracing/opentracing-go v1.0.2
 github.com/opentracing/opentracing-go
 github.com/opentracing/opentracing-go/ext
