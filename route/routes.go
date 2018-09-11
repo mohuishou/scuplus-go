@@ -45,4 +45,7 @@ func Routes(app *iris.Application) {
 
 	// 研究生
 	GraduateRoutes(app)
+
+	//
+	app.Post("/unionid", api.UnionID)
 }

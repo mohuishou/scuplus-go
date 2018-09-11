@@ -133,6 +133,8 @@ github.com/temoto/robotstxt v0.0.0-20170603013557-9e4646fa7053 h1:8SnEScSvQhZU6d
 github.com/temoto/robotstxt v0.0.0-20170603013557-9e4646fa7053/go.mod h1:aOux3gHPCftJ3KHq6Pz/AlDjYJ7Y+yKfm1gU/3B0u04=
 github.com/ugorji/go/codec v0.0.0-20180831062425-e253f1f20942 h1:CZORS/4d6i+5FKSAtbRIjlElV2BAFYv/bokcaEVUimQ=
 github.com/ugorji/go/codec v0.0.0-20180831062425-e253f1f20942/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
+github.com/xlstudio/wxbizdatacrypt v0.0.0-20180822073906-4c8d395744ac h1:gkFYBz5NE9W28XLOtyd+TAiegV74iX0/0xxxRSTWMf4=
+github.com/xlstudio/wxbizdatacrypt v0.0.0-20180822073906-4c8d395744ac/go.mod h1:x91BQo565gI814B6UfpHANIOA4eRUPpLEfIdFIon+3Y=
 golang.org/x/crypto v0.0.0-20180614221331-a8fb68e7206f h1:0ReLo7NGPIcJVP5DVBX71f2C2NxXXUCxX/WYAAqzkaA=
 golang.org/x/crypto v0.0.0-20180614221331-a8fb68e7206f/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/net v0.0.0-20180218175443-cbe0f9307d01/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=

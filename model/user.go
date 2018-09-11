@@ -36,6 +36,7 @@ func (u *User) Login() (string, error) {
 		return "", errors.New("用户信息不完整")
 	}
 
+	sessionKey := u.Wechat.SessionKey
 	DB().Where("openid=?", u.Wechat.Openid).Find(&u.Wechat)
 	uid := u.Wechat.UserID
 	if uid == 0 {
@@ -43,6 +44,10 @@ func (u *User) Login() (string, error) {
 			return "", err
 		}
 		uid = u.ID
+	} else {
+		if err := DB().Model(&u.Wechat).Update("session_key", sessionKey).Error; err != nil {
+			return "", err
+		}
 	}
 
 	DB().Find(u, uid)

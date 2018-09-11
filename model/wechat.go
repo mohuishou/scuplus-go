@@ -14,6 +14,7 @@ import (
 type Wechat struct {
 	Model
 	Openid     string `json:"openid"`
+	UnionID    string `json:"union_id"`
 	SessionKey string `json:"session_key"`
 	NickName   string `json:"nick_name"`
 	AvatarURL  string `json:"avatar_url"`

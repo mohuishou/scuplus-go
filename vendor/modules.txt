@@ -219,6 +219,8 @@ github.com/shurcooL/sanitized_anchor_name
 github.com/streadway/amqp
 # github.com/temoto/robotstxt v0.0.0-20170603013557-9e4646fa7053
 github.com/temoto/robotstxt
+# github.com/xlstudio/wxbizdatacrypt v0.0.0-20180822073906-4c8d395744ac
+github.com/xlstudio/wxbizdatacrypt
 # golang.org/x/crypto v0.0.0-20180614221331-a8fb68e7206f
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/acme

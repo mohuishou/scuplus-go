@@ -65,6 +65,7 @@ require (
 	github.com/streadway/amqp v0.0.0-20180528204448-e5adc2ada8b8 // indirect
 	github.com/temoto/robotstxt v0.0.0-20170603013557-9e4646fa7053 // indirect
 	github.com/ugorji/go/codec v0.0.0-20180831062425-e253f1f20942 // indirect
+	github.com/xlstudio/wxbizdatacrypt v0.0.0-20180822073906-4c8d395744ac
 	golang.org/x/crypto v0.0.0-20180614221331-a8fb68e7206f // indirect
 	golang.org/x/net v0.0.0-20180611182652-db08ff08e862 // indirect
 	golang.org/x/oauth2 v0.0.0-20180603041954-1e0a3fa8ba9a

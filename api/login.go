@@ -3,7 +3,10 @@ package api
 import (
 	"log"
 
+	"github.com/mohuishou/scuplus-go/config"
+
 	"github.com/mohuishou/scu/library"
+	"github.com/xlstudio/wxbizdatacrypt"
 
 	"github.com/mohuishou/scu"
 
@@ -13,6 +16,35 @@ import (
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"
 )
+
+func UnionID(ctx iris.Context) {
+	encryptedData := ctx.FormValue("encrypted_data")
+	iv := ctx.FormValue("iv")
+	if encryptedData == "" || iv == "" {
+		Error(ctx, 10400, "参数错误", nil)
+		return
+	}
+
+	uid := middleware.GetUserID(ctx)
+	wechat := model.Wechat{}
+	model.DB().Where("user_id = ?", uid).Find(&wechat)
+	pc := wxbizdatacrypt.WxBizDataCrypt{
+		AppID:      config.Get().Wechat.Appid,
+		SessionKey: wechat.SessionKey,
+	}
+	result, err := pc.Decrypt(encryptedData, iv, false)
+	if err != nil {
+		Error(ctx, 10500, "数据解密失败", err.Error())
+		return
+	}
+	data := result.(map[string]interface{})
+	unionid := data["unionId"].(string)
+	if err := model.DB().Model(&wechat).Update("union_id", unionid).Error; err != nil {
+		Error(ctx, 10500, "网络错误!", err.Error())
+		return
+	}
+	Success(ctx, "获取成功", nil)
+}
 
 // Login 用户登录
 func Login(ctx iris.Context) {
@@ -49,6 +81,7 @@ func Login(ctx iris.Context) {
 		"verify":         user.Verify,
 		"library_verify": userLibrary.Verify,
 		"user_type":      userConf.UserType,
+		"unionid":        user.Wechat.UnionID != "",
 	})
 }
 
