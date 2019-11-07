@@ -6,7 +6,7 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/mohuishou/scuplus-go/model"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/util/spider/webhook"
 )
 

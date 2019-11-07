@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/cache/msgid"
 	"github.com/mohuishou/scuplus-go/middleware"

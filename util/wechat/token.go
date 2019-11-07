@@ -3,13 +3,12 @@ package wechat
 import (
 	"log"
 	"net/http"
-
+	"errors"
 	"fmt"
 
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/kataras/iris/core/errors"
 	"github.com/mohuishou/scuplus-go/cache/token"
 	"github.com/mohuishou/scuplus-go/config"
 )

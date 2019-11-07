@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/middleware"
 	"github.com/mohuishou/scuplus-go/model"

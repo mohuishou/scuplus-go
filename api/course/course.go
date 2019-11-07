@@ -5,7 +5,7 @@ import (
 
 	"strings"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/api"
 	cache "github.com/mohuishou/scuplus-go/cache/lists"
 	"github.com/mohuishou/scuplus-go/middleware"

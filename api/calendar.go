@@ -5,7 +5,7 @@ import (
 
 	"github.com/mohuishou/scuplus-go/model"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 // GetTerm 获取当前学期

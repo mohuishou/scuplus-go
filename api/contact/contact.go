@@ -1,7 +1,7 @@
 package contact
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/model"
 )

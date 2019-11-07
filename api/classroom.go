@@ -1,6 +1,6 @@
 package api
 
-import "github.com/kataras/iris"
+import "github.com/kataras/iris/v12"
 import "github.com/mohuishou/scuplus-go/util/classroom"
 
 // GetClassroom 获取自习教室

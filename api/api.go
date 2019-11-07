@@ -1,6 +1,6 @@
 package api
 
-import "github.com/kataras/iris"
+import "github.com/kataras/iris/v12"
 
 // Error 输出错误信息
 func Error(ctx iris.Context, code int, msg string, data interface{}) {

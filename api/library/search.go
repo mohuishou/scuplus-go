@@ -1,7 +1,7 @@
 package library
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scu/library"
 	"github.com/mohuishou/scuplus-go/api"
 )

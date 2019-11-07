@@ -1,4 +1,4 @@
-FROM golang:1.9.2-stretch
+FROM golang:1.13.4-stretch
 WORKDIR /go/src/github.com/mohuishou/scuplus-go
 COPY . .
 RUN go build -o /scuplus .

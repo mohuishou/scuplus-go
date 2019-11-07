@@ -3,7 +3,7 @@ package lecture
 import (
 	"time"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/api"
 	"github.com/mohuishou/scuplus-go/model"
 )

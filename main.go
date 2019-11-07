@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/kataras/iris/middleware/pprof"
+	"github.com/kataras/iris/v12/middleware/pprof"
 	"github.com/mohuishou/scuplus-go/config"
 	"github.com/mohuishou/scuplus-go/middleware"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/route"
 )
 
