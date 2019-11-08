@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 // Register 注册中间件

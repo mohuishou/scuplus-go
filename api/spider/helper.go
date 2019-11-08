@@ -1,7 +1,7 @@
 package spider
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scuplus-go/util/spider/helper/jwc"
 )
 

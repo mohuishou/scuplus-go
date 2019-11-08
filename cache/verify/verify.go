@@ -2,10 +2,9 @@ package verify
 
 import (
 	"log"
-
+	"errors"
 	"fmt"
 
-	"github.com/kataras/iris/core/errors"
 	"github.com/mohuishou/scuplus-go/cache"
 )
 

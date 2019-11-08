@@ -7,7 +7,7 @@ import (
 
 	"github.com/mohuishou/scu"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/mohuishou/scu/jwc"
 	"github.com/mohuishou/scuplus-go/cache/bind"
 	"github.com/mohuishou/scuplus-go/middleware"
